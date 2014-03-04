@@ -4,3 +4,6 @@
 *.jar
 *.war
 *.ear
+/was-maven-plugin.iml
+/target
+/.idea
