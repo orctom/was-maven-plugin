@@ -24,8 +24,8 @@ public class WebSphereModel {
     private boolean verbose;
     private int retryCounts;
 
-    private File trustStoreLocation;
-    private File keyStoreLocation;
+    private File trustStore;
+    private File keyStore;
     private String trustStorePassword;
     private String keyStorePassword;
 
@@ -197,21 +197,21 @@ public class WebSphereModel {
         return this;
     }
 
-    public File getTrustStoreLocation() {
-        return trustStoreLocation;
+    public File getTrustStore() {
+        return trustStore;
     }
 
-    public WebSphereModel setTrustStoreLocation(File trustStoreLocation) {
-        this.trustStoreLocation = trustStoreLocation;
+    public WebSphereModel setTrustStore(File trustStore) {
+        this.trustStore = trustStore;
         return this;
     }
 
-    public File getKeyStoreLocation() {
-        return keyStoreLocation;
+    public File getKeyStore() {
+        return keyStore;
     }
 
-    public WebSphereModel setKeyStoreLocation(File keyStoreLocation) {
-        this.keyStoreLocation = keyStoreLocation;
+    public WebSphereModel setKeyStore(File keyStore) {
+        this.keyStore = keyStore;
         return this;
     }
 

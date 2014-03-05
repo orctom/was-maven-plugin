@@ -2,6 +2,8 @@ package com.orctom.mojo.was.service;
 
 import com.ibm.websphere.management.AdminClient;
 import com.ibm.websphere.management.AdminClientFactory;
+import com.ibm.websphere.management.ObjectNameHelper;
+import com.ibm.websphere.management.Session;
 import com.ibm.websphere.management.application.AppConstants;
 import com.ibm.websphere.management.application.AppManagementProxy;
 import com.ibm.websphere.management.application.AppNotification;
@@ -29,10 +31,61 @@ public class WebSphereService {
     }
 
     @SuppressWarnings("unchecked")
+    public void refreshCluster() {
+        if (StringUtils.isEmpty(model.getCluster())) {
+            System.out.println("WARNING: Skipped due to NO cluster specified.");
+            return;
+        }
+        try {
+            ObjectName query = new ObjectName("WebSphere:*,type=Cluster,name=" + model.getCluster());
+            Set<ObjectName> response = client.queryNames(query, null);
+            for (ObjectName cluster : response) {
+                client.invoke(cluster, "refresh", null, null);
+            }
+        } catch (Exception e) {
+            throw new WebSphereServiceException(e.getMessage(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void restartCluster() {
+        if (StringUtils.isEmpty(model.getCluster())) {
+            System.out.println("WARNING: Skipped due to NO cluster specified.");
+            return;
+        }
+        try {
+            ObjectName query = new ObjectName("WebSphere:*,type=Cluster,name=" + model.getCluster());
+            Set<ObjectName> response = client.queryNames(query, null);
+            for (ObjectName cluster : response) {
+                client.invoke(cluster, "rippleStart", null, null);
+            }
+
+        } catch (Exception e) {
+            throw new WebSphereServiceException(e.getMessage(), e);
+        }
+    }
+
+    public ObjectName getServer() throws MalformedObjectNameException, ConnectorException {
+        ObjectName server = null;
+        Session session = new Session();
+        Set servers = null;
+        boolean isCluster = this.isCluster();
+        if (isCluster) {
+            servers = client.queryNames(new ObjectName("WebSphere:type=Cluster,name=" + model.getCluster() + ",*"), null);
+        } else {
+            servers = client.queryNames(new ObjectName("WebSphere:type=Server,name=" + model.getServer() + ",*"), null);
+        }
+        if (servers.isEmpty()) {
+            throw new WebSphereServiceException("IBM WebSphere server not found: " + (isCluster ? model.getCluster() : model.getServer()));
+        }
+        return (ObjectName) servers.iterator().next();
+    }
+
+    @SuppressWarnings("unchecked")
     public List<Server> listServers() {
         try {
-            ObjectName jvmQuery = new ObjectName("WebSphere:*,type=Server");
-            Set<ObjectName> response = client.queryNames(jvmQuery, null);
+            ObjectName query = new ObjectName("WebSphere:*,type=Server,j2eeType=J2EEServer");
+            Set<ObjectName> response = client.queryNames(query, null);
             List<Server> servers = new ArrayList<Server>();
             for (ObjectName serverObjectName : response) {
                 Server server = new Server();
@@ -42,28 +95,51 @@ public class WebSphereService {
                 server.setProcessId(String.valueOf(client.getAttribute(serverObjectName, "pid")));
                 server.setServerVendor(String.valueOf(client.getAttribute(serverObjectName, "serverVendor")));
                 server.setServerVersion(String.valueOf(client.getAttribute(serverObjectName, "serverVersion")));
+                server.setState(String.valueOf(client.getAttribute(serverObjectName, "state")));
                 servers.add(server);
             }
             return servers;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new WebSphereServiceException(e.getMessage(), e);
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public void restartServer() {
+        if (StringUtils.isEmpty(model.getServer())) {
+            System.out.println("WARNING: Skipped due to NO server specified.");
+            return;
+        }
+        try {
+            ObjectName query = new ObjectName("WebSphere:*,type=Server,j2eeType=J2EEServer,name=" + model.getServer());
+            Set<ObjectName> response = client.queryNames(query, null);
+            List<Server> servers = new ArrayList<Server>();
+            for (ObjectName server : response) {
+                client.invoke(server, "restart", null, null);
+            }
+        } catch (Exception e) {
             throw new WebSphereServiceException(e.getMessage(), e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void installApplication(HashMap<String, Object> options) {
-        if (!isConnected()) {
-            throw new WebSphereServiceException("Cannot install artifact, no connection to WebSphere Application Server exists");
-        }
+    public Vector<String> listApplications() throws Exception {
+        ApplicationListener listener = createInstallationListener();
+        client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
+        return AppManagementProxy.getJMXProxyForClient(client).listApplications(new Hashtable(), null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void installApplication() {
         try {
             Hashtable<String, Object> preferences = new Hashtable<String, Object>();
             preferences.put(AppConstants.APPDEPL_LOCALE, Locale.getDefault());
 
             Properties defaultBinding = new Properties();
             preferences.put(AppConstants.APPDEPL_DFLTBNDG, defaultBinding);
-            if (options.containsKey(AppConstants.APPDEPL_DFLTBNDG_VHOST)) {
-                defaultBinding.put(AppConstants.APPDEPL_DFLTBNDG_VHOST, options.get(AppConstants.APPDEPL_DFLTBNDG_VHOST));
+            if (StringUtils.isNotEmpty(model.getVirtualHost())) {
+                defaultBinding.put(AppConstants.APPDEPL_DFLTBNDG_VHOST, model.getVirtualHost());
             }
 
             AppDeploymentController controller = AppDeploymentController.readArchive(model.getPackageFile().getAbsolutePath(), preferences);
@@ -78,65 +154,71 @@ public class WebSphereService {
 
             Hashtable<String, Object> config = controller.getAppDeploymentSavedResults();
 
+            config.put(AppConstants.APPDEPL_DFLTBNDG, defaultBinding);
+
             config.put(AppConstants.APPDEPL_LOCALE, Locale.getDefault());
+            config.put(AppConstants.APPDEPL_APPNAME, model.getApplicationName());
             config.put(AppConstants.APPDEPL_ARCHIVE_UPLOAD, Boolean.TRUE);
             config.put(AppConstants.APPDEPL_PRECOMPILE_JSP, Boolean.TRUE);
 
+            //config.put( AppConstants.APPDEPL_CLASSLOADINGMODE, AppConstants.APPDEPL_CLASSLOADINGMODE_PARENTLAST);
+            //config.put( AppConstants.APPDEPL_CLASSLOADERPOLICY, AppConstants.APPDEPL_CLASSLOADERPOLICY_MULTIPLE);
+
             Hashtable<String, Object> module2server = new Hashtable<String, Object>();
-            module2server.put("*", getTarget());
+            ObjectName server = getServer();
+            if (this.isCluster()) {
+                module2server.put("*", "WebSphere:cell=" + ObjectNameHelper.getCellName(server) + ",cluster=" + model.getCluster());
+            } else {
+                module2server.put("*", "WebSphere:cell=" + ObjectNameHelper.getCellName(server) + ",node="
+                        + ObjectNameHelper.getNodeName(server) + ",server=" + model.getServer());
+            }
+            //module2server.put("*", getTarget());
             config.put(AppConstants.APPDEPL_MODULE_TO_SERVER, module2server);
 
-            InstallationListener listener = createInstallationListener();
+            ApplicationListener listener = createInstallationListener();
             client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
             AppManagementProxy.getJMXProxyForClient(client).installApplication(model.getPackageFile().getAbsolutePath(), config, null);
-            waitForInstallThread();
+            waitForApplicationOperationsThread();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new WebSphereServiceException("Failed to install artifact: " + e.getMessage());
+            throw new WebSphereServiceException("Failed to install application ", e);
         }
     }
 
-    public void uninstallApplication(String name) throws Exception {
-        InstallationListener listener = createInstallationListener();
-
+    public void uninstallApplication() throws Exception {
+        ApplicationListener listener = createInstallationListener();
         client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
-
-        AppManagementProxy.getJMXProxyForClient(client).uninstallApplication(name, new Hashtable(), null);
-
-        waitForInstallThread();
+        AppManagementProxy.getJMXProxyForClient(client).uninstallApplication(model.getApplicationName(), new Hashtable(), null);
+        waitForApplicationOperationsThread();
     }
 
-    public void startApplication(String name) throws Exception {
+    public void startApplication() throws Exception {
         try {
-            AppManagementProxy.getJMXProxyForClient(client).startApplication(name, new Hashtable(), null);
+            AppManagementProxy.getJMXProxyForClient(client).startApplication(model.getApplicationName(), new Hashtable(), null);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new WebSphereServiceException("Could not start artifact '" + name + "': " + e.getMessage());
+            throw new WebSphereServiceException("Could not start application '" + model.getApplicationName(), e);
         }
     }
 
-    public void stopApplication(String name) throws Exception {
+    public void stopApplication() throws Exception {
         try {
-            AppManagementProxy.getJMXProxyForClient(client).stopApplication(name, new Hashtable(), null);
+            AppManagementProxy.getJMXProxyForClient(client).stopApplication(model.getApplicationName(), new Hashtable(), null);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new WebSphereServiceException("Could not stop artifact '" + name + "': " + e.getMessage());
+            throw new WebSphereServiceException("Could not stop application '" + model.getApplicationName(), e);
         }
     }
 
-    public boolean isApplicationInstalled(String name) {
+    public boolean isApplicationInstalled() {
         try {
-            return AppManagementProxy.getJMXProxyForClient(client).checkIfAppExists(name, new Hashtable(), null);
+            return AppManagementProxy.getJMXProxyForClient(client).checkIfAppExists(model.getApplicationName(), new Hashtable(), null);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new WebSphereServiceException("Could not determine if artifact '" + name + "' is installed: " + e.getMessage());
+            throw new WebSphereServiceException("Could not determine if application '" + model.getApplicationName() + "' is installed", e);
         }
     }
 
-    private InstallationListener createInstallationListener() throws Exception {
+    private ApplicationListener createInstallationListener() throws Exception {
         NotificationFilterSupport filter = new NotificationFilterSupport();
         filter.enableType(AppConstants.NotificationType);
-        return new InstallationListener(client, getAppManagementObject(), filter);
+        return new ApplicationListener(client, getAppManagementObject(), filter);
     }
 
     public boolean isConnected() {
@@ -154,19 +236,27 @@ public class WebSphereService {
         Properties config = new Properties();
         config.put(AdminClient.CONNECTOR_HOST, model.getHost());
         config.put(AdminClient.CONNECTOR_PORT, model.getPort());
-        config.put(AdminClient.CACHE_DISABLED, "false");
+        config.put(AdminClient.CACHE_DISABLED, Boolean.FALSE);
         if (StringUtils.isNotEmpty(model.getUser())) {
             injectSecurityConfiguration(config);
         } else {
-            config.put(AdminClient.CONNECTOR_SECURITY_ENABLED, "false");
+            config.put(AdminClient.CONNECTOR_SECURITY_ENABLED, Boolean.FALSE);
         }
 
-        config.put(AdminClient.AUTH_TARGET, getTarget());
+        //config.put(AdminClient.AUTH_TARGET, getTarget());
         config.put(AdminClient.CONNECTOR_TYPE, model.getConnectorType());
-        client = AdminClientFactory.createAdminClient(config);
+        try {
+            client = AdminClientFactory.createAdminClient(config);
+        } catch (ConnectorException e) {
+            throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server, please check the firewall", e);
+        }
         if (client == null) {
             throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server @ " + model.getHost() + ":" + model.getPort());
         }
+    }
+
+    private boolean isCluster() {
+        return StringUtils.isNotEmpty(model.getCluster());
     }
 
     private String getTarget() {
@@ -190,15 +280,16 @@ public class WebSphereService {
     }
 
     private void injectSecurityConfiguration(Properties config) {
-        config.put(AdminClient.CONNECTOR_SECURITY_ENABLED, "true");
+        config.put(AdminClient.CONNECTOR_SECURITY_ENABLED, Boolean.TRUE);
+        config.put(AdminClient.CONNECTOR_AUTO_ACCEPT_SIGNER, Boolean.TRUE);
         config.put(AdminClient.USERNAME, model.getUser());
         config.put(AdminClient.PASSWORD, model.getPassword());
 
-        config.put("com.ibm.ssl.trustStore", model.getTrustStoreLocation().getAbsolutePath());
-        config.put("javax.net.ssl.trustStore", model.getTrustStoreLocation().getAbsolutePath());
+        config.put("com.ibm.ssl.trustStore", model.getTrustStore().getAbsolutePath());
+        config.put("javax.net.ssl.trustStore", model.getTrustStore().getAbsolutePath());
 
-        config.put("com.ibm.ssl.keyStore", model.getKeyStoreLocation().getAbsolutePath());
-        config.put("javax.net.ssl.keyStore", model.getKeyStoreLocation().getAbsolutePath());
+        config.put("com.ibm.ssl.keyStore", model.getKeyStore().getAbsolutePath());
+        config.put("javax.net.ssl.keyStore", model.getKeyStore().getAbsolutePath());
 
         config.put("com.ibm.ssl.trustStorePassword", model.getTrustStorePassword());
         config.put("javax.net.ssl.trustStorePassword", model.getTrustStorePassword());
@@ -226,8 +317,7 @@ public class WebSphereService {
         return (ObjectName) iterator.next();
     }
 
-
-    private void waitForInstallThread() {
+    private void waitForApplicationOperationsThread() {
         synchronized (this) {
             try {
                 wait();
@@ -237,19 +327,19 @@ public class WebSphereService {
         }
     }
 
-    private void notifyInstallThread() {
+    private void notifyApplicationOperationThread() {
         synchronized (this) {
             notify();
         }
     }
 
-    class InstallationListener implements NotificationListener {
+    class ApplicationListener implements NotificationListener {
 
         private AdminClient client;
         private ObjectName appManagement;
         private NotificationFilter filter;
 
-        public InstallationListener(AdminClient adminClient, ObjectName appManagement, NotificationFilter filter) {
+        public ApplicationListener(AdminClient adminClient, ObjectName appManagement, NotificationFilter filter) {
             this.client = adminClient;
             this.appManagement = appManagement;
             this.filter = filter;
@@ -258,22 +348,15 @@ public class WebSphereService {
         public synchronized void handleNotification(Notification notification, Object handback) {
             AppNotification ev = (AppNotification) notification.getUserData();
 
-            if (ev.taskName.equals(AppNotification.INSTALL) && (ev.taskStatus.equals(AppNotification.STATUS_COMPLETED) || ev.taskStatus.equals(AppNotification.STATUS_FAILED))) {
+            System.out.println(ev.taskName + " <> " + ev.taskStatus);
+
+            if ((ev.taskStatus.equals(AppNotification.STATUS_COMPLETED) || ev.taskStatus.equals(AppNotification.STATUS_FAILED))) {
                 try {
                     client.removeNotificationListener(appManagement, this);
                 } catch (Throwable th) {
                     System.err.println("Error removing install listener: " + th);
                 }
-                notifyInstallThread();
-            }
-
-            if (ev.taskName.equals(AppNotification.UNINSTALL) && (ev.taskStatus.equals(AppNotification.STATUS_COMPLETED) || ev.taskStatus.equals(AppNotification.STATUS_FAILED))) {
-                try {
-                    client.removeNotificationListener(appManagement, this);
-                } catch (Throwable th) {
-                    System.err.println("Error removing uninstall listener: " + th);
-                }
-                notifyInstallThread();
+                notifyApplicationOperationThread();
             }
         }
 

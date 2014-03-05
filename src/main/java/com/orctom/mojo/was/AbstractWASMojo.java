@@ -21,7 +21,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter(defaultValue = "localhost")
     protected String host;
 
-    @Parameter
+    @Parameter(defaultValue = "8879")
     protected String port;
 
     @Parameter(defaultValue = "SOAP")
@@ -62,4 +62,16 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "3")
     protected int retryCounts;
+
+    @Parameter
+    protected File trustStore;
+
+    @Parameter
+    protected File keyStore;
+
+    @Parameter
+    protected String trustStorePassword;
+
+    @Parameter
+    protected String keyStorePassword;
 }
