@@ -64,10 +64,10 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected int retryCounts;
 
     @Parameter
-    protected File trustStore;
+    protected String trustStore;
 
     @Parameter
-    protected File keyStore;
+    protected String keyStore;
 
     @Parameter
     protected String trustStorePassword;

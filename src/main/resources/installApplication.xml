@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project default="installApplication" basedir=".">
+    <target name="defaultBindings">
+        <taskdef name="defaultBindings" classname="com.ibm.websphere.ant.tasks.DefaultBindings" />
+        <wsDefaultBindings
+                ear="{{ear||"
+                outputFile="{{ear||"
+                virtualHost="{{virtualHost}}"
+                failonerror="{{failOnError}}"
+                jvmMaxMemory="512M"
+                lang="jython"
+                />
+    </target>
+    <target name="installApplication" depends="defaultBindings">
+        <taskdef name="installApplication" classname="com.ibm.websphere.ant.tasks.InstallApplication"/>
+        <wsInstallApp
+                wasHome="{{wasHome}}"
+                options="-appname {{applicationName}} -preCompileJSPs true -cluster {{cluster}} -server {{server}}"
+                ear="{{ear||"
+                profile="{{profile}}"
+                properties="{{properties}}"
+                profileName="{{profileName}}"
+                conntype="{{connectorType}}"
+                host="{{host}}"
+                port="{{port}}"
+                user="{{user}}"
+                password="{{password}}"
+                failonerror="{{failOnError}}"
+                jvmMaxMemory="512M"
+                lang="jython"
+                />
+    </target>
+</project>

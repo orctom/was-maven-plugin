@@ -1,5 +1,8 @@
 package com.orctom.mojo.was.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.io.File;
 
 /**
@@ -7,6 +10,7 @@ import java.io.File;
  */
 public class WebSphereModel {
 
+    private String wasHome;
     private String applicationName;
     private String host;
     private String port;
@@ -24,8 +28,8 @@ public class WebSphereModel {
     private boolean verbose;
     private int retryCounts;
 
-    private File trustStore;
-    private File keyStore;
+    private String trustStore;
+    private String keyStore;
     private String trustStorePassword;
     private String keyStorePassword;
 
@@ -51,6 +55,15 @@ public class WebSphereModel {
         this.failOnError = failOnError;
         this.verbose = verbose;
         this.retryCounts = retryCounts;
+    }
+
+    public String getWasHome() {
+        return wasHome;
+    }
+
+    public WebSphereModel setWasHome(String wasHome) {
+        this.wasHome = wasHome;
+        return this;
     }
 
     public String getApplicationName() {
@@ -197,20 +210,20 @@ public class WebSphereModel {
         return this;
     }
 
-    public File getTrustStore() {
+    public String getTrustStore() {
         return trustStore;
     }
 
-    public WebSphereModel setTrustStore(File trustStore) {
+    public WebSphereModel setTrustStore(String trustStore) {
         this.trustStore = trustStore;
         return this;
     }
 
-    public File getKeyStore() {
+    public String getKeyStore() {
         return keyStore;
     }
 
-    public WebSphereModel setKeyStore(File keyStore) {
+    public WebSphereModel setKeyStore(String keyStore) {
         this.keyStore = keyStore;
         return this;
     }
@@ -231,5 +244,10 @@ public class WebSphereModel {
     public WebSphereModel setKeyStorePassword(String keyStorePassword) {
         this.keyStorePassword = keyStorePassword;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

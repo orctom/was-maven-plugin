@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project default="startApplications" basedir=".">
+    <target name="startApplications">
+        <taskdef name="startApplications" classname="com.ibm.websphere.ant.tasks.StartApplication"/>
+        <wsInstallApp
+                wasHome="{{wasHome}}"
+                server="{{server}}"
+                application="{{applicationName}}"
+                profile="{{profile}}"
+                properties="{{properties}}"
+                profileName="{{profileName}}"
+                conntype="{{connectorType}}"
+                host="{{host}}"
+                port="{{port}}"
+                user="{{user}}"
+                password="{{password}}"
+                failonerror="{{failOnError}}"
+                jvmMaxMemory="512M"
+                lang="jython"
+                />
+    </target>
+</project>

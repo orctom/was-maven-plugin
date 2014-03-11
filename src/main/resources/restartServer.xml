@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project default="restartServer" basedir=".">
+    <target name="restartServer">
+        <taskdef name="restartServer" classname="com.ibm.websphere.ant.tasks.WsAdmin"/>
+        <wsInstallApp
+                wasHome="{{wasHome}}"
+                options="{{options}}"
+                properties="{{properties}}"
+                command="AdminTask.updateAppOnCluster('[-ApplicationNames {{applicationName}} -timeout 3600]')"
+                conntype="{{connectorType}}"
+                host="{{host}}"
+                port="{{port}}"
+                user="{{user}}"
+                password="{{password}}"
+                failonerror="{{failOnError}}"
+                jvmMaxMemory="512M"
+                lang="jython"
+                />
+    </target>
+</project>

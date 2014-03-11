@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project default="uninstallApplication" basedir=".">
+    <target name="uninstallApplication">
+        <taskdef name="uninstallApplication" classname="com.ibm.websphere.ant.tasks.UninstallApplication"/>
+        <wsInstallApp
+                wasHome="{{wasHome}}"
+                options="{{options}}"
+                ear="{{ear||"
+                profile="{{profile}}"
+                properties="{{properties}}"
+                profileName="{{profileName}}"
+                conntype="{{connectorType}}"
+                host="{{host}}"
+                port="{{port}}"
+                user="{{user}}"
+                password="{{password}}"
+                failonerror="{{failOnError}}"
+                jvmMaxMemory="512M"
+                lang="jython"
+                />
+    </target>
+</project>

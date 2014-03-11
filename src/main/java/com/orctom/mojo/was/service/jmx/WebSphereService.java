@@ -1,4 +1,4 @@
-package com.orctom.mojo.was.service;
+package com.orctom.mojo.was.service.jmx;
 
 import com.ibm.websphere.management.AdminClient;
 import com.ibm.websphere.management.AdminClientFactory;
@@ -13,6 +13,7 @@ import com.ibm.websphere.management.exception.ConnectorException;
 import com.orctom.mojo.was.model.Server;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.model.WebSphereServiceException;
+import com.orctom.mojo.was.service.IWebSphereService;
 import org.apache.commons.lang.StringUtils;
 
 import javax.management.*;
@@ -21,7 +22,7 @@ import java.util.*;
 /**
  * Created by CH on 3/4/14.
  */
-public class WebSphereService {
+public class WebSphereService implements IWebSphereService {
 
     private AdminClient client;
     private WebSphereModel model;
@@ -30,38 +31,20 @@ public class WebSphereService {
         this.model = model;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    public void refreshCluster() {
-        if (StringUtils.isEmpty(model.getCluster())) {
-            System.out.println("WARNING: Skipped due to NO cluster specified.");
-            return;
-        }
+    public void restartServer() {
+        ObjectName server = null;
         try {
-            ObjectName query = new ObjectName("WebSphere:*,type=Cluster,name=" + model.getCluster());
-            Set<ObjectName> response = client.queryNames(query, null);
-            for (ObjectName cluster : response) {
-                client.invoke(cluster, "refresh", null, null);
+            server = getServer();
+            if (isCluster()) {
+                //client.invoke(server, "refresh", null, null);
+                client.invoke(server, "rippleStart", null, null);
+            } else {
+                client.invoke(server, "restart", null, null);
             }
         } catch (Exception e) {
-            throw new WebSphereServiceException(e.getMessage(), e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void restartCluster() {
-        if (StringUtils.isEmpty(model.getCluster())) {
-            System.out.println("WARNING: Skipped due to NO cluster specified.");
-            return;
-        }
-        try {
-            ObjectName query = new ObjectName("WebSphere:*,type=Cluster,name=" + model.getCluster());
-            Set<ObjectName> response = client.queryNames(query, null);
-            for (ObjectName cluster : response) {
-                client.invoke(cluster, "rippleStart", null, null);
-            }
-
-        } catch (Exception e) {
-            throw new WebSphereServiceException(e.getMessage(), e);
+            throw new WebSphereServiceException("Failed to restart server", e);
         }
     }
 
@@ -104,32 +87,19 @@ public class WebSphereService {
         }
     }
 
-
+    @Override
     @SuppressWarnings("unchecked")
-    public void restartServer() {
-        if (StringUtils.isEmpty(model.getServer())) {
-            System.out.println("WARNING: Skipped due to NO server specified.");
-            return;
-        }
+    public Collection<String> listApplications() {
         try {
-            ObjectName query = new ObjectName("WebSphere:*,type=Server,j2eeType=J2EEServer,name=" + model.getServer());
-            Set<ObjectName> response = client.queryNames(query, null);
-            List<Server> servers = new ArrayList<Server>();
-            for (ObjectName server : response) {
-                client.invoke(server, "restart", null, null);
-            }
+            ApplicationListener listener = createInstallationListener();
+            client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
+            return AppManagementProxy.getJMXProxyForClient(client).listApplications(new Hashtable(), null);
         } catch (Exception e) {
-            throw new WebSphereServiceException(e.getMessage(), e);
+            throw new WebSphereServiceException("Failed to list applications", e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Vector<String> listApplications() throws Exception {
-        ApplicationListener listener = createInstallationListener();
-        client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
-        return AppManagementProxy.getJMXProxyForClient(client).listApplications(new Hashtable(), null);
-    }
-
+    @Override
     @SuppressWarnings("unchecked")
     public void installApplication() {
         try {
@@ -180,18 +150,24 @@ public class WebSphereService {
             AppManagementProxy.getJMXProxyForClient(client).installApplication(model.getPackageFile().getAbsolutePath(), config, null);
             waitForApplicationOperationsThread();
         } catch (Exception e) {
-            throw new WebSphereServiceException("Failed to install application ", e);
+            throw new WebSphereServiceException("Failed to install application: " + model.getApplicationName(), e);
         }
     }
 
-    public void uninstallApplication() throws Exception {
-        ApplicationListener listener = createInstallationListener();
-        client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
-        AppManagementProxy.getJMXProxyForClient(client).uninstallApplication(model.getApplicationName(), new Hashtable(), null);
-        waitForApplicationOperationsThread();
+    @Override
+    public void uninstallApplication() {
+        try {
+            ApplicationListener listener = createInstallationListener();
+            client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
+            AppManagementProxy.getJMXProxyForClient(client).uninstallApplication(model.getApplicationName(), new Hashtable(), null);
+            waitForApplicationOperationsThread();
+        } catch (Exception e) {
+            throw new WebSphereServiceException("Failed to uninstall application:" + model.getApplicationName(), e);
+        }
     }
 
-    public void startApplication() throws Exception {
+    @Override
+    public void startApplication() {
         try {
             AppManagementProxy.getJMXProxyForClient(client).startApplication(model.getApplicationName(), new Hashtable(), null);
         } catch (Exception e) {
@@ -199,7 +175,8 @@ public class WebSphereService {
         }
     }
 
-    public void stopApplication() throws Exception {
+    @Override
+    public void stopApplication() {
         try {
             AppManagementProxy.getJMXProxyForClient(client).stopApplication(model.getApplicationName(), new Hashtable(), null);
         } catch (Exception e) {
@@ -207,6 +184,7 @@ public class WebSphereService {
         }
     }
 
+    @Override
     public boolean isApplicationInstalled() {
         try {
             return AppManagementProxy.getJMXProxyForClient(client).checkIfAppExists(model.getApplicationName(), new Hashtable(), null);
@@ -238,17 +216,28 @@ public class WebSphereService {
         config.put(AdminClient.CONNECTOR_PORT, model.getPort());
         config.put(AdminClient.CACHE_DISABLED, Boolean.FALSE);
         if (StringUtils.isNotEmpty(model.getUser())) {
-            injectSecurityConfiguration(config);
+            config.put(AdminClient.USERNAME, model.getUser());
+            if (StringUtils.isNotEmpty(model.getPassword())) {
+                config.put(AdminClient.PASSWORD, model.getPassword());
+                injectSecurityConfiguration(config);
+            }
         } else {
             config.put(AdminClient.CONNECTOR_SECURITY_ENABLED, Boolean.FALSE);
         }
 
         //config.put(AdminClient.AUTH_TARGET, getTarget());
         config.put(AdminClient.CONNECTOR_TYPE, model.getConnectorType());
+
+        System.out.println("==================================");
+        for (Map.Entry<?, ?> entry : config.entrySet()) {
+            System.out.println(entry.getKey() + " = " + entry.getValue());
+        }
+        System.out.println("==================================");
         try {
             client = AdminClientFactory.createAdminClient(config);
         } catch (ConnectorException e) {
-            throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server, please check the firewall", e);
+            e.printStackTrace();
+            //throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server, please check the firewall", e);
         }
         if (client == null) {
             throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server @ " + model.getHost() + ":" + model.getPort());
@@ -282,20 +271,40 @@ public class WebSphereService {
     private void injectSecurityConfiguration(Properties config) {
         config.put(AdminClient.CONNECTOR_SECURITY_ENABLED, Boolean.TRUE);
         config.put(AdminClient.CONNECTOR_AUTO_ACCEPT_SIGNER, Boolean.TRUE);
-        config.put(AdminClient.USERNAME, model.getUser());
-        config.put(AdminClient.PASSWORD, model.getPassword());
 
-        config.put("com.ibm.ssl.trustStore", model.getTrustStore().getAbsolutePath());
-        config.put("javax.net.ssl.trustStore", model.getTrustStore().getAbsolutePath());
+//        config.setProperty(AdminClient.CONNECTOR_SOAP_CONFIG, "C:\\Program Files (x86)\\IBM\\WebSphere\\AppServer\\profiles\\secure\\properties\\ssl.client.props");
 
-        config.put("com.ibm.ssl.keyStore", model.getKeyStore().getAbsolutePath());
-        config.put("javax.net.ssl.keyStore", model.getKeyStore().getAbsolutePath());
+        if (StringUtils.isNotEmpty(model.getKeyStore())) {
+            config.put("com.ibm.ssl.keyStore", model.getKeyStore());
+            config.put("javax.net.ssl.keyStore", model.getKeyStore());
 
-        config.put("com.ibm.ssl.trustStorePassword", model.getTrustStorePassword());
-        config.put("javax.net.ssl.trustStorePassword", model.getTrustStorePassword());
+            config.put("com.ibm.ssl.keyStorePassword", model.getKeyStorePassword());
+            config.put("javax.net.ssl.keyStorePassword", model.getKeyStorePassword());
 
-        config.put("com.ibm.ssl.keyStorePassword", model.getKeyStorePassword());
-        config.put("javax.net.ssl.keyStorePassword", model.getKeyStorePassword());
+            if (model.getKeyStore().endsWith(".p12") || model.getKeyStore().endsWith(".P12")) {
+                config.put("com.ibm.ssl.keyStoreType", "PKCS12");
+                config.put("javax.net.ssl.keyStoreType", "PKCS12");
+            } else {
+                config.put("com.ibm.ssl.keyStoreType", "JKS");
+                config.put("javax.net.ssl.keyStoreType", "JKS");
+            }
+        }
+
+        if (StringUtils.isNotEmpty(model.getTrustStore())) {
+            config.put("com.ibm.ssl.trustStore", model.getTrustStore());
+            config.put("javax.net.ssl.trustStore", model.getTrustStore());
+
+            config.put("com.ibm.ssl.trustStorePassword", model.getTrustStorePassword());
+            config.put("javax.net.ssl.trustStorePassword", model.getTrustStorePassword());
+
+            if (model.getTrustStore().endsWith(".p12") || model.getTrustStore().endsWith(".P12")) {
+                config.put("com.ibm.ssl.keyStoreType", "PKCS12");
+                config.put("javax.net.ssl.keyStoreType", "PKCS12");
+            } else {
+                config.put("com.ibm.ssl.keyStoreType", "JKS");
+                config.put("javax.net.ssl.keyStoreType", "JKS");
+            }
+        }
     }
 
     public void disconnect() {
@@ -371,6 +380,10 @@ public class WebSphereService {
         public ObjectName getAppManagement() {
             return appManagement;
         }
+    }
+
+    public AdminClient getAdminClient() {
+        return this.client;
     }
 
 }
