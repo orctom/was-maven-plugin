@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project default="restartServer" basedir=".">
-    <target name="restartServer">
-        <taskdef name="restartServer" classname="com.ibm.websphere.ant.tasks.WsAdmin"/>
-        <restartServer
+<project default="stopServer" basedir=".">
+    <target name="stopServer">
+        <taskdef name="stopServer" classname="com.ibm.websphere.ant.tasks.WsAdmin"/>
+        <stopServer
                 wasHome="{{wasHome}}"
-                options="{{options}}"
                 properties="{{properties}}"
-                command="AdminTask.updateAppOnCluster('[-ApplicationNames {{applicationName}} -timeout 3600]')"
+                command="AdminControl.stopServer('{{server}}', '{{node}}')"
                 conntype="{{connectorType}}"
                 host="{{host}}"
                 port="{{port}}"

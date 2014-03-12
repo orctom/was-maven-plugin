@@ -51,17 +51,17 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String contextRoot;
 
+    @Parameter(defaultValue = "AppSrv01")
+    private String profileName;
+
     @Parameter(defaultValue = "${project.artifact.file}")
     protected File packageFile;
 
     @Parameter(defaultValue = "true")
     protected boolean failOnError;
 
-    @Parameter(defaultValue = "false")
+    @Parameter
     protected boolean verbose;
-
-    @Parameter(defaultValue = "3")
-    protected int retryCounts;
 
     @Parameter
     protected String trustStore;

@@ -19,14 +19,14 @@ import java.util.Collection;
 /**
  * Created by CH on 3/11/14.
  */
-public class WebSphereServiceScriptImpl implements IWebSphereService {
+public class WebSphereServiceAntImpl implements IWebSphereService {
 
     private WebSphereModel model;
     private String workingDir;
 
-    private static final String TEMPLATE_FOLDER = "jython/";
+    private static final String TEMPLATE_FOLDER = "ant/";
 
-    public WebSphereServiceScriptImpl(WebSphereModel model, String workingDir) {
+    public WebSphereServiceAntImpl(WebSphereModel model, String workingDir) {
         this.model = model;
         this.workingDir = workingDir;
     }
@@ -109,25 +109,21 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
     private Commandline getCommandline(String task) throws IOException {
         File buildScript = getBuildScript(task);
         Commandline commandLine = new Commandline();
-        commandLine.setExecutable(getWsAdminExecutable().getAbsolutePath());
+        commandLine.addEnvironment("WAS_USER_SCRIPT", "");
+        commandLine.setExecutable(getWsAntExecutable().getAbsolutePath());
         commandLine.setWorkingDirectory(workingDir);
 
-        commandLine.createArg().setLine("-conntype " + model.getConnectorType());
-        commandLine.createArg().setLine("-host " + model.getHost());
-        commandLine.createArg().setLine("-port " + model.getPort());
-        if (StringUtils.isNotBlank(model.getUser())) {
-            commandLine.createArg().setLine("-user " + model.getUser());
-            if (StringUtils.isNotBlank(model.getPassword())) {
-                commandLine.createArg().setLine("-password " + model.getPassword());
-            }
+        commandLine.createArg().setLine("-buildfile " + "\"" + buildScript.getAbsolutePath() + "\"");
+
+        if (model.isVerbose()) {
+            commandLine.createArg().setValue("-verbose");
+            commandLine.createArg().setValue("-debug");
         }
-        commandLine.createArg().setLine("-lang jython");
-        commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
 
         return commandLine;
     }
 
-    protected File getWsAdminExecutable() {
+    protected File getWsAntExecutable() {
         String wasHome = model.getWasHome();
         if (StringUtils.isBlank(wasHome)) {
             throw new WebSphereServiceException("WAS_HOME is not set");
@@ -136,23 +132,23 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
         File[] candidates = binDir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 dir.equals(model.getWasHome());
-                return name.startsWith("wsadmin");
+                return name.startsWith("ws_ant");
             }
         });
 
         if (candidates.length != 1) {
-            throw new WebSphereServiceException("Couldn't find wsadmin[.sh|.bat], candidates: " + candidates);
+            throw new WebSphereServiceException("Couldn't find ws_ant[.sh|.bat], candidates: " + candidates);
         }
 
         File wsAnt = candidates[0];
-        System.out.println("wsadmin location: " + wsAnt.getAbsolutePath());
+        System.out.println("wsAnt location: " + wsAnt.getAbsolutePath());
 
         return wsAnt;
     }
 
     private File getBuildScript(String task) throws IOException {
         MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(task + ".py");
+        Mustache mustache = mf.compile(task + ".xml");
 
         StringBuilder buildFile = new StringBuilder(50);
         buildFile.append(task);
@@ -162,7 +158,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
         if (StringUtils.isNotBlank(model.getApplicationName())) {
             buildFile.append("-").append(model.getApplicationName());
         }
-        buildFile.append("-").append(System.currentTimeMillis()).append(".py");
+        buildFile.append("-").append(System.currentTimeMillis()).append(".xml");
 
         File buildScriptFile = new File(workingDir + "/was-maven-plugin", buildFile.toString());
         buildScriptFile.getParentFile().mkdirs();
@@ -183,7 +179,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
                 boolean isReturnValueLine = false;
                 boolean rtStop = false;
                 public void consumeLine(String line) {
-                    System.out.println(line);
+                    System.out.println("hello xxx" + line);
                     if (isReturnValueLine && StringUtils.isBlank(line)) {
                         isReturnValueLine = false;
                     }
@@ -208,7 +204,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
 
             String error = err.getOutput();
             if (StringUtils.isNotEmpty(error)) {
-                System.out.println(error);
+                System.err.println(error);
             }
 
             return rtValue.toString();

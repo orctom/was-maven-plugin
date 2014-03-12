@@ -23,7 +23,11 @@ public class WebSphereModel {
     private String packageFile;
     private boolean failOnError;
     private boolean verbose;
-    private int retryCounts;
+
+    /**
+     * Only applicable in "script" mode, set this to have packages and script copied to remote box and execute
+     */
+    private String remoteWorkingDir;
 
     private String trustStore;
     private String keyStore;
@@ -40,7 +44,7 @@ public class WebSphereModel {
     public WebSphereModel(String applicationName, String host, String port, String connectorType, String cluster,
                           String cell, String node, String server, String virtualHost, String user, String password,
                           String contextRoot, String options, String profileName, String packageFile,
-                          boolean failOnError, boolean verbose, int retryCounts) {
+                          boolean failOnError, boolean verbose) {
         this.applicationName = applicationName;
         this.host = host;
         this.port = port;
@@ -58,7 +62,6 @@ public class WebSphereModel {
         this.packageFile = packageFile;
         this.failOnError = failOnError;
         this.verbose = verbose;
-        this.retryCounts = retryCounts;
     }
 
     public String getWasHome() {
@@ -66,7 +69,9 @@ public class WebSphereModel {
     }
 
     public WebSphereModel setWasHome(String wasHome) {
-        this.wasHome = wasHome;
+        if (null != wasHome) {
+            this.wasHome = wasHome;
+        }
         return this;
     }
 
@@ -225,12 +230,12 @@ public class WebSphereModel {
         return this;
     }
 
-    public int getRetryCounts() {
-        return retryCounts;
+    public String getRemoteWorkingDir() {
+        return remoteWorkingDir;
     }
 
-    public WebSphereModel setRetryCounts(int retryCounts) {
-        this.retryCounts = retryCounts;
+    public WebSphereModel setRemoteWorkingDir(String remoteWorkingDir) {
+        this.remoteWorkingDir = remoteWorkingDir;
         return this;
     }
 
@@ -273,8 +278,7 @@ public class WebSphereModel {
     @Override
     public String toString() {
         return "WebSphereModel{" +
-                "retryCounts=" + retryCounts +
-                ", wasHome='" + wasHome + '\'' +
+                "wasHome='" + wasHome + '\'' +
                 ", applicationName='" + this.getApplicationName() + '\'' +
                 ", host='" + host + '\'' +
                 ", port='" + port + '\'' +
@@ -288,6 +292,7 @@ public class WebSphereModel {
                 ", password='" + password + '\'' +
                 ", contextRoot='" + contextRoot + '\'' +
                 ", options='" + options + '\'' +
+                ", remoteWorkingDir='" + remoteWorkingDir + '\'' +
                 ", profileName='" + profileName + '\'' +
                 ", packageFile='" + packageFile + '\'' +
                 ", failOnError=" + failOnError +
