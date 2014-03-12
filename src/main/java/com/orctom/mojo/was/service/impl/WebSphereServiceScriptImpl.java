@@ -1,4 +1,4 @@
-package com.orctom.mojo.was.service.script;
+package com.orctom.mojo.was.service.impl;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -19,12 +19,12 @@ import java.util.Collection;
 /**
  * Created by CH on 3/11/14.
  */
-public class WebSphereService implements IWebSphereService {
+public class WebSphereServiceScriptImpl implements IWebSphereService {
 
     private WebSphereModel model;
     private String workingDir;
 
-    public WebSphereService(WebSphereModel model, String workingDir) {
+    public WebSphereServiceScriptImpl(WebSphereModel model, String workingDir) {
         this.model = model;
         this.workingDir = workingDir;
     }

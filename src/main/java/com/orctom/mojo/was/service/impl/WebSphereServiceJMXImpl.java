@@ -1,4 +1,4 @@
-package com.orctom.mojo.was.service.jmx;
+package com.orctom.mojo.was.service.impl;
 
 import com.ibm.websphere.management.AdminClient;
 import com.ibm.websphere.management.AdminClientFactory;
@@ -22,12 +22,12 @@ import java.util.*;
 /**
  * Created by CH on 3/4/14.
  */
-public class WebSphereService implements IWebSphereService {
+public class WebSphereServiceJMXImpl implements IWebSphereService {
 
     private AdminClient client;
     private WebSphereModel model;
 
-    public WebSphereService(WebSphereModel model) {
+    public WebSphereServiceJMXImpl(WebSphereModel model) {
         this.model = model;
     }
 

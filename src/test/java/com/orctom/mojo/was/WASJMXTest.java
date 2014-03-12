@@ -2,7 +2,7 @@ package com.orctom.mojo.was;
 
 import com.orctom.mojo.was.model.Server;
 import com.orctom.mojo.was.model.WebSphereModel;
-import com.orctom.mojo.was.service.jmx.WebSphereService;
+import com.orctom.mojo.was.service.impl.WebSphereServiceJMXImpl;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -15,12 +15,12 @@ public class WASJMXTest {
 
     @Test
     public void testListServers() {
-        WebSphereService service = null;
+        WebSphereServiceJMXImpl service = null;
         try {
             WebSphereModel model = new WebSphereModel();
             model.setHost("chvwwwdevcmb01.uschecomrnd.net").setPort("8879").setConnectorType("SOAP");
 
-            service = new WebSphereService(model);
+            service = new WebSphereServiceJMXImpl(model);
             service.connect();
             List<Server> servers = service.listServers();
             for (Server server : servers) {
@@ -37,12 +37,12 @@ public class WASJMXTest {
 
     @Test
     public void testListServers2() {
-        WebSphereService service = null;
+        WebSphereServiceJMXImpl service = null;
         try {
             WebSphereModel model = new WebSphereModel();
             model.setHost("10.164.39.41").setPort("8880").setConnectorType("SOAP");
 
-            service = new WebSphereService(model);
+            service = new WebSphereServiceJMXImpl(model);
             service.connect();
             List<Server> servers = service.listServers();
             for (Server server : servers) {
@@ -59,7 +59,7 @@ public class WASJMXTest {
 
     @Test
     public void testListApplications() {
-        WebSphereService service = null;
+        WebSphereServiceJMXImpl service = null;
         try {
             WebSphereModel model = new WebSphereModel();
             model.setHost("10.164.39.41").setPort("8881").setConnectorType("SOAP").setServer("server1")
@@ -70,7 +70,7 @@ public class WASJMXTest {
                     .setTrustStorePassword("WebAS")
             ;
 
-            service = new WebSphereService(model);
+            service = new WebSphereServiceJMXImpl(model);
             service.connect();
             Collection applications = service.listApplications();
             for (Object application : applications) {
@@ -87,7 +87,7 @@ public class WASJMXTest {
 
     @Test
     public void restartServer() {
-        WebSphereService service = null;
+        WebSphereServiceJMXImpl service = null;
         try {
             WebSphereModel model = new WebSphereModel();
             model.setHost("localhost").setPort("8886").setConnectorType("SOAP").setServer("server1")
@@ -102,7 +102,7 @@ public class WASJMXTest {
             System.out.println(model);
             System.out.println("============");
 
-            service = new WebSphereService(model);
+            service = new WebSphereServiceJMXImpl(model);
             service.connect();
             System.out.println("restarting.........");
             service.restartServer();
@@ -118,7 +118,7 @@ public class WASJMXTest {
 
     @Test
     public void restartServer2() {
-        WebSphereService service = null;
+        WebSphereServiceJMXImpl service = null;
         try {
             WebSphereModel model = new WebSphereModel();
             model.setHost("10.164.39.41").setPort("8881").setConnectorType("SOAP").setServer("server1")
@@ -133,7 +133,7 @@ public class WASJMXTest {
             System.out.println(model);
             System.out.println("============");
 
-            service = new WebSphereService(model);
+            service = new WebSphereServiceJMXImpl(model);
             service.connect();
             System.out.println("restarting.........");
             service.restartServer();
