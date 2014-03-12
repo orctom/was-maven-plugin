@@ -3,7 +3,7 @@
 <project default="restartServer" basedir=".">
     <target name="restartServer">
         <taskdef name="restartServer" classname="com.ibm.websphere.ant.tasks.WsAdmin"/>
-        <wsInstallApp
+        <restartServer
                 wasHome="{{wasHome}}"
                 options="{{options}}"
                 properties="{{properties}}"

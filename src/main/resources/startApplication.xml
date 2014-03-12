@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project default="stopApplications" basedir=".">
-    <target name="stopApplications">
-        <taskdef name="stopApplications" classname="com.ibm.websphere.ant.tasks.StopApplication"/>
-        <wsInstallApp
+<project default="startApplication" basedir=".">
+    <target name="startApplication">
+        <taskdef name="startApplication" classname="com.ibm.websphere.ant.tasks.StartApplication"/>
+        <startApplication
                 wasHome="{{wasHome}}"
                 server="{{server}}"
                 application="{{applicationName}}"

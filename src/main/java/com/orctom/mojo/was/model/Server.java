@@ -1,8 +1,5 @@
 package com.orctom.mojo.was.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Created by CH on 3/4/14.
  */
@@ -74,6 +71,14 @@ public class Server {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
+        return "Server{" +
+                "cellName='" + cellName + '\'' +
+                ", nodeName='" + nodeName + '\'' +
+                ", serverName='" + serverName + '\'' +
+                ", serverVendor='" + serverVendor + '\'' +
+                ", serverVersion='" + serverVersion + '\'' +
+                ", processId='" + processId + '\'' +
+                ", state='" + state + '\'' +
+                '}';
     }
 }

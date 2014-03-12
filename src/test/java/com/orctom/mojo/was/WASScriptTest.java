@@ -1,12 +1,10 @@
 package com.orctom.mojo.was;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import com.orctom.mojo.was.model.WebSphereModel;
+import com.orctom.mojo.was.service.script.WebSphereService;
 import org.junit.Test;
 
-import java.io.StringWriter;
+import java.util.Collection;
 
 /**
  * Created by CH on 3/11/14.
@@ -15,15 +13,19 @@ public class WASScriptTest {
 
     @Test
     public void testListApplications() throws Exception {
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile("installApplication.xml");
+        WebSphereService service = null;
+        try {
+            WebSphereModel model = new WebSphereModel();
+            model.setHost("10.164.39.41").setPort("8881").setConnectorType("SOAP").setServer("server1")
+                    .setUser("wsadmin").setPassword("passw0rd").setProfileName("AppSrv01").setVerbose(true);
 
-        WebSphereModel model = new WebSphereModel();
-        model.setHost("10.164.39.41").setPort("8881").setConnectorType("SOAP").setServer("server1")
-                .setUser("wsadmin").setPassword("passw0rd");
-
-        StringWriter writer = new StringWriter();
-        mustache.execute(writer, model).flush();
-        System.out.println(writer.toString());
+            service = new WebSphereService(model, "D:\\workspace-idea\\was-maven-plugin\\target");
+            Collection<String> applications = service.listApplications();
+            for (String app : applications) {
+                System.out.println("app: " + app);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

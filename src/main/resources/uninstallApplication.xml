@@ -3,7 +3,7 @@
 <project default="uninstallApplication" basedir=".">
     <target name="uninstallApplication">
         <taskdef name="uninstallApplication" classname="com.ibm.websphere.ant.tasks.UninstallApplication"/>
-        <wsInstallApp
+        <uninstallApplication
                 wasHome="{{wasHome}}"
                 options="{{options}}"
                 ear="{{ear||"

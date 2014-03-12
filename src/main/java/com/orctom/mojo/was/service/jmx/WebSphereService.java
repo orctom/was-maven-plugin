@@ -14,7 +14,7 @@ import com.orctom.mojo.was.model.Server;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.model.WebSphereServiceException;
 import com.orctom.mojo.was.service.IWebSphereService;
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import javax.management.*;
 import java.util.*;
@@ -112,7 +112,7 @@ public class WebSphereService implements IWebSphereService {
                 defaultBinding.put(AppConstants.APPDEPL_DFLTBNDG_VHOST, model.getVirtualHost());
             }
 
-            AppDeploymentController controller = AppDeploymentController.readArchive(model.getPackageFile().getAbsolutePath(), preferences);
+            AppDeploymentController controller = AppDeploymentController.readArchive(model.getPackageFile(), preferences);
 
             AppDeploymentTask task = controller.getFirstTask();
             while (task != null) {
@@ -147,7 +147,7 @@ public class WebSphereService implements IWebSphereService {
 
             ApplicationListener listener = createInstallationListener();
             client.addNotificationListener(listener.getAppManagement(), listener, listener.getFilter(), "");
-            AppManagementProxy.getJMXProxyForClient(client).installApplication(model.getPackageFile().getAbsolutePath(), config, null);
+            AppManagementProxy.getJMXProxyForClient(client).installApplication(model.getPackageFile(), config, null);
             waitForApplicationOperationsThread();
         } catch (Exception e) {
             throw new WebSphereServiceException("Failed to install application: " + model.getApplicationName(), e);

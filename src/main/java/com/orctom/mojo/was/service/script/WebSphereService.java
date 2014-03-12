@@ -6,7 +6,6 @@ import com.github.mustachejava.MustacheFactory;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.model.WebSphereServiceException;
 import com.orctom.mojo.was.service.IWebSphereService;
-import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -14,7 +13,8 @@ import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
 import java.io.*;
-import java.util.Vector;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Created by CH on 3/11/14.
@@ -35,12 +35,31 @@ public class WebSphereService implements IWebSphereService {
     }
 
     @Override
-    public Vector<String> listApplications() {
-        throw new UnsupportedOperationException("not implemented yet");
+    public Collection<String> listApplications() {
+        String value = execute("listApplications");
+        if (StringUtils.isNotBlank(value)) {
+            return Arrays.asList(StringUtils.split(value, " "));
+        }
+        return null;
     }
 
     @Override
     public void installApplication() {
+        StringBuilder options = new StringBuilder(100);
+        //-appname {{applicationName}} -preCompileJSPs true -cluster {{cluster}} -server {{server}}
+        options.append("-preCompileJSPs true");
+        if (StringUtils.isNotEmpty(model.getApplicationName())) {
+            options.append(" -appname ").append(model.getApplicationName());
+        }
+
+        if (StringUtils.isNotEmpty(model.getCluster())) {
+            options.append(" -cluster ").append(model.getCluster());
+        }
+
+        if (StringUtils.isNotEmpty(model.getServer())) {
+            options.append(" -server ").append(model.getServer());
+        }
+        model.setOptions(options.toString());
         execute("installApplication");
     }
 
@@ -61,13 +80,17 @@ public class WebSphereService implements IWebSphereService {
 
     @Override
     public boolean isApplicationInstalled() {
-        throw new UnsupportedOperationException("not implemented yet");
+        if (StringUtils.isBlank(model.getApplicationName())) {
+            throw new WebSphereServiceException("application name not set");
+        }
+        Collection<String> applications = listApplications();
+        return applications.contains(model.getApplicationName());
     }
 
-    private void execute(String task) {
+    private String execute(String task) {
         try {
             Commandline commandline = getCommandline(task);
-            executeCommand(commandline);
+            return executeCommand(commandline);
         } catch (Exception e) {
             throw new WebSphereServiceException("Failed to execute: " + task, e);
         }
@@ -91,7 +114,11 @@ public class WebSphereService implements IWebSphereService {
     }
 
     protected File getWsAntExecutable() {
-        File binDir = new File(model.getWasHome(), "bin");
+        String wasHome = model.getWasHome();
+        if (StringUtils.isBlank(wasHome)) {
+            throw new WebSphereServiceException("WAS_HOME is not set");
+        }
+        File binDir = new File(wasHome, "bin");
         File[] candidates = binDir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 dir.equals(model.getWasHome());
@@ -100,7 +127,7 @@ public class WebSphereService implements IWebSphereService {
         });
 
         if (candidates.length != 1) {
-            throw new WebSphereServiceException("Couldn't find ws_ant[.sh|.bat], candidates: " + ArrayUtils.toString(candidates));
+            throw new WebSphereServiceException("Couldn't find ws_ant[.sh|.bat], candidates: " + candidates);
         }
 
         File wsAnt = candidates[0];
@@ -114,33 +141,49 @@ public class WebSphereService implements IWebSphereService {
         Mustache mustache = mf.compile(task + ".xml");
 
         StringBuilder buildFile = new StringBuilder(50);
-        buildFile.append(task)
-                .append("-")
-                .append(model.getHost())
-                .append("-")
-                .append(model.getApplicationName())
-                .append("-")
-                .append(System.currentTimeMillis())
-                .append(".xml");
+        buildFile.append(task);
+        if (StringUtils.isNotBlank(model.getHost())) {
+            buildFile.append("-").append(model.getHost());
+        }
+        if (StringUtils.isNotBlank(model.getApplicationName())) {
+            buildFile.append("-").append(model.getApplicationName());
+        }
+        buildFile.append("-").append(System.currentTimeMillis()).append(".xml");
 
         File buildScriptFile = new File(workingDir + "/was-maven-plugin", buildFile.toString());
-        buildScriptFile.mkdirs();
+        buildScriptFile.getParentFile().mkdirs();
         Writer writer = new FileWriter(buildScriptFile);
         mustache.execute(writer, model).flush();
 
         return buildScriptFile;
     }
 
-    private void executeCommand(Commandline commandline) {
+    private String executeCommand(Commandline commandline) {
         try {
-            StreamConsumer errConsumer = getStreamConsumer("error");
-            StreamConsumer infoConsumer = getStreamConsumer("info");
-
             if (model.isVerbose()) {
                 System.out.println("Executing command line: " + StringUtils.join(commandline.getShellCommandline(), " "));
             }
 
-            int returnCode = CommandLineUtils.executeCommandLine(commandline, infoConsumer, errConsumer);
+            final StringBuilder rtValue = new StringBuilder(100);
+            StreamConsumer consumer = new StreamConsumer() {
+                boolean isReturnValueLine = false;
+                boolean rtStop = false;
+                public void consumeLine(String line) {
+                    System.out.println(line);
+                    if (isReturnValueLine && StringUtils.isBlank(line)) {
+                        isReturnValueLine = false;
+                    }
+                    if (isReturnValueLine) {
+                        rtValue.append(line.substring("  [wsadmin] ".length())).append(" ");
+                    }
+                    if (line.startsWith("  [wsadmin] WAS")) {
+                        isReturnValueLine = true;
+                    }
+                }
+            };
+
+            CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
+            int returnCode = CommandLineUtils.executeCommandLine(commandline, consumer, err);
 
             String msg = "Return code: " + returnCode;
             if (returnCode != 0) {
@@ -148,22 +191,15 @@ public class WebSphereService implements IWebSphereService {
             } else {
                 System.out.println(msg);
             }
+
+            String error = err.getOutput();
+            if (StringUtils.isNotEmpty(error)) {
+                System.out.println(error);
+            }
+
+            return rtValue.toString();
         } catch (CommandLineException e) {
             throw new WebSphereServiceException(e.getMessage());
         }
-    }
-
-    private StreamConsumer getStreamConsumer(final String level) {
-        StreamConsumer consumer = new StreamConsumer() {
-            public void consumeLine(String line) {
-                if (level.equalsIgnoreCase("info")) {
-                    System.out.println(line);
-                } else {
-                    System.err.println(line);
-                }
-            }
-        };
-
-        return consumer;
     }
 }

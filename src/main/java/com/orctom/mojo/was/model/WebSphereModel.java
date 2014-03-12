@@ -1,10 +1,5 @@
 package com.orctom.mojo.was.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
-import java.io.File;
-
 /**
  * Created by CH on 3/4/14.
  */
@@ -23,7 +18,9 @@ public class WebSphereModel {
     private String user;
     private String password;
     private String contextRoot;
-    private File packageFile;
+    private String options;
+    private String profileName;
+    private String packageFile;
     private boolean failOnError;
     private boolean verbose;
     private int retryCounts;
@@ -34,11 +31,16 @@ public class WebSphereModel {
     private String keyStorePassword;
 
     public WebSphereModel() {
+        wasHome = System.getProperty("WAS_HOME");
+        if (null == wasHome) {
+            wasHome = System.getenv("WAS_HOME");
+        }
     }
 
     public WebSphereModel(String applicationName, String host, String port, String connectorType, String cluster,
                           String cell, String node, String server, String virtualHost, String user, String password,
-                          String contextRoot, File packageFile, boolean failOnError, boolean verbose, int retryCounts) {
+                          String contextRoot, String options, String profileName, String packageFile,
+                          boolean failOnError, boolean verbose, int retryCounts) {
         this.applicationName = applicationName;
         this.host = host;
         this.port = port;
@@ -51,6 +53,8 @@ public class WebSphereModel {
         this.user = user;
         this.password = password;
         this.contextRoot = contextRoot;
+        this.options = options;
+        this.profileName = profileName;
         this.packageFile = packageFile;
         this.failOnError = failOnError;
         this.verbose = verbose;
@@ -67,6 +71,9 @@ public class WebSphereModel {
     }
 
     public String getApplicationName() {
+        if (null == applicationName && null != packageFile) {
+            applicationName = packageFile.substring(packageFile.lastIndexOf("."));
+        }
         return applicationName;
     }
 
@@ -174,11 +181,28 @@ public class WebSphereModel {
         return this;
     }
 
-    public File getPackageFile() {
+    public String getOptions() {
+        return options;
+    }
+
+    public void setOptions(String options) {
+        this.options = options;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public WebSphereModel setProfileName(String profileName) {
+        this.profileName = profileName;
+        return this;
+    }
+
+    public String getPackageFile() {
         return packageFile;
     }
 
-    public WebSphereModel setPackageFile(File packageFile) {
+    public WebSphereModel setPackageFile(String packageFile) {
         this.packageFile = packageFile;
         return this;
     }
@@ -248,6 +272,26 @@ public class WebSphereModel {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return "WebSphereModel{" +
+                "retryCounts=" + retryCounts +
+                ", wasHome='" + wasHome + '\'' +
+                ", applicationName='" + this.getApplicationName() + '\'' +
+                ", host='" + host + '\'' +
+                ", port='" + port + '\'' +
+                ", connectorType='" + connectorType + '\'' +
+                ", cluster='" + cluster + '\'' +
+                ", cell='" + cell + '\'' +
+                ", node='" + node + '\'' +
+                ", server='" + server + '\'' +
+                ", virtualHost='" + virtualHost + '\'' +
+                ", user='" + user + '\'' +
+                ", password='" + password + '\'' +
+                ", contextRoot='" + contextRoot + '\'' +
+                ", options='" + options + '\'' +
+                ", profileName='" + profileName + '\'' +
+                ", packageFile='" + packageFile + '\'' +
+                ", failOnError=" + failOnError +
+                ", verbose=" + verbose +
+                '}';
     }
 }

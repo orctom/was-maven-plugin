@@ -3,8 +3,8 @@
 <project default="installApplication" basedir=".">
     <target name="defaultBindings">
         <taskdef name="defaultBindings" classname="com.ibm.websphere.ant.tasks.DefaultBindings" />
-        <wsDefaultBindings
-                ear="{{ear||"
+        <defaultBindings
+                ear="{{packageFile||"
                 outputFile="{{ear||"
                 virtualHost="{{virtualHost}}"
                 failonerror="{{failOnError}}"
@@ -14,10 +14,10 @@
     </target>
     <target name="installApplication" depends="defaultBindings">
         <taskdef name="installApplication" classname="com.ibm.websphere.ant.tasks.InstallApplication"/>
-        <wsInstallApp
+        <installApplication
                 wasHome="{{wasHome}}"
-                options="-appname {{applicationName}} -preCompileJSPs true -cluster {{cluster}} -server {{server}}"
-                ear="{{ear||"
+                options="{{options}}"
+                ear="{{packageFile||"
                 profile="{{profile}}"
                 properties="{{properties}}"
                 profileName="{{profileName}}"

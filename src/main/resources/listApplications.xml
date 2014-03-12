@@ -3,7 +3,7 @@
 <project default="listApplications" basedir=".">
     <target name="listApplications">
         <taskdef name="listApplications" classname="com.ibm.websphere.ant.tasks.ListApplications"/>
-        <wsInstallApp
+        <listApplications
                 wasHome="{{wasHome}}"
                 profile="{{profile}}"
                 properties="{{properties}}"
