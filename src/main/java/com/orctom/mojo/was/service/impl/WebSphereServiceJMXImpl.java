@@ -87,7 +87,6 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
         }
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public Collection<String> listApplications() {
         try {
@@ -184,7 +183,6 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
         }
     }
 
-    @Override
     public boolean isApplicationInstalled() {
         try {
             return AppManagementProxy.getJMXProxyForClient(client).checkIfAppExists(model.getApplicationName(), new Hashtable(), null);

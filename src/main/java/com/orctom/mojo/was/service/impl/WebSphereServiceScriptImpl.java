@@ -1,18 +1,15 @@
 package com.orctom.mojo.was.service.impl;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.model.WebSphereServiceException;
 import com.orctom.mojo.was.service.IWebSphereService;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -24,29 +21,30 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
     private WebSphereModel model;
     private String workingDir;
 
-    private static final String TEMPLATE_FOLDER = "jython/";
+    private static final String TEMPLATE = "jython/websphere.py";
+    private static final String TEMPLATE_EXT = ".py";
+    private static final String TEMP_DIR = "/was-maven-plugin/py/";
 
     public WebSphereServiceScriptImpl(WebSphereModel model, String workingDir) {
         this.model = model;
-        this.workingDir = workingDir;
+        this.workingDir = workingDir + TEMP_DIR;
     }
 
     @Override
     public void restartServer() {
-        execute(TEMPLATE_FOLDER + "restartServer");
+        execute("restartServer");
     }
 
     public void startServer() {
-        execute(TEMPLATE_FOLDER + "startServer");
+        execute("startServer");
     }
 
     public void stopServer() {
-        execute(TEMPLATE_FOLDER + "stopServer");
+        execute("stopServer");
     }
 
-    @Override
     public Collection<String> listApplications() {
-        String value = execute(TEMPLATE_FOLDER + "listApplications");
+        String value = execute("listApplications");
         if (StringUtils.isNotBlank(value)) {
             return Arrays.asList(StringUtils.split(value, " "));
         }
@@ -70,116 +68,30 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
             options.append(" -server ").append(model.getServer());
         }
         model.setOptions(options.toString());
-        execute(TEMPLATE_FOLDER + "installApplication");
+        execute("installApplication");
     }
 
     @Override
     public void uninstallApplication() {
-        execute(TEMPLATE_FOLDER + "uninstallApplication");
+        execute("uninstallApplication");
     }
 
     @Override
     public void startApplication() {
-        execute(TEMPLATE_FOLDER + "startApplication");
+        execute("startApplication");
     }
 
     @Override
     public void stopApplication() {
-        execute(TEMPLATE_FOLDER + "stopApplication");
-    }
-
-    @Override
-    public boolean isApplicationInstalled() {
-        if (StringUtils.isBlank(model.getApplicationName())) {
-            throw new WebSphereServiceException("application name not set");
-        }
-        Collection<String> applications = listApplications();
-        return applications.contains(model.getApplicationName());
+        execute("stopApplication");
     }
 
     private String execute(String task) {
         try {
             Commandline commandline = getCommandline(task);
-            return executeCommand(commandline);
-        } catch (Exception e) {
-            throw new WebSphereServiceException("Failed to execute: " + task, e);
-        }
-    }
-
-    private Commandline getCommandline(String task) throws IOException {
-        File buildScript = getBuildScript(task);
-        Commandline commandLine = new Commandline();
-        commandLine.setExecutable(getWsAdminExecutable().getAbsolutePath());
-        commandLine.setWorkingDirectory(workingDir);
-
-        commandLine.createArg().setLine("-conntype " + model.getConnectorType());
-        commandLine.createArg().setLine("-host " + model.getHost());
-        commandLine.createArg().setLine("-port " + model.getPort());
-        if (StringUtils.isNotBlank(model.getUser())) {
-            commandLine.createArg().setLine("-user " + model.getUser());
-            if (StringUtils.isNotBlank(model.getPassword())) {
-                commandLine.createArg().setLine("-password " + model.getPassword());
-            }
-        }
-        commandLine.createArg().setLine("-lang jython");
-        commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
-
-        return commandLine;
-    }
-
-    protected File getWsAdminExecutable() {
-        String wasHome = model.getWasHome();
-        if (StringUtils.isBlank(wasHome)) {
-            throw new WebSphereServiceException("WAS_HOME is not set");
-        }
-        File binDir = new File(wasHome, "bin");
-        File[] candidates = binDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                dir.equals(model.getWasHome());
-                return name.startsWith("wsadmin");
-            }
-        });
-
-        if (candidates.length != 1) {
-            throw new WebSphereServiceException("Couldn't find wsadmin[.sh|.bat], candidates: " + candidates);
-        }
-
-        File wsAnt = candidates[0];
-        System.out.println("wsadmin location: " + wsAnt.getAbsolutePath());
-
-        return wsAnt;
-    }
-
-    private File getBuildScript(String task) throws IOException {
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(task + ".py");
-
-        StringBuilder buildFile = new StringBuilder(50);
-        buildFile.append(task);
-        if (StringUtils.isNotBlank(model.getHost())) {
-            buildFile.append("-").append(model.getHost());
-        }
-        if (StringUtils.isNotBlank(model.getApplicationName())) {
-            buildFile.append("-").append(model.getApplicationName());
-        }
-        buildFile.append("-").append(System.currentTimeMillis()).append(".py");
-
-        File buildScriptFile = new File(workingDir + "/was-maven-plugin", buildFile.toString());
-        buildScriptFile.getParentFile().mkdirs();
-        Writer writer = new FileWriter(buildScriptFile);
-        mustache.execute(writer, model).flush();
-
-        return buildScriptFile;
-    }
-
-    private String executeCommand(Commandline commandline) {
-        try {
-            if (model.isVerbose()) {
-                System.out.println("Executing command line: " + StringUtils.join(commandline.getShellCommandline(), " "));
-            }
 
             final StringBuilder rtValue = new StringBuilder(100);
-            StreamConsumer consumer = new StreamConsumer() {
+            StreamConsumer outConsumer = new StreamConsumer() {
                 boolean isReturnValueLine = false;
                 boolean rtStop = false;
                 public void consumeLine(String line) {
@@ -196,24 +108,40 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
                 }
             };
 
-            CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
-            int returnCode = CommandLineUtils.executeCommandLine(commandline, consumer, err, 300);
+            CommandLineUtils.StringStreamConsumer errorConsumer = new CommandLineUtils.StringStreamConsumer();
 
-            String msg = "Return code: " + returnCode;
-            if (returnCode != 0) {
-                throw new WebSphereServiceException(msg);
-            } else {
-                System.out.println(msg);
-            }
+            CommandUtils.executeCommand(commandline, outConsumer, errorConsumer, model.isVerbose());
 
-            String error = err.getOutput();
+            String error = errorConsumer.getOutput();
             if (StringUtils.isNotEmpty(error)) {
                 System.out.println(error);
             }
 
             return rtValue.toString();
-        } catch (CommandLineException e) {
-            throw new WebSphereServiceException(e.getMessage());
+        } catch (Exception e) {
+            throw new WebSphereServiceException("Failed to execute: " + task, e);
         }
+    }
+
+    private Commandline getCommandline(String task) throws IOException {
+        File buildScript = CommandUtils.getBuildScript(task, TEMPLATE, model, workingDir, TEMPLATE_EXT);
+        Commandline commandLine = new Commandline();
+        commandLine.setExecutable(CommandUtils.getExecutable(model.getWasHome(), "wsadmin").getAbsolutePath());
+        commandLine.setWorkingDirectory(workingDir);
+
+        commandLine.createArg().setLine("-conntype " + model.getConnectorType());
+        commandLine.createArg().setLine("-host " + model.getHost());
+        commandLine.createArg().setLine("-port " + model.getPort());
+        if (StringUtils.isNotBlank(model.getUser())) {
+            commandLine.createArg().setLine("-user " + model.getUser());
+            if (StringUtils.isNotBlank(model.getPassword())) {
+                commandLine.createArg().setLine("-password " + model.getPassword());
+            }
+        }
+        commandLine.createArg().setLine("-lang jython");
+        commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
+        commandLine.createArg().setLine("-o "  + task);
+
+        return commandLine;
     }
 }
