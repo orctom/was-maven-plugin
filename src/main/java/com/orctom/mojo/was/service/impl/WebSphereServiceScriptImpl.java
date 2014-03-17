@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
+ * Using jython
  * Created by CH on 3/11/14.
  */
 public class WebSphereServiceScriptImpl implements IWebSphereService {
@@ -86,6 +87,11 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
         execute("stopApplication");
     }
 
+    @Override
+    public void deploy() {
+        execute("deploy");
+    }
+
     private String execute(String task) {
         try {
             Commandline commandline = getCommandline(task);
@@ -93,7 +99,6 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
             final StringBuilder rtValue = new StringBuilder(100);
             StreamConsumer outConsumer = new StreamConsumer() {
                 boolean isReturnValueLine = false;
-                boolean rtStop = false;
                 public void consumeLine(String line) {
                     System.out.println(line);
                     if (isReturnValueLine && StringUtils.isBlank(line)) {

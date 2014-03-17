@@ -3,7 +3,6 @@ package com.orctom.mojo.was.service.impl;
 import com.ibm.websphere.management.AdminClient;
 import com.ibm.websphere.management.AdminClientFactory;
 import com.ibm.websphere.management.ObjectNameHelper;
-import com.ibm.websphere.management.Session;
 import com.ibm.websphere.management.application.AppConstants;
 import com.ibm.websphere.management.application.AppManagementProxy;
 import com.ibm.websphere.management.application.AppNotification;
@@ -20,6 +19,7 @@ import javax.management.*;
 import java.util.*;
 
 /**
+ * Using JMX
  * Created by CH on 3/4/14.
  */
 public class WebSphereServiceJMXImpl implements IWebSphereService {
@@ -34,7 +34,7 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
     @Override
     @SuppressWarnings("unchecked")
     public void restartServer() {
-        ObjectName server = null;
+        ObjectName server;
         try {
             server = getServer();
             if (isCluster()) {
@@ -49,9 +49,7 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
     }
 
     public ObjectName getServer() throws MalformedObjectNameException, ConnectorException {
-        ObjectName server = null;
-        Session session = new Session();
-        Set servers = null;
+        Set servers;
         boolean isCluster = this.isCluster();
         if (isCluster) {
             servers = client.queryNames(new ObjectName("WebSphere:type=Cluster,name=" + model.getCluster() + ",*"), null);
@@ -69,7 +67,7 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
         try {
             ObjectName query = new ObjectName("WebSphere:*,type=Server,j2eeType=J2EEServer");
             Set<ObjectName> response = client.queryNames(query, null);
-            List<Server> servers = new ArrayList<Server>();
+            List<Server> servers = new ArrayList<>();
             for (ObjectName serverObjectName : response) {
                 Server server = new Server();
                 server.setCellName(String.valueOf(client.getAttribute(serverObjectName, "cellName")));
@@ -102,7 +100,7 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
     @SuppressWarnings("unchecked")
     public void installApplication() {
         try {
-            Hashtable<String, Object> preferences = new Hashtable<String, Object>();
+            Hashtable<String, Object> preferences = new Hashtable<>();
             preferences.put(AppConstants.APPDEPL_LOCALE, Locale.getDefault());
 
             Properties defaultBinding = new Properties();
@@ -133,7 +131,7 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
             //config.put( AppConstants.APPDEPL_CLASSLOADINGMODE, AppConstants.APPDEPL_CLASSLOADINGMODE_PARENTLAST);
             //config.put( AppConstants.APPDEPL_CLASSLOADERPOLICY, AppConstants.APPDEPL_CLASSLOADERPOLICY_MULTIPLE);
 
-            Hashtable<String, Object> module2server = new Hashtable<String, Object>();
+            Hashtable<String, Object> module2server = new Hashtable<>();
             ObjectName server = getServer();
             if (this.isCluster()) {
                 module2server.put("*", "WebSphere:cell=" + ObjectNameHelper.getCellName(server) + ",cluster=" + model.getCluster());
@@ -181,6 +179,15 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
         } catch (Exception e) {
             throw new WebSphereServiceException("Could not stop application '" + model.getApplicationName(), e);
         }
+    }
+
+    @Override
+    public void deploy() {
+        if (isApplicationInstalled()) {
+            uninstallApplication();
+        }
+        installApplication();
+        restartServer();
     }
 
     public boolean isApplicationInstalled() {
@@ -369,10 +376,6 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
 
         public NotificationFilter getFilter() {
             return filter;
-        }
-
-        public AdminClient getClient() {
-            return client;
         }
 
         public ObjectName getAppManagement() {

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
+ * Using WebSphere built-in ant tasks, which will translated to jacl or jython behind the screen
  * Created by CH on 3/11/14.
  */
 public class WebSphereServiceAntImpl implements IWebSphereService {
@@ -83,6 +84,15 @@ public class WebSphereServiceAntImpl implements IWebSphereService {
     @Override
     public void stopApplication() {
         execute("stopApplication");
+    }
+
+    @Override
+    public void deploy() {
+        if (isApplicationInstalled()) {
+            uninstallApplication();
+        }
+        installApplication();
+        restartServer();
     }
 
     public boolean isApplicationInstalled() {
