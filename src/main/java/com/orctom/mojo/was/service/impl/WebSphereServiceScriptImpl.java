@@ -6,12 +6,9 @@ import com.orctom.mojo.was.service.IWebSphereService;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamConsumer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Using jython
@@ -42,14 +39,6 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
 
     public void stopServer() {
         execute("stopServer");
-    }
-
-    public Collection<String> listApplications() {
-        String value = execute("listApplications");
-        if (StringUtils.isNotBlank(value)) {
-            return Arrays.asList(StringUtils.split(value, " "));
-        }
-        return null;
     }
 
     @Override
@@ -92,37 +81,24 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
         execute("deploy");
     }
 
-    private String execute(String task) {
+    private void execute(String task) {
         try {
             Commandline commandline = getCommandline(task);
 
-            final StringBuilder rtValue = new StringBuilder(100);
-            StreamConsumer outConsumer = new StreamConsumer() {
-                boolean isReturnValueLine = false;
-                public void consumeLine(String line) {
-                    System.out.println(line);
-                    if (isReturnValueLine && StringUtils.isBlank(line)) {
-                        isReturnValueLine = false;
-                    }
-                    if (isReturnValueLine) {
-                        rtValue.append(line.substring("  [wsadmin] ".length())).append(" ");
-                    }
-                    if (line.startsWith("  [wsadmin] WAS")) {
-                        isReturnValueLine = true;
-                    }
-                }
-            };
-
+            CommandLineUtils.StringStreamConsumer outConsumer = new CommandLineUtils.StringStreamConsumer();
             CommandLineUtils.StringStreamConsumer errorConsumer = new CommandLineUtils.StringStreamConsumer();
 
             CommandUtils.executeCommand(commandline, outConsumer, errorConsumer, model.isVerbose());
 
-            String error = errorConsumer.getOutput();
-            if (StringUtils.isNotEmpty(error)) {
-                System.out.println(error);
+            String info = outConsumer.getOutput();
+            if (StringUtils.isNotEmpty(info)) {
+                System.out.println(info);
             }
 
-            return rtValue.toString();
+            String error = errorConsumer.getOutput();
+            if (StringUtils.isNotEmpty(error)) {
+                System.err.println(error);
+            }
         } catch (Exception e) {
             throw new WebSphereServiceException("Failed to execute: " + task, e);
         }
@@ -145,7 +121,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
         }
         commandLine.createArg().setLine("-lang jython");
         commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
-        commandLine.createArg().setLine("-o "  + task);
+        commandLine.createArg().setLine("-o " + task);
 
         return commandLine;
     }
