@@ -12,26 +12,30 @@ import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Created by CH on 3/13/14.
  */
 public class CommandUtils {
 
-    public static File getExecutable(final String wasHome, String name) {
+    private static final String TIMESTAMP_FORMAT = "yyyyMMdd-HHmmss-SSS";
+
+    public static File getExecutable(final String wasHome, final String name) {
         if (StringUtils.isBlank(wasHome)) {
             throw new WebSphereServiceException("WAS_HOME is not set");
         }
         File binDir = new File(wasHome, "bin");
         File[] candidates = binDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                dir.equals(wasHome);
-                return name.startsWith(name);
+            public boolean accept(File dir, String fileName) {
+                return fileName.startsWith(name);
             }
         });
 
         if (candidates.length != 1) {
-            throw new WebSphereServiceException("Couldn't find " + name + "[.sh|.bat], candidates: " + candidates);
+            throw new WebSphereServiceException("Couldn't find " + name + "[.sh|.bat], candidates: " + Arrays.toString(candidates));
         }
 
         File executable = candidates[0];
@@ -53,7 +57,7 @@ public class CommandUtils {
         if (StringUtils.isNotBlank(model.getApplicationName())) {
             buildFile.append("-").append(model.getApplicationName());
         }
-        buildFile.append("-").append(System.currentTimeMillis()).append(ext);
+        buildFile.append("-").append(getTimestampString()).append(ext);
 
         File buildScriptFile = new File(workingDir, buildFile.toString());
         buildScriptFile.getParentFile().mkdirs();
@@ -82,5 +86,9 @@ public class CommandUtils {
         } catch (CommandLineException e) {
             throw new WebSphereServiceException(e.getMessage());
         }
+    }
+
+    private static String getTimestampString() {
+        return new SimpleDateFormat(TIMESTAMP_FORMAT).format(new Date());
     }
 }
