@@ -23,8 +23,8 @@ class WebSphere:
         if "" != cluster:
             print AdminTask.updateAppOnCluster('[-ApplicationNames ' + applicationName + '}} -timeout 3600]')
         else:
-            print AdminControl.stopServer(server, node)
-            print AdminControl.startServer(server, node)
+            appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
+            print AdminControl.invoke(appManager, 'restart')
 
     def startApplication(self):
         print "starting application"
@@ -33,7 +33,7 @@ class WebSphere:
         else:
             appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
         print appManager
-        AdminControl.invoke(appManager, 'startApplication', applicationName)
+        print AdminControl.invoke(appManager, 'startApplication', applicationName)
         #AdminApplication.startApplicationOnCluster(applicationName, cluster)
 
     def stopApplication(self):
@@ -43,7 +43,7 @@ class WebSphere:
         else:
             appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
         print appManager
-        AdminControl.invoke(appManager, 'stopApplication', applicationName)
+        print AdminControl.invoke(appManager, 'stopApplication', applicationName)
         #AdminApplication.stopApplicationOnCluster(applicationName, cluster)
 
     def installApplication(self):
@@ -60,7 +60,7 @@ class WebSphere:
                 options = ['-distributeApp', '-appname', applicationName, '-server', server, '-MapModulesToServers', [['.*','.*', serverMapping]], '-MapWebModToVH', [['.*','.*', virtualHost]]]
 
             print "installing"
-            AdminApp.install(packageFile, options)
+            print AdminApp.install(packageFile, options)
 
             print "saving config"
             AdminConfig.save()
@@ -81,7 +81,7 @@ class WebSphere:
 
     def uninstallApplication(self):
         print "uninstalling application:", applicationName
-        AdminApp.uninstall(applicationName)
+        print AdminApp.uninstall(applicationName)
         AdminConfig.save()
         AdminNodeManagement.syncActiveNodes()
 

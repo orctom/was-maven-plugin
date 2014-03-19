@@ -3,6 +3,7 @@ package com.orctom.mojo.was.service.impl;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.model.WebSphereServiceException;
 import com.orctom.mojo.was.service.IWebSphereService;
+import com.orctom.mojo.was.utils.CommandUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -20,12 +21,11 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
     private String workingDir;
 
     private static final String TEMPLATE = "jython/websphere.py";
-    private static final String TEMPLATE_EXT = ".py";
-    private static final String TEMP_DIR = "/was-maven-plugin/py/";
+    private static final String TEMPLATE_EXT = "py";
 
-    public WebSphereServiceScriptImpl(WebSphereModel model, String workingDir) {
+    public WebSphereServiceScriptImpl(WebSphereModel model, String targetDir) {
         this.model = model;
-        this.workingDir = workingDir + TEMP_DIR;
+        this.workingDir = CommandUtils.getWorkingDir(targetDir, TEMPLATE_EXT);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.orctom.mojo.was.service.impl;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.model.WebSphereServiceException;
 import com.orctom.mojo.was.service.IWebSphereService;
+import com.orctom.mojo.was.utils.CommandUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -23,11 +24,11 @@ public class WebSphereServiceAntImpl implements IWebSphereService {
     private String workingDir;
 
     private static final String TEMPLATE_FOLDER = "ant/";
-    private static final String TEMPLATE_EXT = ".xml";
+    private static final String TEMPLATE_EXT = "xml";
 
-    public WebSphereServiceAntImpl(WebSphereModel model, String workingDir) {
+    public WebSphereServiceAntImpl(WebSphereModel model, String targetDir) {
         this.model = model;
-        this.workingDir = workingDir + "/was-maven-plugin/ant/";
+        this.workingDir = CommandUtils.getWorkingDir(targetDir, TEMPLATE_EXT);
     }
 
     @Override

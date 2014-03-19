@@ -1,8 +1,9 @@
-package com.orctom.mojo.was.service.impl;
+package com.orctom.mojo.was.utils;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import com.orctom.mojo.was.Constants;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.model.WebSphereServiceException;
 import org.codehaus.plexus.util.StringUtils;
@@ -22,6 +23,10 @@ import java.util.Date;
 public class CommandUtils {
 
     private static final String TIMESTAMP_FORMAT = "yyyyMMdd-HHmmss-SSS";
+
+    public static String getWorkingDir(String targetFolder, String templateExt) {
+        return targetFolder + "/" + Constants.PLUGIN_ID + "/" + templateExt + "/";
+    }
 
     public static File getExecutable(final String wasHome, final String name) {
         if (StringUtils.isBlank(wasHome)) {
@@ -88,7 +93,7 @@ public class CommandUtils {
         }
     }
 
-    private static String getTimestampString() {
+    public static String getTimestampString() {
         return new SimpleDateFormat(TIMESTAMP_FORMAT).format(new Date());
     }
 }

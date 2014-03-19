@@ -1,5 +1,7 @@
 package com.orctom.mojo.was.model;
 
+import org.codehaus.plexus.util.StringUtils;
+
 /**
  * Created by CH on 3/4/14.
  */
@@ -8,8 +10,8 @@ public class WebSphereModel {
     private String wasHome;
     private String applicationName;
     private String host;
-    private String port;
-    private String connectorType;
+    private String port = "8880";
+    private String connectorType = "SOAP";
     private String cluster;
     private String cell;
     private String node;
@@ -23,6 +25,8 @@ public class WebSphereModel {
     private String packageFile;
     private boolean failOnError;
     private boolean verbose;
+
+    private Meta meta;
 
     /**
      * Only applicable in "script" mode, set this to have packages and script copied to remote box and execute
@@ -69,7 +73,7 @@ public class WebSphereModel {
     }
 
     public WebSphereModel setWasHome(String wasHome) {
-        if (null != wasHome) {
+        if (StringUtils.isNotBlank(wasHome)) {
             this.wasHome = wasHome;
         }
         return this;
@@ -110,7 +114,9 @@ public class WebSphereModel {
     }
 
     public WebSphereModel setConnectorType(String connectorType) {
-        this.connectorType = connectorType;
+        if (StringUtils.isNotBlank(connectorType)) {
+            this.connectorType = connectorType;
+        }
         return this;
     }
 
@@ -275,6 +281,15 @@ public class WebSphereModel {
         return this;
     }
 
+    public Meta getMeta() {
+        return meta;
+    }
+
+    public WebSphereModel setMeta(Meta meta) {
+        this.meta = meta;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "WebSphereModel{" +
@@ -297,6 +312,14 @@ public class WebSphereModel {
                 ", packageFile='" + packageFile + '\'' +
                 ", failOnError=" + failOnError +
                 ", verbose=" + verbose +
+                ", meta=" + meta +
                 '}';
+    }
+
+    public boolean isValid() {
+        return (StringUtils.isNotBlank(cluster) ||
+                StringUtils.isNotBlank(cell) ||
+                StringUtils.isNotBlank(server) ||
+                StringUtils.isNotBlank(node));
     }
 }
