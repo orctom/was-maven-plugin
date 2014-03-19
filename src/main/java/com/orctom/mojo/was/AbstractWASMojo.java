@@ -1,10 +1,8 @@
 package com.orctom.mojo.was;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import com.orctom.mojo.was.model.Meta;
 import com.orctom.mojo.was.model.WebSphereModel;
+import com.orctom.mojo.was.utils.PropertiesUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Component;
@@ -12,10 +10,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
-import org.codehaus.plexus.util.PropertyUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 /**
@@ -119,7 +116,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     protected Set<WebSphereModel> getWebSphereModels() {
         if (null != deploymentsPropertyFile && deploymentsPropertyFile.exists()) {
-            Properties properties = PropertyUtils.loadProperties(deploymentsPropertyFile);
+            Properties properties = PropertiesUtils.loadProperties(deploymentsPropertyFile);
             project.getProperties().putAll(properties);
         }
 
@@ -225,19 +222,11 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 System.out.println(entry.getKey() + " - " + entry.getValue());
             }
             System.out.println("-----------");
-            MustacheFactory mf = new DefaultMustacheFactory();
-            Mustache mustache = mf.compile(new StringReader(value), "dummy");
-            StringWriter writer = new StringWriter();
-            try {
-                mustache.execute(writer, project.getProperties()).flush();
-                value = writer.toString();
-                System.out.println(propertyName + " = " + value);
-                if (StringUtils.isNotEmpty(value)) {
-                    project.getProperties().setProperty(propertyName, value);
-                }
-            } catch (IOException e) {
-                System.err.println("Failed to resolve property: " + propertyName + ", "+ e.getMessage());
-                return project.getProperties().getProperty(propertyName);
+
+            value = PropertiesUtils.resolve(value, project.getProperties());
+            System.out.println(propertyName + " = " + value);
+            if (StringUtils.isNotEmpty(value)) {
+                project.getProperties().setProperty(propertyName, value);
             }
         }
         return value;
