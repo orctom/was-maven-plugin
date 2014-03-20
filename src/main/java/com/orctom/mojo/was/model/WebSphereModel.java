@@ -2,6 +2,8 @@ package com.orctom.mojo.was.model;
 
 import org.codehaus.plexus.util.StringUtils;
 
+import java.util.Properties;
+
 /**
  * Created by CH on 3/4/14.
  */
@@ -38,6 +40,8 @@ public class WebSphereModel {
     private String trustStorePassword;
     private String keyStorePassword;
 
+    private Properties properties;
+
     public WebSphereModel() {
         wasHome = System.getProperty("WAS_HOME");
         if (null == wasHome) {
@@ -45,7 +49,7 @@ public class WebSphereModel {
         }
     }
 
-    public WebSphereModel(String applicationName, String host, String port, String connectorType, String cluster,
+    public WebSphereModel(String applicationNameSuffix, String host, String port, String connectorType, String cluster,
                           String cell, String node, String server, String virtualHost, String user, String password,
                           String contextRoot, String options, String profileName, String packageFile,
                           boolean failOnError, boolean verbose) {
@@ -288,6 +292,14 @@ public class WebSphereModel {
     public WebSphereModel setMeta(Meta meta) {
         this.meta = meta;
         return this;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 
     @Override

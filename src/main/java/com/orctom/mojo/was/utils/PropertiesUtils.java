@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by CH on 3/19/14.
@@ -27,18 +30,62 @@ public class PropertiesUtils {
         } catch (Exception e) {
             return null;
         }
-
     }
 
     public static Properties loadProperties(InputStream is) {
         try {
             Properties properties = new Properties();
-
             if (null != is) {
                 properties.load(is);
             }
-
             return properties;
+        } catch (IOException e) {
+            return null;
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    public static Map<String, Properties> loadSectionedProperties(URL url) {
+        return loadSectionedProperties(url, null, null);
+    }
+
+    public static Map<String, Properties> loadSectionedProperties(URL url, String section, Properties defaultProps) {
+        try {
+            return loadSectionedProperties(url.openStream(), section, defaultProps);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Map<String, Properties> loadSectionedProperties(File file) {
+        return loadSectionedProperties(file, null, null);
+    }
+
+    public static Map<String, Properties> loadSectionedProperties(File file, String section, Properties defaultProps) {
+        try {
+            return loadSectionedProperties(new FileInputStream(file), section, defaultProps);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Map<String, Properties> loadSectionedProperties(InputStream is) {
+        return loadSectionedProperties(is, null, null);
+    }
+
+    public static Map<String, Properties> loadSectionedProperties(InputStream is, String section, Properties defaultProps) {
+        try {
+            SectionedProperties properties = new SectionedProperties(section, defaultProps);
+            if (null != is) {
+                properties.load(is);
+            }
+            return properties.getProperties();
         } catch (IOException e) {
             return null;
         } finally {
@@ -70,4 +117,39 @@ public class PropertiesUtils {
 
         return template.toString();
     }
+
+    static class SectionedProperties extends Properties {
+
+        private static final long serialVersionUID = 1L;
+        private Pattern section = Pattern.compile("\\s*\\[([^]]*)\\]\\s*");
+        private Map<String, Properties> properties = new HashMap<String, Properties>();
+        private Properties props = new Properties();
+
+        public SectionedProperties() {}
+
+        public SectionedProperties(String section, Properties _props) {
+            if (null != section && null != _props && !_props.isEmpty()) {
+                properties.put(section, _props);
+            }
+        }
+
+        @Override
+        public synchronized Object put(Object keyObj, Object valueObj) {
+            String key = String.valueOf(keyObj);
+            String value = String.valueOf(valueObj);
+            Matcher matcher = section.matcher(key);
+            if (matcher.matches()) {
+                props = new Properties();
+                properties.put(matcher.replaceAll("$1"), props);
+            } else {
+                props.put(key, value);
+            }
+            return valueObj;
+        }
+
+        public Map<String, Properties> getProperties() {
+            return properties;
+        }
+    }
+
 }

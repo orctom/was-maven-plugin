@@ -108,6 +108,52 @@ public class AntTaskUtils {
         antProject.executeTarget(antTargetName);
     }
 
+//    private static String processPlaceholderValues(String antXML, WebSphereModel model, MavenProject project, Log logger) {
+//        String cdapFolder = meta.isBatch() || "V".equalsIgnoreCase(meta.getCdapType()) || "VC".equalsIgnoreCase(meta.getCdapType())  ? "viking" : "od";
+//
+//        StringBuilder includes = new StringBuilder(100);
+//        String[] countries = StringUtils.split(meta.getCountryLocale(), "+");
+//        for (String country : countries) {
+//            includes.append("config_*_").append(country).append(".properties\"/>");
+//            includes.append("<include name=\"config_*_").append(country).append("_").append(meta.getBrand()).append("*.properties");
+//            includes.append("\" /><include name=\"");
+//        }
+//
+//        // for ibsd config_fr_FR_europa_business.properties
+//        if ("bsd".equals(meta.getBrand()) && meta.getLocale().contains("fr")) {
+//            includes.append("config_fr_FR_europa_business.properties");
+//            //includes.append("\" /><include name=\"");
+//        }
+//
+//        //includes.delete(includes.length() - "\" /><include name=\"".length(), includes.length());
+//
+//        if (debug) {
+//            System.out.println("processPlaceholderValues... ");
+//            System.out.println("@{meta.brand}          ==> " + meta.getBrand());
+//            System.out.println("@{meta.locale}         ==> " + meta.getLocale());
+//            System.out.println("@{meta.cdap}           ==> " + meta.getCdapType());
+//            System.out.println("@{meta.locale.country} ==> " + meta.getCountryLocale());
+//            System.out.println("@{meta.cdap.folder}    ==> " + cdapFolder);
+//            System.out.println("@{extra.includes}      ==> " + includes.toString());
+//        }
+//
+//        String realAntXML = antXML
+//                .replaceAll("\\@\\{meta\\.brand\\}", meta.getBrand())
+//                .replaceAll("\\@\\{meta\\.locale\\}", meta.getLocale())
+//                .replaceAll("\\@\\{meta\\.cdap\\}", meta.getCdapType())
+//                .replaceAll("\\@\\{meta\\.locale\\.country\\}", meta.getCountryLocale())
+//                .replaceAll("\\@\\{meta\\.cdap\\.folder\\}", cdapFolder)
+//                .replaceAll("\\@\\{extra\\.includes\\}", includes.toString());
+//
+//        if (debug) {
+//            System.out.println("ant xml:\n");
+//            System.out.println(realAntXML);
+//            System.out.println("=============================================");
+//        }
+//
+//        return realAntXML;
+//    }
+
     private static Project generateAntProject(File antBuildFile, MavenProject project, MavenProjectHelper projectHelper,
                                               List<Artifact> pluginArtifact, Log logger)
             throws MojoExecutionException {

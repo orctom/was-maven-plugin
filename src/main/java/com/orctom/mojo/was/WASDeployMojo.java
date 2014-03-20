@@ -20,7 +20,13 @@ public class WASDeployMojo extends AbstractWASMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        getLog().info(Constants.PLUGIN_ID + " - deploy");
         Set<WebSphereModel> models = getWebSphereModels();
+
+        if (models.isEmpty()) {
+            getLog().info("[SKIPPED] empty target server configured, please check your configuration");
+            return;
+        }
         String workingDir = project.getBuild().getOutputDirectory();
 
         for (WebSphereModel model : models) {

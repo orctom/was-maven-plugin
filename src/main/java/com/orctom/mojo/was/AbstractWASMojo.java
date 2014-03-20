@@ -115,20 +115,29 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected PlexusConfiguration[] postSteps;
 
     protected Set<WebSphereModel> getWebSphereModels() {
-        if (null != deploymentsPropertyFile && deploymentsPropertyFile.exists()) {
-            Properties properties = PropertiesUtils.loadProperties(deploymentsPropertyFile);
-            project.getProperties().putAll(properties);
-        }
+
 
         String deployTargets = System.getProperty(Constants.KEY_DEPLOY_TARGETS);
 
         if (StringUtils.isNotBlank(deployTargets)) {
-            return getWebSphereModels(deployTargets);
+            getLog().info("Multi targets: " + deployTargets);
+            if (null != deploymentsPropertyFile && deploymentsPropertyFile.exists()) {
+                Map<String, Properties> propertiesMap = PropertiesUtils.loadSectionedProperties(
+                        deploymentsPropertyFile, "DEFAULT", project.getProperties());
+                if (propertiesMap.size() > 1) {
+
+                    return getWebSphereModels(deployTargets);
+                }
+            }
+            getLog().info("Single target not properly configured.");
+            return null;
         } else {
             WebSphereModel model = getWebSphereModel();
             if (!model.isValid()) {
+                getLog().info("Single target not properly configured.");
                 return null;
             }
+            getLog().info("Single target: " + model.getHost());
             Set<WebSphereModel> models = new HashSet<>(1);
             models.add(model);
             return models;
@@ -179,9 +188,14 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setLocale(getPropertyValue(deployTarget + "meta.locale"))
                     .setCdap(getPropertyValue("meta.cdap"))
                     .setCdap(getPropertyValue(deployTarget + "meta.cdap"));
+            String appName = applicationName;
+            String appNameSuffix = getPropertyValue(deployTarget + ".applicationNameSuffix");
+            if (StringUtils.isNotEmpty(appNameSuffix)) {
+                appName = appName + "_" + appNameSuffix;
+            }
             WebSphereModel model = new WebSphereModel()
                     .setWasHome(wasHome)
-                    .setApplicationName(getPropertyValue(deployTarget + ".applicationName"))
+                    .setApplicationName(appName)
                     .setHost(getPropertyValue(deployTarget + ".host"))
                     .setPort(getPropertyValue(deployTarget + ".port"))
                     .setConnectorType(getPropertyValue(deployTarget + ".connectorType"))
@@ -214,17 +228,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected String getPropertyValue(String propertyName) {
         String value = project.getProperties().getProperty(propertyName);
         if (null != value && value.contains("{{") && value.contains("}}")) {
-            System.out.println("1 " + value);
-            System.out.println("2 " + project.getProperties().getProperty("meta.brand"));
-            System.out.println("3 " + project.getProperties().getProperty("meta.locale"));
-            System.out.println("4 " + project.getProperties().getProperty("meta.cdap"));
-            for (Map.Entry<Object, Object> entry : project.getProperties().entrySet()) {
-                System.out.println(entry.getKey() + " - " + entry.getValue());
-            }
-            System.out.println("-----------");
-
             value = PropertiesUtils.resolve(value, project.getProperties());
-            System.out.println(propertyName + " = " + value);
             if (StringUtils.isNotEmpty(value)) {
                 project.getProperties().setProperty(propertyName, value);
             }
