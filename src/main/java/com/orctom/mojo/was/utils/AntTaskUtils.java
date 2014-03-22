@@ -135,11 +135,6 @@ public class AntTaskUtils {
             Path p = new Path(antProject);
             p.setPath(StringUtils.join(project.getCompileClasspathElements().iterator(), File.pathSeparator));
 
-			/*
-             * maven.dependency.classpath it's deprecated as it's equal to
-			 * maven.compile.classpath
-			 */
-            antProject.addReference("maven.dependency.classpath", p);
             antProject.addReference("maven.compile.classpath", p);
 
             p = new Path(antProject);
@@ -150,14 +145,12 @@ public class AntTaskUtils {
             p.setPath(StringUtils.join(project.getTestClasspathElements().iterator(), File.pathSeparator));
             antProject.addReference("maven.test.classpath", p);
 
-			/* set maven.plugin.classpath with plugin dependencies */
             antProject.addReference("maven.plugin.classpath", getPathFromArtifacts(pluginArtifact, antProject));
 
             antProject.addReference(DEFAULT_MAVEN_PROJECT_REFID, project);
             antProject.addReference(DEFAULT_MAVEN_PROJECT_HELPER_REFID, projectHelper);
             initMavenTasks(antProject);
 
-            // The ant project needs actual properties when calling an external build file.
             copyProperties(project, antProject);
             copyProperties(model.getProperties(), antProject);
 
