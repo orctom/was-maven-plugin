@@ -32,22 +32,22 @@ public class AntTaskUtils {
     /**
      * The refid used to store the Maven project object in the Ant build.
      */
-    public final static String DEFAULT_MAVEN_PROJECT_REFID = "maven.project";
+    private final static String DEFAULT_MAVEN_PROJECT_REFID = "maven.project";
 
     /**
      * The refid used to store the Maven project object in the Ant build.
      */
-    public final static String DEFAULT_MAVEN_PROJECT_HELPER_REFID = "maven.project.helper";
+    private final static String DEFAULT_MAVEN_PROJECT_HELPER_REFID = "maven.project.helper";
 
     /**
      * The path to The XML file containing the definition of the Maven tasks.
      */
-    public final static String ANTLIB = "org/apache/maven/ant/tasks/antlib.xml";
+    private final static String ANTLIB = "org/apache/maven/ant/tasks/antlib.xml";
 
     /**
      * The default target name.
      */
-    public final static String DEFAULT_ANT_TARGET_NAME = "main";
+    private final static String DEFAULT_ANT_TARGET_NAME = "main";
 
     public static void execute(WebSphereModel model, PlexusConfiguration target, MavenProject project,
                                MavenProjectHelper projectHelper, List<Artifact> pluginArtifact, Log logger)
