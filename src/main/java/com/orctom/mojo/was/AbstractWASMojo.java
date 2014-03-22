@@ -15,6 +15,8 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.util.*;
 
+import static com.orctom.mojo.was.utils.PropertiesUtils.SectionedProperties.DEFAULT_SECTION;
+
 /**
  * Abstract Mojo for websphere deployment
  * Created by CH on 3/4/14.
@@ -109,7 +111,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected PlexusConfiguration[] preSteps;
 
     /**
-     * The XML for the Ant target.
+     * The XML for the Ant target
      */
     @Parameter
     protected PlexusConfiguration[] postSteps;
@@ -120,13 +122,11 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         String deployTargets = System.getProperty(Constants.KEY_DEPLOY_TARGETS);
 
         if (StringUtils.isNotBlank(deployTargets)) {
-            getLog().info("Multi targets: " + deployTargets);
             if (null != deploymentsPropertyFile && deploymentsPropertyFile.exists()) {
-                Map<String, Properties> propertiesMap = PropertiesUtils.loadSectionedProperties(
-                        deploymentsPropertyFile, "DEFAULT", project.getProperties());
+                Map<String, Properties> propertiesMap = PropertiesUtils.loadSectionedProperties(deploymentsPropertyFile, DEFAULT_SECTION, project.getProperties());
                 if (propertiesMap.size() > 1) {
-
-                    return getWebSphereModels(deployTargets);
+                    getLog().info("Multi targets: " + deployTargets);
+                    return getWebSphereModels(deployTargets, propertiesMap);
                 }
             }
             getLog().info("Single target not properly configured.");
@@ -146,9 +146,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     protected WebSphereModel getWebSphereModel() {
         Meta meta = new Meta()
-                .setBrand(getPropertyValue("meta.brand"))
-                .setLocale(getPropertyValue("meta.locale"))
-                .setCdap(getPropertyValue("meta.cdap"));
+                .setBrand(project.getProperties().getProperty("meta.brand"))
+                .setLocale(project.getProperties().getProperty("meta.locale"))
+                .setCdap(project.getProperties().getProperty("meta.cdap"));
         return new WebSphereModel()
                 .setWasHome(wasHome)
                 .setApplicationName(applicationName)
@@ -175,38 +175,36 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setMeta(meta);
     }
 
-    protected Set<WebSphereModel> getWebSphereModels(String deployTargetStr) {
+    protected Set<WebSphereModel> getWebSphereModels(String deployTargetStr, Map<String, Properties> propertiesMap) {
         Set<String> deployTargets = new HashSet<>();
         Collections.addAll(deployTargets, StringUtils.split(deployTargetStr, ","));
 
         Set<WebSphereModel> models = new HashSet<>();
         for (String deployTarget : deployTargets) {
+            Properties props = propertiesMap.get(deployTarget);
             Meta meta = new Meta()
-                    .setBrand(getPropertyValue("meta.brand"))
-                    .setBrand(getPropertyValue(deployTarget + "meta.brand"))
-                    .setLocale(getPropertyValue("meta.locale"))
-                    .setLocale(getPropertyValue(deployTarget + "meta.locale"))
-                    .setCdap(getPropertyValue("meta.cdap"))
-                    .setCdap(getPropertyValue(deployTarget + "meta.cdap"));
+                    .setBrand(getPropertyValue("meta.brand", props))
+                    .setLocale(getPropertyValue("meta.locale", props))
+                    .setCdap(getPropertyValue("meta.cdap", props));
             String appName = applicationName;
-            String appNameSuffix = getPropertyValue(deployTarget + ".applicationNameSuffix");
+            String appNameSuffix = getPropertyValue("applicationNameSuffix", props);
             if (StringUtils.isNotEmpty(appNameSuffix)) {
                 appName = appName + "_" + appNameSuffix;
             }
             WebSphereModel model = new WebSphereModel()
                     .setWasHome(wasHome)
                     .setApplicationName(appName)
-                    .setHost(getPropertyValue(deployTarget + ".host"))
-                    .setPort(getPropertyValue(deployTarget + ".port"))
-                    .setConnectorType(getPropertyValue(deployTarget + ".connectorType"))
-                    .setCluster(getPropertyValue(deployTarget + ".cluster"))
-                    .setCell(getPropertyValue(deployTarget + ".cell"))
-                    .setNode(getPropertyValue(deployTarget + ".node"))
-                    .setServer(getPropertyValue(deployTarget + ".server"))
-                    .setVirtualHost(getPropertyValue(deployTarget + ".virtualHost"))
-                    .setContextRoot(getPropertyValue(deployTarget + ".contextRoot"))
-                    .setUser(getPropertyValue(deployTarget + ".user"))
-                    .setPassword(getPropertyValue(deployTarget + ".password"))
+                    .setHost(getPropertyValue("host", props))
+                    .setPort(getPropertyValue("port", props))
+                    .setConnectorType(getPropertyValue("connectorType", props))
+                    .setCluster(getPropertyValue("cluster", props))
+                    .setCell(getPropertyValue("cell", props))
+                    .setNode(getPropertyValue("node", props))
+                    .setServer(getPropertyValue("server", props))
+                    .setVirtualHost(getPropertyValue("virtualHost", props))
+                    .setContextRoot(getPropertyValue("contextRoot", props))
+                    .setUser(getPropertyValue("user", props))
+                    .setPassword(getPropertyValue("password", props))
                     .setProfileName(profileName)
                     .setPackageFile(packageFile.getAbsolutePath())
                     .setRemoteWorkingDir(remoteWorkingDir)
@@ -217,20 +215,22 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setFailOnError(failOnError)
                     .setVerbose(verbose)
                     .setMeta(meta);
+            model.setProperties(props);
             if (model.isValid()) {
                 models.add(model);
+                props.setProperty("applicationName", model.getApplicationName());
             }
         }
 
         return models;
     }
 
-    protected String getPropertyValue(String propertyName) {
-        String value = project.getProperties().getProperty(propertyName);
+    protected String getPropertyValue(String propertyName, Properties props) {
+        String value = props.getProperty(propertyName);
         if (null != value && value.contains("{{") && value.contains("}}")) {
-            value = PropertiesUtils.resolve(value, project.getProperties());
+            value = PropertiesUtils.resolve(value, props);
             if (StringUtils.isNotEmpty(value)) {
-                project.getProperties().setProperty(propertyName, value);
+                props.setProperty(propertyName, value);
             }
         }
         return value;

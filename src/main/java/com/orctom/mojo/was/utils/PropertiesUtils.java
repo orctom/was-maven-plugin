@@ -52,12 +52,12 @@ public class PropertiesUtils {
     }
 
     public static Map<String, Properties> loadSectionedProperties(URL url) {
-        return loadSectionedProperties(url, null, null);
+        return loadSectionedProperties(url, null);
     }
 
-    public static Map<String, Properties> loadSectionedProperties(URL url, String section, Properties defaultProps) {
+    public static Map<String, Properties> loadSectionedProperties(URL url, Properties defaultProps) {
         try {
-            return loadSectionedProperties(url.openStream(), section, defaultProps);
+            return loadSectionedProperties(url.openStream(), defaultProps);
         } catch (Exception e) {
             return null;
         }
@@ -69,19 +69,19 @@ public class PropertiesUtils {
 
     public static Map<String, Properties> loadSectionedProperties(File file, String section, Properties defaultProps) {
         try {
-            return loadSectionedProperties(new FileInputStream(file), section, defaultProps);
+            return loadSectionedProperties(new FileInputStream(file), defaultProps);
         } catch (Exception e) {
             return null;
         }
     }
 
     public static Map<String, Properties> loadSectionedProperties(InputStream is) {
-        return loadSectionedProperties(is, null, null);
+        return loadSectionedProperties(is, null);
     }
 
-    public static Map<String, Properties> loadSectionedProperties(InputStream is, String section, Properties defaultProps) {
+    public synchronized static Map<String, Properties> loadSectionedProperties(InputStream is, Properties defaultProps) {
         try {
-            SectionedProperties properties = new SectionedProperties(section, defaultProps);
+            SectionedProperties properties = new SectionedProperties(defaultProps);
             if (null != is) {
                 properties.load(is);
             }
@@ -118,18 +118,21 @@ public class PropertiesUtils {
         return template.toString();
     }
 
-    static class SectionedProperties extends Properties {
+    public static class SectionedProperties extends Properties {
 
         private static final long serialVersionUID = 1L;
         private Pattern section = Pattern.compile("\\s*\\[([^]]*)\\]\\s*");
         private Map<String, Properties> properties = new HashMap<String, Properties>();
+        private Properties defaultProps = new Properties();
         private Properties props = new Properties();
+
+        public static final String DEFAULT_SECTION = "[DEFAULT]";
 
         public SectionedProperties() {}
 
-        public SectionedProperties(String section, Properties _props) {
-            if (null != section && null != _props && !_props.isEmpty()) {
-                properties.put(section, _props);
+        public SectionedProperties(Properties _props) {
+            if (null != _props && !_props.isEmpty()) {
+                defaultProps = _props;
             }
         }
 
@@ -139,8 +142,15 @@ public class PropertiesUtils {
             String value = String.valueOf(valueObj);
             Matcher matcher = section.matcher(key);
             if (matcher.matches()) {
-                props = new Properties();
-                properties.put(matcher.replaceAll("$1"), props);
+                if (DEFAULT_SECTION.equals(key)) {
+                    props = defaultProps;
+                } else {
+                    props = new Properties();
+                    if (null != defaultProps && !defaultProps.isEmpty()) {
+                        props.putAll(defaultProps);
+                    }
+                    properties.put(matcher.replaceAll("$1"), props);
+                }
             } else {
                 props.put(key, value);
             }

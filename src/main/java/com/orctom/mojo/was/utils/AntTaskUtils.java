@@ -21,10 +21,7 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Utils to execute ant tasks
@@ -104,57 +101,11 @@ public class AntTaskUtils {
         buildFile.getParentFile().mkdirs();
         FileUtils.fileWrite(buildFile.getAbsolutePath(), "UTF-8", antXML.toString());
 
-        Project antProject = generateAntProject(buildFile, project, projectHelper, pluginArtifact, logger);
+        Project antProject = generateAntProject(model, buildFile, project, projectHelper, pluginArtifact, logger);
         antProject.executeTarget(antTargetName);
     }
 
-//    private static String processPlaceholderValues(String antXML, WebSphereModel model, MavenProject project, Log logger) {
-//        String cdapFolder = meta.isBatch() || "V".equalsIgnoreCase(meta.getCdapType()) || "VC".equalsIgnoreCase(meta.getCdapType())  ? "viking" : "od";
-//
-//        StringBuilder includes = new StringBuilder(100);
-//        String[] countries = StringUtils.split(meta.getCountryLocale(), "+");
-//        for (String country : countries) {
-//            includes.append("config_*_").append(country).append(".properties\"/>");
-//            includes.append("<include name=\"config_*_").append(country).append("_").append(meta.getBrand()).append("*.properties");
-//            includes.append("\" /><include name=\"");
-//        }
-//
-//        // for ibsd config_fr_FR_europa_business.properties
-//        if ("bsd".equals(meta.getBrand()) && meta.getLocale().contains("fr")) {
-//            includes.append("config_fr_FR_europa_business.properties");
-//            //includes.append("\" /><include name=\"");
-//        }
-//
-//        //includes.delete(includes.length() - "\" /><include name=\"".length(), includes.length());
-//
-//        if (debug) {
-//            System.out.println("processPlaceholderValues... ");
-//            System.out.println("@{meta.brand}          ==> " + meta.getBrand());
-//            System.out.println("@{meta.locale}         ==> " + meta.getLocale());
-//            System.out.println("@{meta.cdap}           ==> " + meta.getCdapType());
-//            System.out.println("@{meta.locale.country} ==> " + meta.getCountryLocale());
-//            System.out.println("@{meta.cdap.folder}    ==> " + cdapFolder);
-//            System.out.println("@{extra.includes}      ==> " + includes.toString());
-//        }
-//
-//        String realAntXML = antXML
-//                .replaceAll("\\@\\{meta\\.brand\\}", meta.getBrand())
-//                .replaceAll("\\@\\{meta\\.locale\\}", meta.getLocale())
-//                .replaceAll("\\@\\{meta\\.cdap\\}", meta.getCdapType())
-//                .replaceAll("\\@\\{meta\\.locale\\.country\\}", meta.getCountryLocale())
-//                .replaceAll("\\@\\{meta\\.cdap\\.folder\\}", cdapFolder)
-//                .replaceAll("\\@\\{extra\\.includes\\}", includes.toString());
-//
-//        if (debug) {
-//            System.out.println("ant xml:\n");
-//            System.out.println(realAntXML);
-//            System.out.println("=============================================");
-//        }
-//
-//        return realAntXML;
-//    }
-
-    private static Project generateAntProject(File antBuildFile, MavenProject project, MavenProjectHelper projectHelper,
+    private static Project generateAntProject(WebSphereModel model, File antBuildFile, MavenProject project, MavenProjectHelper projectHelper,
                                               List<Artifact> pluginArtifact, Log logger)
             throws MojoExecutionException {
         try {
@@ -208,6 +159,7 @@ public class AntTaskUtils {
 
             // The ant project needs actual properties when calling an external build file.
             copyProperties(project, antProject);
+            copyProperties(model.getProperties(), antProject);
 
             return antProject;
 
@@ -255,15 +207,8 @@ public class AntTaskUtils {
         typedef.execute();
     }
 
-    /**
-     * Copy properties from the maven project to the ant project.
-     */
     private static void copyProperties(MavenProject mavenProject, Project antProject) {
-        Properties mavenProps = mavenProject.getProperties();
-        for (Object o : mavenProps.keySet()) {
-            String key = (String) o;
-            antProject.setProperty(key, mavenProps.getProperty(key));
-        }
+        copyProperties(mavenProject.getProperties(), antProject);
 
         // Set the POM file as the ant.file for the tasks run directly in Maven.
         antProject.setProperty("ant.file", mavenProject.getFile().getAbsolutePath());
@@ -282,5 +227,12 @@ public class AntTaskUtils {
         antProject.setProperty(("project.build.testOutputDirectory"), mavenProject.getBuild().getTestOutputDirectory());
         antProject.setProperty(("project.build.sourceDirectory"), mavenProject.getBuild().getSourceDirectory());
         antProject.setProperty(("project.build.testSourceDirectory"), mavenProject.getBuild().getTestSourceDirectory());
+    }
+
+    private static void copyProperties(Properties properties, Project antProject) {
+        for (Object o : properties.keySet()) {
+            String key = (String) o;
+            antProject.setProperty(key, properties.getProperty(key));
+        }
     }
 }
