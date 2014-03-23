@@ -241,8 +241,7 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
         try {
             client = AdminClientFactory.createAdminClient(config);
         } catch (ConnectorException e) {
-            e.printStackTrace();
-            //throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server, please check the firewall", e);
+            throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server, please check the firewall", e);
         }
         if (client == null) {
             throw new WebSphereServiceException("Unable to connect to IBM WebSphere Application Server @ " + model.getHost() + ":" + model.getPort());
