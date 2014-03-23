@@ -10,7 +10,8 @@ import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -106,14 +107,25 @@ public class WebSphereServiceAntImpl implements IWebSphereService {
 
     private String execute(String task) {
         try {
-            Commandline commandline = getCommandline(task);
+            File buildScript = CommandUtils.getBuildScript(task, TEMPLATE_FOLDER + task + TEMPLATE_EXT, model, workingDir, TEMPLATE_EXT);
+            Commandline commandLine = new Commandline();
+            commandLine.setExecutable(CommandUtils.getExecutable(model.getWasHome(), "ws_ant").getAbsolutePath());
+            commandLine.setWorkingDirectory(workingDir);
 
+            commandLine.createArg().setLine("-buildfile " + "\"" + buildScript.getAbsolutePath() + "\"");
+
+            if (model.isVerbose()) {
+                commandLine.createArg().setValue("-verbose");
+                commandLine.createArg().setValue("-debug");
+            }
+
+            final PrintStream ps = new PrintStream(new FileOutputStream(new File(buildScript, ".log")));
             final StringBuilder rtValue = new StringBuilder(100);
             StreamConsumer outConsumer = new StreamConsumer() {
                 boolean isReturnValueLine = false;
-                boolean rtStop = false;
                 public void consumeLine(String line) {
                     System.out.println(line);
+                    ps.println(line);
                     if (isReturnValueLine && StringUtils.isBlank(line)) {
                         isReturnValueLine = false;
                     }
@@ -127,33 +139,17 @@ public class WebSphereServiceAntImpl implements IWebSphereService {
             };
 
             CommandLineUtils.StringStreamConsumer errorConsumer = new CommandLineUtils.StringStreamConsumer();
-
-            CommandUtils.executeCommand(commandline, outConsumer, errorConsumer, model.isVerbose());
+            CommandUtils.executeCommand(commandLine, outConsumer, errorConsumer, model.isVerbose());
 
             String error = errorConsumer.getOutput();
             if (StringUtils.isNotEmpty(error)) {
                 System.err.println(error);
+                ps.println(error);
             }
 
             return rtValue.toString();
         } catch (Exception e) {
             throw new WebSphereServiceException("Failed to execute: " + task, e);
         }
-    }
-
-    private Commandline getCommandline(String task) throws IOException {
-        File buildScript = CommandUtils.getBuildScript(task, TEMPLATE_FOLDER + task + TEMPLATE_EXT, model, workingDir, TEMPLATE_EXT);
-        Commandline commandLine = new Commandline();
-        commandLine.setExecutable(CommandUtils.getExecutable(model.getWasHome(), "ws_ant").getAbsolutePath());
-        commandLine.setWorkingDirectory(workingDir);
-
-        commandLine.createArg().setLine("-buildfile " + "\"" + buildScript.getAbsolutePath() + "\"");
-
-        if (model.isVerbose()) {
-            commandLine.createArg().setValue("-verbose");
-            commandLine.createArg().setValue("-debug");
-        }
-
-        return commandLine;
     }
 }

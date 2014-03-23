@@ -18,10 +18,11 @@ import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Utils to execute ant tasks
@@ -113,23 +114,8 @@ public class AntTaskUtils {
             ProjectHelper.configureProject(antProject, antBuildFile);
             antProject.init();
 
-            DefaultLogger antLogger = new DefaultLogger();
-            antLogger.setOutputPrintStream(System.out);
-            antLogger.setErrorPrintStream(System.err);
+            setupLogger(antBuildFile, logger, antProject);
 
-            if (logger.isDebugEnabled()) {
-                antLogger.setMessageOutputLevel(Project.MSG_DEBUG);
-            } else if (logger.isInfoEnabled()) {
-                antLogger.setMessageOutputLevel(Project.MSG_INFO);
-            } else if (logger.isWarnEnabled()) {
-                antLogger.setMessageOutputLevel(Project.MSG_WARN);
-            } else if (logger.isErrorEnabled()) {
-                antLogger.setMessageOutputLevel(Project.MSG_ERR);
-            } else {
-                antLogger.setMessageOutputLevel(Project.MSG_VERBOSE);
-            }
-
-            antProject.addBuildListener(antLogger);
             antProject.setBaseDir(project.getBasedir());
 
             Path p = new Path(antProject);
@@ -163,6 +149,36 @@ public class AntTaskUtils {
         } catch (Throwable e) {
             throw new MojoExecutionException("Error executing ant tasks: " + e.getMessage(), e);
         }
+    }
+
+    private static void setupLogger(File antBuildFile, Log logger, Project antProject) throws FileNotFoundException {
+        DefaultLogger consoleLogger = new DefaultLogger();
+        consoleLogger.setOutputPrintStream(System.out);
+        consoleLogger.setErrorPrintStream(System.err);
+
+        addBuildListener(logger, antProject, consoleLogger);
+
+        DefaultLogger fileLogger = new DefaultLogger();
+        PrintStream ps = new PrintStream(new FileOutputStream(new File(antBuildFile.getAbsolutePath() + ".log")));
+        fileLogger.setOutputPrintStream(ps);
+        fileLogger.setErrorPrintStream(ps);
+
+        addBuildListener(logger, antProject, fileLogger);
+    }
+
+    private static void addBuildListener(Log logger, Project antProject, DefaultLogger listener) {
+        if (logger.isDebugEnabled()) {
+            listener.setMessageOutputLevel(Project.MSG_DEBUG);
+        } else if (logger.isInfoEnabled()) {
+            listener.setMessageOutputLevel(Project.MSG_INFO);
+        } else if (logger.isWarnEnabled()) {
+            listener.setMessageOutputLevel(Project.MSG_WARN);
+        } else if (logger.isErrorEnabled()) {
+            listener.setMessageOutputLevel(Project.MSG_ERR);
+        } else {
+            listener.setMessageOutputLevel(Project.MSG_VERBOSE);
+        }
+        antProject.addBuildListener(listener);
     }
 
     private static void stringReplace(StringBuffer text, String match, String with) {

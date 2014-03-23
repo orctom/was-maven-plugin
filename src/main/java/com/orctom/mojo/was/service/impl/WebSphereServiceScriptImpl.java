@@ -9,7 +9,8 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
  * Using jython
@@ -83,46 +84,35 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
 
     private void execute(String task) {
         try {
-            Commandline commandline = getCommandline(task);
+            File buildScript = CommandUtils.getBuildScript(task, TEMPLATE, model, workingDir, TEMPLATE_EXT);
+            Commandline commandLine = new Commandline();
+            commandLine.setExecutable(CommandUtils.getExecutable(model.getWasHome(), "wsadmin").getAbsolutePath());
+            commandLine.setWorkingDirectory(workingDir);
 
-            CommandLineUtils.StringStreamConsumer outConsumer = new CommandLineUtils.StringStreamConsumer();
-            CommandLineUtils.StringStreamConsumer errorConsumer = new CommandLineUtils.StringStreamConsumer();
-
-            CommandUtils.executeCommand(commandline, outConsumer, errorConsumer, model.isVerbose());
-
-            String info = outConsumer.getOutput();
-            if (StringUtils.isNotEmpty(info)) {
-                System.out.println(info);
+            commandLine.createArg().setLine("-conntype " + model.getConnectorType());
+            commandLine.createArg().setLine("-host " + model.getHost());
+            commandLine.createArg().setLine("-port " + model.getPort());
+            if (StringUtils.isNotBlank(model.getUser())) {
+                commandLine.createArg().setLine("-user " + model.getUser());
+                if (StringUtils.isNotBlank(model.getPassword())) {
+                    commandLine.createArg().setLine("-password " + model.getPassword());
+                }
             }
+            commandLine.createArg().setLine("-lang jython");
+            commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
+            commandLine.createArg().setLine("-o " + task);
 
-            String error = errorConsumer.getOutput();
-            if (StringUtils.isNotEmpty(error)) {
-                System.err.println(error);
+            CommandLineUtils.StringStreamConsumer logConsumer = new CommandLineUtils.StringStreamConsumer();
+            CommandUtils.executeCommand(commandLine, logConsumer, logConsumer, model.isVerbose());
+
+            String output = logConsumer.getOutput();
+            if (StringUtils.isNotEmpty(output)) {
+                System.out.println(output);
+                PrintStream ps = new PrintStream(new FileOutputStream(new File(buildScript, ".log")));
+                ps.println(output);
             }
         } catch (Exception e) {
             throw new WebSphereServiceException("Failed to execute: " + task, e);
         }
-    }
-
-    private Commandline getCommandline(String task) throws IOException {
-        File buildScript = CommandUtils.getBuildScript(task, TEMPLATE, model, workingDir, TEMPLATE_EXT);
-        Commandline commandLine = new Commandline();
-        commandLine.setExecutable(CommandUtils.getExecutable(model.getWasHome(), "wsadmin").getAbsolutePath());
-        commandLine.setWorkingDirectory(workingDir);
-
-        commandLine.createArg().setLine("-conntype " + model.getConnectorType());
-        commandLine.createArg().setLine("-host " + model.getHost());
-        commandLine.createArg().setLine("-port " + model.getPort());
-        if (StringUtils.isNotBlank(model.getUser())) {
-            commandLine.createArg().setLine("-user " + model.getUser());
-            if (StringUtils.isNotBlank(model.getPassword())) {
-                commandLine.createArg().setLine("-password " + model.getPassword());
-            }
-        }
-        commandLine.createArg().setLine("-lang jython");
-        commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
-        commandLine.createArg().setLine("-o " + task);
-
-        return commandLine;
     }
 }
