@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.orctom.mojo.test</groupId>
+	<artifactId>multi-targets</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<build>
+		<finalName>test</finalName>
+		<plugins>
+			<plugin>
+				<groupId>com.orctom.mojo</groupId>
+				<artifactId>was-maven-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+						<configuration>
+							<wasHome>${env.WAS_HOME}</wasHome>
+                            <!--<packageFile>D:\workspaces\global\WASod_ear\target\WASod_ear.ear</packageFile>-->
+                            <!--<packageFile>D:\workspaces\global\toolsEARR7\target\toolsEARR7.ear</packageFile>-->
+							<failOnError>false</failOnError>
+                            <verbose>true</verbose>
+							<parallel>false</parallel>
+							<preSteps>
+								<target name="pre 1">
+									<echo message="====== pre 1 ===== ${applicationName}" />
+								</target>
+								<target name="pre 2">
+									<echo message="====== pre 2 =====" />
+								</target>
+							</preSteps>
+							<postSteps>
+								<target name="post 1">
+									<echo message="====== post 1 =====" />
+								</target>
+								<target name="post 2">
+									<echo message="====== post 2 =====" />
+									<sleep seconds="10"/>
+								</target>
+							</postSteps>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>20020829</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.8.4</version>
+					</dependency>
+					<dependency>
+						<groupId>com.jcraft</groupId>
+						<artifactId>jsch</artifactId>
+						<version>0.1.49</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+</project>

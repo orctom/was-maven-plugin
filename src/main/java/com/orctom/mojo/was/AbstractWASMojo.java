@@ -182,6 +182,10 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         Set<WebSphereModel> models = new HashSet<>();
         for (String deployTarget : deployTargets) {
             Properties props = propertiesMap.get(deployTarget);
+            if (null == props || props.isEmpty()) {
+                getLog().info("[SKIPPED] " + deployTarget + ", not configured in property file.");
+                continue;
+            }
             Meta meta = new Meta()
                     .setBrand(getPropertyValue("meta.brand", props))
                     .setLocale(getPropertyValue("meta.locale", props))

@@ -1,7 +1,9 @@
 import sys
 import getopt
 import time
+import traceback
 
+host = r"{{host}}"
 cell = r"{{cell}}"
 cluster = r"{{cluster}}"
 server = r"{{server}}"
@@ -14,41 +16,54 @@ packageFile = r"{{packageFile}}"
 
 class WebSphere:
     def listApplications(self):
-        print "list applications"
+        print "[LIST APPLICATIONS]", host
         print AdminApp.list()
-        return AdminApplication.listApplications()
 
     def restartServer(self):
-        print "restarting server"
+        print '-'*60
+        print "[RESTARTING SERVER]", host
+        print '-'*60
         if "" != cluster:
             print AdminTask.updateAppOnCluster('[-ApplicationNames ' + applicationName + '}} -timeout 3600]')
         else:
-            appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
-            print AdminControl.invoke(appManager, 'restart')
+            try:
+                appManager = AdminControl.queryNames('node=HaoNode01,type=ApplicationManager,process=server1,*')
+                print AdminControl.invoke(appManager, 'restart')
+            except:
+                print "Failed to restart server:"
+                print '-'*10
+                traceback.print_exc(file=sys.stdout)
+                print '-'*10
+                print "try to startApplication directly..."
+                self.startApplication()
 
     def startApplication(self):
-        print "starting application"
+        print '-'*60
+        print "[STARTING APPLICATION]", host, applicationName
+        print '-'*60
         if "" == node:
             appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
         else:
             appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
-        print appManager
         print AdminControl.invoke(appManager, 'startApplication', applicationName)
         #AdminApplication.startApplicationOnCluster(applicationName, cluster)
 
     def stopApplication(self):
-        print "stopping application"
+        print '-'*60
+        print "[STOPPING APPLICATION]", host, applicationName
+        print '-'*60
         if "" == node:
             appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
         else:
             appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
-        print appManager
         print AdminControl.invoke(appManager, 'stopApplication', applicationName)
         #AdminApplication.stopApplicationOnCluster(applicationName, cluster)
 
     def installApplication(self):
         try:
-            print "installing application:", applicationName
+            print '-'*60
+            print "[INSTALLING APPLICATION]", host, applicationName
+            print '-'*60
             if "" != cluster:
                 serverMapping = 'WebSphere:cluster=' + cluster
                 options = ['-deployws', '-distributeApp', '-appname', applicationName, '-cluster', cluster, '-server', server, '-MapModulesToServers', [['.*','.*', serverMapping]], '-MapWebModToVH', [['.*','.*', virtualHost]]]
@@ -59,31 +74,38 @@ class WebSphere:
                 serverMapping = 'WebSphere:server=' + server
                 options = ['-distributeApp', '-appname', applicationName, '-server', server, '-MapModulesToServers', [['.*','.*', serverMapping]], '-MapWebModToVH', [['.*','.*', virtualHost]]]
 
-            print "installing"
+            print "INSTALLING"
             print AdminApp.install(packageFile, options)
 
-            print "saving config"
+            print "SAVING CONFIG"
             AdminConfig.save()
 
-            print "syncing"
-            AdminNodeManagement.syncActiveNodes()
+            if "" != cluster:
+                print "SYNCING"
+                AdminNodeManagement.syncActiveNodes()
 
             result = AdminApp.isAppReady(applicationName)
             while result == "false":
-                print "status:", AdminApp.getDeployStatus(applicationName)
+                print "STATUS:", AdminApp.getDeployStatus(applicationName)
                 time.sleep(5)
                 result = AdminApp.isAppReady(applicationName)
-            print "installed", applicationName
+            print "INSTALLED", applicationName
+            return "true"
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-            print "Exception happened:", lines
+            print "Failed to install application: ", applicationName
+            print '-'*10
+            traceback.print_exc(file=sys.stdout)
+            print '-'*10
+            return "false"
 
     def uninstallApplication(self):
-        print "uninstalling application:", applicationName
+        print '-'*60
+        print "[UNINSTALLING APPLICATION]", host, applicationName
+        print '-'*60
         print AdminApp.uninstall(applicationName)
         AdminConfig.save()
-        AdminNodeManagement.syncActiveNodes()
+        if "" != cluster:
+            AdminNodeManagement.syncActiveNodes()
 
     def isApplicationInstalled(self):
         return AdminApplication.checkIfAppExists(applicationName)
@@ -92,8 +114,8 @@ class WebSphere:
         if "true" == self.isApplicationInstalled():
             self.uninstallApplication()
 
-        self.installApplication()
-        self.restartServer()
+        if "true" == self.installApplication():
+            self.restartServer()
 
 
 #-----------------------------------------------------------------

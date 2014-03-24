@@ -105,6 +105,13 @@ public class WebSphereModel {
     }
 
     public String getPort() {
+        if (null == port) {
+            if (null != cluster) {
+                port = "8879";
+            } else {
+                port = "8880";
+            }
+        }
         return port;
     }
 

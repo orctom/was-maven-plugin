@@ -28,6 +28,7 @@ public class WebSphereServiceAntImpl implements IWebSphereService {
     private static final String TEMPLATE_EXT = "xml";
 
     public WebSphereServiceAntImpl(WebSphereModel model, String targetDir) {
+        System.out.println("Using Ant Tasks");
         this.model = model;
         this.workingDir = CommandUtils.getWorkingDir(targetDir, TEMPLATE_EXT);
     }

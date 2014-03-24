@@ -28,6 +28,7 @@ public class WebSphereServiceJMXImpl implements IWebSphereService {
     private WebSphereModel model;
 
     public WebSphereServiceJMXImpl(WebSphereModel model) {
+        System.out.println("Using JMX MBean");
         this.model = model;
     }
 

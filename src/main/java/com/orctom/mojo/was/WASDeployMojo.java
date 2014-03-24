@@ -32,7 +32,7 @@ public class WASDeployMojo extends AbstractWASMojo {
         Set<WebSphereModel> models = getWebSphereModels();
 
         if (models.isEmpty()) {
-            getLog().info("[SKIPPED] empty target server configured, please check your configuration");
+            getLog().info("[SKIPPED DEPLOYMENT] empty target server configured, please check your configuration");
             return;
         }
 
@@ -67,7 +67,7 @@ public class WASDeployMojo extends AbstractWASMojo {
         executeAntTasks(model, super.preSteps);
 
         getLog().info("======================    deploy    ========================");
-        WebSphereServiceFactory.getService(mode, model, project.getBuild().getOutputDirectory()).deploy();
+        WebSphereServiceFactory.getService(mode, model, project.getBuild().getDirectory()).deploy();
 
         executeAntTasks(model, super.postSteps);
     }

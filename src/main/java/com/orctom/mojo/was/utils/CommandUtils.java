@@ -62,7 +62,7 @@ public class CommandUtils {
         if (StringUtils.isNotBlank(model.getApplicationName())) {
             buildFile.append("-").append(model.getApplicationName());
         }
-        buildFile.append("-").append(getTimestampString()).append(ext);
+        buildFile.append("-").append(getTimestampString()).append(".").append(ext);
 
         File buildScriptFile = new File(workingDir, buildFile.toString());
         buildScriptFile.getParentFile().mkdirs();
@@ -76,7 +76,7 @@ public class CommandUtils {
                                       boolean isVerbose) {
         try {
             if (isVerbose) {
-                System.out.println("Executing command: " + StringUtils.join(commandline.getShellCommandline(), " "));
+                System.out.println("Executing command:\n" + StringUtils.join(commandline.getShellCommandline(), " "));
             }
 
             int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 300);
