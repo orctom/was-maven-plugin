@@ -35,7 +35,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter(defaultValue = "SCRIPT")
     protected String mode;
 
-    @Parameter(defaultValue = "${project.basedir}/deploy-target-servers.properties")
+    @Parameter(defaultValue = "${project.basedir}/was-maven-plugin.properties")
     protected File deploymentsPropertyFile;
 
     @Parameter
