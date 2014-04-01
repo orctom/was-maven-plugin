@@ -9,6 +9,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Set;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class WASDeployMojo extends AbstractWASMojo {
 
     @Parameter
-    protected boolean parallel;
+    protected String parallel;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -36,7 +37,9 @@ public class WASDeployMojo extends AbstractWASMojo {
             return;
         }
 
-        if (parallel) {
+        boolean parallelDeploy = StringUtils.isEmpty(parallel) ? models.size() > 1 : Boolean.valueOf(parallel);
+
+        if (parallelDeploy) {
             ExecutorService executor = Executors.newFixedThreadPool(models.size());
             for (final WebSphereModel model : models) {
                 executor.execute(new Runnable() {
