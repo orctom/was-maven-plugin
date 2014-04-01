@@ -35,7 +35,7 @@ public class CommandUtils {
         File binDir = new File(wasHome, "bin");
         File[] candidates = binDir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String fileName) {
-                return fileName.startsWith(name);
+                return fileName.startsWith(name) && (fileName.endsWith("bat") || fileName.endsWith("sh"));
             }
         });
 
@@ -79,7 +79,7 @@ public class CommandUtils {
                 System.out.println("Executing command:\n" + StringUtils.join(commandline.getShellCommandline(), " "));
             }
 
-            int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 300);
+            int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 1200);
 
             String msg = "Return code: " + returnCode;
             if (returnCode != 0) {

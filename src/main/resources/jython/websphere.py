@@ -24,7 +24,7 @@ class WebSphere:
         print "[RESTARTING SERVER]", host
         print '-'*60
         if "" != cluster:
-            print AdminTask.updateAppOnCluster('[-ApplicationNames ' + applicationName + '}} -timeout 3600]')
+            print AdminTask.updateAppOnCluster('[-ApplicationNames ' + applicationName + ' -timeout 600]')
         else:
             try:
                 appManager = AdminControl.queryNames('node=HaoNode01,type=ApplicationManager,process=server1,*')
