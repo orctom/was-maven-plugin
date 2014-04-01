@@ -73,6 +73,9 @@ public class WASDeployMojo extends AbstractWASMojo {
     }
 
     private void executeAntTasks(WebSphereModel model, PlexusConfiguration[] targets) {
+        if (null == targets || 0 == targets.length) {
+            return;
+        }
         for (PlexusConfiguration target : targets) {
             try {
                 AntTaskUtils.execute(model, target, project, projectHelper, pluginArtifacts, getLog());
