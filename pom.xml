@@ -139,6 +139,31 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals><goal>sign</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -146,11 +171,15 @@
             <groupId>com.ibm.ws</groupId>
             <artifactId>admin.client</artifactId>
             <version>8.5</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/admin.client-8.5.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.ibm.ws</groupId>
             <artifactId>orb</artifactId>
             <version>8.5</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/orb-8.5.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
