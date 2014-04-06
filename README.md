@@ -8,12 +8,12 @@ mvn was-maven-plugin:deploy
 ## Parameters
 | Name						| Type		| Description																								|
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
-| **wasHome**				| String	| WebSphere Application Server home. `Default: **${env.WAS_HOME}**`											|
-| **applicationName**		| String	| Application name displayed in admin console. `Default: **${project.build.finalName}**`					|
+| **wasHome**				| String	| WebSphere Application Server home. Default: `${env.WAS_HOME}`												|
+| **applicationName**		| String	| Application name displayed in admin console. Default: ${project.build.finalName}`							|
 | applicationNameSuffix		| String	| Suffix will be appended to applicationName, as `applicationName_applicationNameSuffix`					|
-| host						| String	| Remote WAS IP/domain URL. e.g. `localhost`, `10.95.197.181`, `devtrunk01.company.com`						|
-| port						| String	| Remote WAS port. `Default: 8879 (w/ cluster specified); 8880 (w/o cluster specified)`						|
-| connectorType 			| String	| `Default: **SOAP**` 																						|
+| host						| String	| Local/Remote WAS IP/domain URL. e.g. `localhost`, `10.95.197.181`, `devtrunk01.company.com`				|
+| port						| String	| Local/Remote WAS port. Default: `8879` (w/ cluster specified); `8880` (w/o cluster specified)				|
+| connectorType 			| String	| Default: `SOAP` 																							|
 | cluster					| String	| Target cluster name																						|
 | cell						| String	| Target cell name																							|
 | node						| String	| Target node name																							|
@@ -22,17 +22,17 @@ mvn was-maven-plugin:deploy
 | user						| String	| Account user name for WAS admin console																	|
 | password					| String	| Account password for WAS admin console																	|
 | contextRoot				| String	| Context Path for war																						|
-| **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, `Default: ${project.artifact.file}`				|
-| **failOnError**			| Boolean	| Whether failed the build when failed to deploy. ** NOT SUPPORTED YET**									|
+| **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
+| **failOnError**			| Boolean	| Whether failed the build when failed to deploy. **NOT SUPPORTED YET**										|
 | **verbose**				| Boolean	| Whether show more detailed info																			|
-| **mode**					| String	| Approach to do the deployment: **SCRIPT** (jython script), **ANT** (WebSphere ant tasks), or **JMX"		|
+| **mode**					| String	| Approach to do the deployment: `SCRIPT` (jython script), `ANT` (WebSphere ant tasks), or `JMX`			|
 | **trustStore**			| File		| Trust store location, required when `mode=JMX` and global security is enabled								|
 | **keyStore**				| File		| Key store location, required when `mode=JMX` and global security is enabled								|
 | **trustStorePassword**	| File		| Password for trust store																					|
 | **keyStorePassword**		| File		| Password for key store																					|
-| deploymentsPropertyFile	| File		| Property file to hold above parameters, except those **bolded". `Default: was-maven-plugin.properties`	|
 | **preSteps**				| XML		| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| XML		| Ant tasks that can be executed after the deployments														|
+| deploymentsPropertyFile	| File		| Property file to hold above parameters, except those **bolded**. Default: `was-maven-plugin.properties`	|
 
 ### Single Target Server
 ```xml
@@ -172,11 +172,11 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 	</dependencies>
 </plugin>
 ```
-**Supports both single target server and multi target servers**
-**All properties defined in properties section of pom or in was-maven-plugin.properties are available in pre-steps/post-steps ant tasks**
+* **pre-steps/post-steps can be used w/ both single target server and multi target servers**
+* **All properties defined in properties section of pom or in was-maven-plugin.properties are available in pre-steps/post-steps ant tasks**
 
 ### Continues Deployment w/ Jenkins
-We could move this plugin to a profile, and utilize https://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin to make this parameterized.
+We could move this plugin to a profile, and utilize [Extended Choice Parameter plugin](https://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin) to make this parameterized.
 
 ### **SCRIPT** approach w/ Global Security Turned on
 When Global Security is enabled on remote WAS, certificates of remote WAS need to be in local trust store. We could configure WAS to prompt to add them to local trust syore.
