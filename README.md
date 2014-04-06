@@ -32,7 +32,7 @@ mvn was-maven-plugin:deploy
 | **keyStorePassword**		| File		| Password for key store																					|
 | **preSteps**				| XML		| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| XML		| Ant tasks that can be executed after the deployments														|
-| deploymentsPropertyFile	| File		| Property file to hold above parameters, except those **bolded**. Default: `was-maven-plugin.properties`	|
+| deploymentsPropertyFile	| File		| For multi target, lold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`.|
 
 ### Single Target Server
 ```xml
@@ -177,8 +177,96 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 
 ### Continues Deployment w/ Jenkins
 We could move this plugin to a profile, and utilize [Extended Choice Parameter plugin](https://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin) to make this parameterized.
+```xml
+<profiles>
+	<profile>
+		<id>deploy</id>
+		<activation>
+			<property>
+				<name>deploy</name>
+				<value>true</value>
+			</property>
+		</activation>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>com.orctom.mojo</groupId>
+					<artifactId>was-maven-plugin</artifactId>
+					<version>1.0.1</version>
+					<executions>
+						<execution>
+							<id>deploy</id>
+							<phase>install</phase>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+							<configuration>
+								<wasHome>${env.WAS_HOME}</wasHome>
+								<verbose>true</verbose>
+								<preSteps>
+									<target name="unzip-Config-zip">
+										<echo message="Unzipping ${project.build.directory}/Config.zip --> WAS shared libs folder" />
+										<unzip dest="${WAS shared libs folder}/conf">
+											<fileset dir="${project.build.directory}/">
+												<include name="Config.zip" />
+											</fileset>
+										</unzip>
+									</target>
+									<target name="unzip-static-zip">
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+										<if>
+											<available file="${project.build.directory}/static.zip" />
+											<then>
+												<echo message="Unzipping ${project.build.directory}/static.zip --> apache sratic path" />
+												<unzip dest="${apache sratic path}" src="${project.build.directory}/static.zip" />
+											</then>
+										</if>
+									</target>
+									<target name="copy-config-to-remote">
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+										<if>
+											<isset property="some property name in pom or was-maven-plugin/properties" />
+											<then>
+												<echo message="Coping ${WAS shared libs folder}/conf to ${remote ip}:${WAS shared libs folder}/conf ..." />
+												<scp todir="wsadmin@${remote ip}:${WAS shared libs folder}/conf" keyfile="${user.home}/.ssh/id_rsa" trust="true" failonerror="false">
+													<fileset dir="${WAS shared libs folder}/conf" />
+												</scp>
+												<echo message="Copied ${meta.config.path}/conf" />
+											</then>
+											<else>
+												<echo message="Skipped, not needed." />
+											</else>
+										</if>
+									</target>
+								</preSteps>
+							</configuration>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>ant-contrib</groupId>
+							<artifactId>ant-contrib</artifactId>
+							<version>20020829</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.ant</groupId>
+							<artifactId>ant-jsch</artifactId>
+							<version>1.8.4</version>
+						</dependency>
+						<dependency>
+							<groupId>com.jcraft</groupId>
+							<artifactId>jsch</artifactId>
+							<version>0.1.49</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
+</profiles>
+```
 
-### **SCRIPT** approach w/ Global Security Turned on
+### W/ Global Security Turned on
 When Global Security is enabled on remote WAS, certificates of remote WAS need to be in local trust store. We could configure WAS to prompt to add them to local trust syore.
 Open ${WAS_HOME}/properties/ssl.client.props
 Change the value of com.ibm.ssl.enableSignerExchangePrompt to `gui` or `stdin` (when ssh, or on client linux w/o X installed)
