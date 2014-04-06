@@ -16,7 +16,7 @@ public interface IWebSphereService {
     void stopApplication();
 
     /**
-     * uninstall-if-exists - > install -> restart
+     * uninstall-if-exists =&gt; install =&gt; restart
      */
     void deploy();
 }
