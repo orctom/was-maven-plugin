@@ -12,7 +12,7 @@ mvn was-maven-plugin:deploy
 | **applicationName**		| String	| Application name displayed in admin console. Default: ${project.build.finalName}`							|
 | applicationNameSuffix		| String	| Suffix will be appended to applicationName, as `applicationName_applicationNameSuffix`					|
 | host						| String	| Local/Remote WAS IP/domain URL. e.g. `localhost`, `10.95.197.181`, `devtrunk01.company.com`				|
-| port						| String	| Local/Remote WAS port. Default: `8879` (w/ cluster specified); `8880` (w/o cluster specified)				|
+| port						| String	| Local/Remote WAS port. Default: `8879` (with cluster specified); `8880` (without cluster specified)		|
 | connectorType 			| String	| Default: `SOAP` 																							|
 | cluster					| String	| Target cluster name																						|
 | cell						| String	| Target cell name																							|
@@ -21,7 +21,7 @@ mvn was-maven-plugin:deploy
 | virtualHost				| String	| Target virtual host name																					|
 | user						| String	| Account user name for WAS admin console																	|
 | password					| String	| Account password for WAS admin console																	|
-| contextRoot				| String	| Context Path if it's a war																						|
+| contextRoot				| String	| Context Path if it's a war																				|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Whether failed the build when failed to deploy. **NOT SUPPORTED YET**										|
 | **verbose**				| Boolean	| Whether show more detailed info																			|
@@ -30,8 +30,8 @@ mvn was-maven-plugin:deploy
 | **keyStore**				| File		| Key store location, required when `mode=JMX` and global security is enabled								|
 | **trustStorePassword**	| File		| Password for trust store																					|
 | **keyStorePassword**		| File		| Password for key store																					|
-| **preSteps**				| XML		| Ant tasks that can be executed before the deployments														|
-| **postSteps**				| XML		| Ant tasks that can be executed after the deployments														|
+| **preSteps**				| Ant tasks	| Ant tasks that can be executed before the deployments														|
+| **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
 | deploymentsPropertyFile	| File		| For multi target, lold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`.|
 
 ### Single Target Server
@@ -172,11 +172,13 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 	</dependencies>
 </plugin>
 ```
-* **pre-steps/post-steps can be used w/ both single target server and multi target servers**
+* **pre-steps/post-steps can be used with both single target server and multi target servers**
 * **All properties defined in properties section of pom or in was-maven-plugin.properties are available in pre-steps/post-steps ant tasks**
 
-### Continues Deployment w/ Jenkins
+### Continues Deployment with Jenkins
 We could move this plugin to a profile, and utilize [Extended Choice Parameter plugin](https://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin) to make this parameterized.
+
+#### Sample pom.xml
 ```xml
 <profiles>
 	<profile>
@@ -265,8 +267,15 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 	</profile>
 </profiles>
 ```
+#### Sample Jenkins Job Configuration
+##### Configure
+![Jenkins Job configure](https://raw.github.com/orctom/was-maven-plugin/master/screenshots/configure.png "Jenkins Job Configure")
+##### Trigger
+![Jenkins Job Trigger](https://raw.github.com/orctom/was-maven-plugin/master/screenshots/trigger.png "Jenkins Job Trigger")
 
-### W/ Global Security Turned on
-When Global Security is enabled on remote WAS, certificates of remote WAS need to be in local trust store. We could configure WAS to prompt to add them to local trust syore.
-Open ${WAS_HOME}/properties/ssl.client.props
-Change the value of com.ibm.ssl.enableSignerExchangePrompt to `gui` or `stdin` (when ssh, or on client linux w/o X installed)
+### With Global Security Turned on
+When Global Security is enabled on remote WAS, certificates of remote WAS need to be added to local trust store. We could configure WAS to prompt to add them to local trust store.
+1. Open ${WAS_HOME}/properties/ssl.client.props
+2. Change the value of com.ibm.ssl.enableSignerExchangePrompt to `gui` or `stdin` (when ssh, or on client linux without X installed)
+⋅⋅* `gui`: will prompt a Java based window, this requires a X window installed.
+⋅⋅* `stdin`: when using ssh, or on client linux without X window installed.
