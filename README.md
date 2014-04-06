@@ -275,7 +275,7 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 
 ### With Global Security Turned on
 When Global Security is enabled on remote WAS, certificates of remote WAS need to be added to local trust store. We could configure WAS to prompt to add them to local trust store.
-1. Open ${WAS_HOME}/properties/ssl.client.props
-2. Change the value of com.ibm.ssl.enableSignerExchangePrompt to `gui` or `stdin` (when ssh, or on client linux without X installed)
-⋅⋅* `gui`: will prompt a Java based window, this requires a X window installed.
-⋅⋅* `stdin`: when using ssh, or on client linux without X window installed.
+ 1. Open ${WAS_HOME}/properties/ssl.client.props 
+ 2. Change the value of com.ibm.ssl.enableSignerExchangePrompt to `gui` or `stdin` (when ssh, or on client linux without X installed) 
+ ⋅⋅* `gui`: will prompt a Java based window, this requires a X window installed. 
+ ⋅⋅* `stdin`: when using ssh, or on client linux without X window installed. 
