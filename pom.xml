@@ -8,7 +8,12 @@
 
     <name>was-maven-plugin</name>
     <description>Maven plugin to deploy war/ear to WebSphere</description>
-    <url>http://orctom.github.io/was-maven-plugin/</url>
+    <url>https://github.com/orctom/was-maven-plugin/</url>
+
+    <issueManagement>
+        <url>https://github.com/orctom/was-maven-plugin/issues</url>
+        <system>GitHub</system>
+    </issueManagement>
 
     <licenses>
         <license>
