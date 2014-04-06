@@ -1,6 +1,6 @@
 # was-maven-plugin [![Build Status](https://api.travis-ci.org/orctom/was-maven-plugin.png)](https://travis-ci.org/orctom/was-maven-plugin)
 
-Maven plugin to deploy artifacts to local/remote WebSphere Application Server (WAS) 8.5
+Maven plugin to deploy single artifact to one or multi local/remote WebSphere Application Server (WAS) 8.5
 
 ## Usage
 mvn was-maven-plugin:deploy
@@ -21,7 +21,7 @@ mvn was-maven-plugin:deploy
 | virtualHost				| String	| Target virtual host name																					|
 | user						| String	| Account user name for WAS admin console																	|
 | password					| String	| Account password for WAS admin console																	|
-| contextRoot				| String	| Context Path for war																						|
+| contextRoot				| String	| Context Path if it's a war																						|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Whether failed the build when failed to deploy. **NOT SUPPORTED YET**										|
 | **verbose**				| Boolean	| Whether show more detailed info																			|
