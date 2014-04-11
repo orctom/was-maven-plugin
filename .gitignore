@@ -9,3 +9,7 @@
 /ssl
 /scripts
 /src/it/multi-targets/target
+/pom.xml.tag
+/pom.xml.next
+/release.properties
+/pom.xml.releaseBackup
