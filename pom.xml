@@ -37,6 +37,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.version>3.0.4</maven.version>
+        <release.args></release.args>
     </properties>
 
     <build>
@@ -93,7 +94,7 @@
                 <configuration>
                     <mavenExecutorId>forked-path</mavenExecutorId>
                     <useReleaseProfile>false</useReleaseProfile>
-                    <arguments>-Prelease</arguments>
+                    <arguments>-Prelease ${release.args}</arguments>
                     <tagNameFormat>@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
