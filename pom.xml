@@ -3,7 +3,7 @@
     <groupId>com.orctom.mojo</groupId>
     <artifactId>was-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>was-maven-plugin</name>
     <description>Maven plugin to deploy war/ear to WebSphere</description>
@@ -25,8 +25,7 @@
     <scm>
         <url>https://github.com/orctom/was-maven-plugin/</url>
         <connection>scm:git:https://github.com/orctom/was-maven-plugin/</connection>
-      <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <developers>
         <developer>
@@ -38,7 +37,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.version>3.0.4</maven.version>
-        <release.args />
+        <release.args></release.args>
     </properties>
 
     <build>
