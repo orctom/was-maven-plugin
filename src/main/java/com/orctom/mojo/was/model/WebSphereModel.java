@@ -30,16 +30,6 @@ public class WebSphereModel {
 
     private Meta meta;
 
-    /**
-     * Only applicable in "script" mode, set this to have packages and script copied to remote box and execute
-     */
-    private String remoteWorkingDir;
-
-    private String trustStore;
-    private String keyStore;
-    private String trustStorePassword;
-    private String keyStorePassword;
-
     private Properties properties;
 
     public WebSphereModel() {
@@ -247,51 +237,6 @@ public class WebSphereModel {
         return this;
     }
 
-    public String getRemoteWorkingDir() {
-        return remoteWorkingDir;
-    }
-
-    public WebSphereModel setRemoteWorkingDir(String remoteWorkingDir) {
-        this.remoteWorkingDir = remoteWorkingDir;
-        return this;
-    }
-
-    public String getTrustStore() {
-        return trustStore;
-    }
-
-    public WebSphereModel setTrustStore(String trustStore) {
-        this.trustStore = trustStore;
-        return this;
-    }
-
-    public String getKeyStore() {
-        return keyStore;
-    }
-
-    public WebSphereModel setKeyStore(String keyStore) {
-        this.keyStore = keyStore;
-        return this;
-    }
-
-    public String getTrustStorePassword() {
-        return trustStorePassword;
-    }
-
-    public WebSphereModel setTrustStorePassword(String trustStorePassword) {
-        this.trustStorePassword = trustStorePassword;
-        return this;
-    }
-
-    public String getKeyStorePassword() {
-        return keyStorePassword;
-    }
-
-    public WebSphereModel setKeyStorePassword(String keyStorePassword) {
-        this.keyStorePassword = keyStorePassword;
-        return this;
-    }
-
     public Meta getMeta() {
         return meta;
     }
@@ -326,7 +271,6 @@ public class WebSphereModel {
                 ", password='" + password + '\'' +
                 ", contextRoot='" + contextRoot + '\'' +
                 ", options='" + options + '\'' +
-                ", remoteWorkingDir='" + remoteWorkingDir + '\'' +
                 ", profileName='" + profileName + '\'' +
                 ", packageFile='" + packageFile + '\'' +
                 ", failOnError=" + failOnError +

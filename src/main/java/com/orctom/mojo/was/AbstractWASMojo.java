@@ -86,9 +86,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter(defaultValue = "AppSrv01")
     protected String profileName;
 
-    @Parameter
-    protected String remoteWorkingDir;
-
     @Parameter(defaultValue = "${project.artifact.file}")
     protected File packageFile;
 
@@ -97,18 +94,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     @Parameter
     protected boolean verbose;
-
-    @Parameter
-    protected String trustStore;
-
-    @Parameter
-    protected String keyStore;
-
-    @Parameter
-    protected String trustStorePassword;
-
-    @Parameter
-    protected String keyStorePassword;
 
     /**
      * The XML for the Ant target.
@@ -171,11 +156,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setPassword(password)
                 .setProfileName(profileName)
                 .setPackageFile(packageFile.getAbsolutePath())
-                .setRemoteWorkingDir(remoteWorkingDir)
-                .setTrustStore(trustStore)
-                .setTrustStorePassword(trustStorePassword)
-                .setKeyStore(keyStore)
-                .setKeyStorePassword(keyStorePassword)
                 .setFailOnError(failOnError)
                 .setVerbose(verbose)
                 .setMeta(meta);
@@ -217,11 +197,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setPassword(getPropertyValue("password", props))
                     .setProfileName(profileName)
                     .setPackageFile(packageFile.getAbsolutePath())
-                    .setRemoteWorkingDir(remoteWorkingDir)
-                    .setTrustStore(trustStore)
-                    .setTrustStorePassword(trustStorePassword)
-                    .setKeyStore(keyStore)
-                    .setKeyStorePassword(keyStorePassword)
                     .setFailOnError(failOnError)
                     .setVerbose(verbose)
                     .setMeta(meta);
