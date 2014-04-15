@@ -2,7 +2,6 @@ package com.orctom.mojo.was.service;
 
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.service.impl.WebSphereServiceAntImpl;
-import com.orctom.mojo.was.service.impl.WebSphereServiceJMXImpl;
 import com.orctom.mojo.was.service.impl.WebSphereServiceScriptImpl;
 
 /**
@@ -14,7 +13,7 @@ public class WebSphereServiceFactory {
     }
 
     public enum Service {
-        JMX, ANT, SCRIPT;
+        ANT, SCRIPT;
     }
 
     public static IWebSphereService getService(String mode, WebSphereModel model, String workingDir) {
@@ -24,8 +23,6 @@ public class WebSphereServiceFactory {
                 return new WebSphereServiceScriptImpl(model, workingDir);
             case ANT:
                 return new WebSphereServiceAntImpl(model, workingDir);
-            case JMX:
-                return new WebSphereServiceJMXImpl(model);
             default:
                 return new WebSphereServiceScriptImpl(model, workingDir);
         }
