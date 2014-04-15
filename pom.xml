@@ -24,10 +24,8 @@
 
     <scm>
         <url>https://github.com/orctom/was-maven-plugin/</url>
-        <connection>scm:git:https://github.com/orctom/was-maven-plugin/</connection>
-        <developerConnection>scm:git:https://github.com/orctom/was-maven-plugin/</developerConnection>
-        <!--<connection>scm:git:ssh://git@github.com:orctom/was-maven-plugin.git</connection>-->
-        <!--<developerConnection>scm:git:ssh://git@github.com:orctom/was-maven-plugin.git</developerConnection>-->
+        <connection>scm:git:ssh://git@github.com:orctom/was-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:orctom/was-maven-plugin.git</developerConnection>
     </scm>
 
     <developers>
