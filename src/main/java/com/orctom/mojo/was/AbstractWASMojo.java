@@ -38,34 +38,40 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.basedir}/was-maven-plugin.properties")
     protected File deploymentsPropertyFile;
 
-    @Parameter
+    @Parameter(required = true)
     protected String wasHome;
 
     @Parameter(defaultValue = "${project.build.finalName}")
     protected String applicationName;
 
-    @Parameter(defaultValue = "localhost")
+    @Parameter(required = true, defaultValue = "localhost")
     protected String host;
 
-    @Parameter(defaultValue = "8879")
+    @Parameter(required = true, defaultValue = "8879")
     protected String port;
 
-    @Parameter(defaultValue = "SOAP")
+    @Parameter(required = true, defaultValue = "SOAP")
     protected String connectorType;
 
+    /**
+     * Required if target server is a cluster
+     */
     @Parameter
     protected String cluster;
 
     @Parameter
     protected String cell;
 
+    /**
+     * Required if target server is NOT cluster
+     */
     @Parameter
     protected String node;
 
-    @Parameter
+    @Parameter(required = true)
     protected String server;
 
-    @Parameter
+    @Parameter(required = true)
     protected String virtualHost;
 
     @Parameter
@@ -74,7 +80,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String password;
 
-    @Parameter
+    @Parameter(required = true)
     protected String contextRoot;
 
     @Parameter(defaultValue = "AppSrv01")
@@ -86,7 +92,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.artifact.file}")
     protected File packageFile;
 
-    @Parameter(defaultValue = "true")
+    @Parameter(defaultValue = "false")
     protected boolean failOnError;
 
     @Parameter

@@ -17,17 +17,28 @@ packageFile = r"{{packageFile}}"
 class WebSphere:
     def listApplications(self):
         print "[LIST APPLICATIONS]", host
+        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
         print AdminApp.list()
 
     def restartServer(self):
         print '-'*60
         print "[RESTARTING SERVER]", host
+        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
         print '-'*60
         if "" != cluster:
-            print AdminTask.updateAppOnCluster('[-ApplicationNames ' + applicationName + ' -timeout 600]')
+            try:
+                appManager = AdminControl.queryNames('name=' + cluster + ',type=Cluster,process=dmgr,*')
+                print AdminControl.invoke(appManager, 'rippleStart')
+            except:
+                print "Failed to restart cluster:"
+                print '-'*10
+                traceback.print_exc(file=sys.stdout)
+                print '-'*10
+                print "try to startApplication directly..."
+                self.startApplication()
         else:
             try:
-                appManager = AdminControl.queryNames('node=HaoNode01,type=ApplicationManager,process=server1,*')
+                appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
                 print AdminControl.invoke(appManager, 'restart')
             except:
                 print "Failed to restart server:"
@@ -40,30 +51,45 @@ class WebSphere:
     def startApplication(self):
         print '-'*60
         print "[STARTING APPLICATION]", host, applicationName
+        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
         print '-'*60
-        if "" == node:
-            appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
-        else:
-            appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
-        print AdminControl.invoke(appManager, 'startApplication', applicationName)
-        #AdminApplication.startApplicationOnCluster(applicationName, cluster)
+        try:
+            if "" == node:
+                appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
+            else:
+                appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
+            print AdminControl.invoke(appManager, 'startApplication', applicationName)
+            #AdminApplication.startApplicationOnCluster(applicationName, cluster)
+        except:
+            print "Failed to start application:"
+            print '-'*10
+            traceback.print_exc(file=sys.stdout)
+            print '-'*10
 
     def stopApplication(self):
         print '-'*60
         print "[STOPPING APPLICATION]", host, applicationName
+        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
         print '-'*60
-        if "" == node:
-            appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
-        else:
-            appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
-        print AdminControl.invoke(appManager, 'stopApplication', applicationName)
-        #AdminApplication.stopApplicationOnCluster(applicationName, cluster)
+        try:
+            if "" == node:
+                appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
+            else:
+                appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
+            print AdminControl.invoke(appManager, 'stopApplication', applicationName)
+            #AdminApplication.stopApplicationOnCluster(applicationName, cluster)
+        except:
+            print "Failed to stop application:"
+            print '-'*10
+            traceback.print_exc(file=sys.stdout)
+            print '-'*10
 
     def installApplication(self):
+        print '-'*60
+        print "[INSTALLING APPLICATION]", host, applicationName
+        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print '-'*60
         try:
-            print '-'*60
-            print "[INSTALLING APPLICATION]", host, applicationName
-            print '-'*60
             if "" != cluster:
                 serverMapping = 'WebSphere:cluster=' + cluster
                 options = ['-deployws', '-distributeApp', '-appname', applicationName, '-cluster', cluster, '-server', server, '-MapModulesToServers', [['.*','.*', serverMapping]], '-MapWebModToVH', [['.*','.*', virtualHost]]]
@@ -101,11 +127,18 @@ class WebSphere:
     def uninstallApplication(self):
         print '-'*60
         print "[UNINSTALLING APPLICATION]", host, applicationName
+        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
         print '-'*60
-        print AdminApp.uninstall(applicationName)
-        AdminConfig.save()
-        if "" != cluster:
-            AdminNodeManagement.syncActiveNodes()
+        try:
+            print AdminApp.uninstall(applicationName)
+            AdminConfig.save()
+            if "" != cluster:
+                AdminNodeManagement.syncActiveNodes()
+        except:
+            print "Failed to uninstall application: ", applicationName
+            print '-'*10
+            traceback.print_exc(file=sys.stdout)
+            print '-'*10
 
     def isApplicationInstalled(self):
         return AdminApplication.checkIfAppExists(applicationName)
@@ -116,6 +149,11 @@ class WebSphere:
 
         if "true" == self.installApplication():
             self.restartServer()
+
+        print '-'*60
+        print "[FINISHED]", host, applicationName
+        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print '-'*60
 
 
 #-----------------------------------------------------------------
