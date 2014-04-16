@@ -44,13 +44,13 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.finalName}")
     protected String applicationName;
 
-    @Parameter(required = true, defaultValue = "localhost")
+    @Parameter(defaultValue = "localhost")
     protected String host;
 
-    @Parameter(required = true, defaultValue = "8879")
+    @Parameter(defaultValue = "8879")
     protected String port;
 
-    @Parameter(required = true, defaultValue = "SOAP")
+    @Parameter(defaultValue = "SOAP")
     protected String connectorType;
 
     /**
@@ -68,10 +68,10 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String node;
 
-    @Parameter(required = true)
+    @Parameter
     protected String server;
 
-    @Parameter(required = true)
+    @Parameter
     protected String virtualHost;
 
     @Parameter
@@ -80,7 +80,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String password;
 
-    @Parameter(required = true)
+    @Parameter
     protected String contextRoot;
 
     @Parameter(defaultValue = "AppSrv01")
