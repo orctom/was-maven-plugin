@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 
 	<name>was-maven-plugin</name>
 	<description>Maven plugin to deploy war/ear to WebSphere</description>
@@ -27,7 +26,7 @@
 		<url>https://github.com/orctom/was-maven-plugin/</url>
 		<connection>scm:git:git@github.com:orctom/was-maven-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:orctom/was-maven-plugin.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>1.0.2</tag>
 	</scm>
 
 	<developers>
@@ -40,7 +39,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.version>3.0.4</maven.version>
-		<release.args/>
+		<release.args />
 	</properties>
 
 	<build>
