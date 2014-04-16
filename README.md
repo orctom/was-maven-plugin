@@ -35,7 +35,7 @@ mvn was-maven-plugin:deploy
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -88,7 +88,7 @@ virtualHost=devtrunk3_host
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -118,7 +118,7 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -190,7 +190,7 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 				<plugin>
 					<groupId>com.orctom.mojo</groupId>
 					<artifactId>was-maven-plugin</artifactId>
-					<version>1.0.1</version>
+					<version>1.0.2</version>
 					<executions>
 						<execution>
 							<id>deploy</id>
@@ -272,7 +272,7 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 ### With Global Security Turned on
 When Global Security is enabled on remote WAS, certificates of remote WAS need to be added to local trust store. We could configure WAS to prompt to add them to local trust store.
  1. Open ${WAS_HOME}/properties/ssl.client.props 
- 2. Change the value of com.ibm.ssl.enableSignerExchangePrompt to `gui` or `stdin` (when ssh, or on client linux without X installed) 
+ 2. Change the value of `com.ibm.ssl.enableSignerExchangePrompt` to `gui` or `stdin`
 
 * `gui`: will prompt a Java based window, this requires a X window installed. 
 * `stdin`: when using ssh, or on client linux without X window installed. 
