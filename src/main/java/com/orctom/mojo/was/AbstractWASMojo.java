@@ -8,6 +8,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.tools.ant.taskdefs.PathConvert;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -118,17 +119,24 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         if (StringUtils.isNotBlank(deployTargets)) {
             if (null != deploymentsPropertyFile && deploymentsPropertyFile.exists()) {
                 Map<String, Properties> propertiesMap = PropertiesUtils.loadSectionedProperties(deploymentsPropertyFile, DEFAULT_SECTION, project.getProperties());
-                if (propertiesMap.size() > 1) {
+                if (propertiesMap.size() >= 1) {
                     getLog().info("Multi targets: " + deployTargets);
                     return getWebSphereModels(deployTargets, propertiesMap);
                 }
+            }
+
+            if (null == deploymentsPropertyFile) {
+                getLog().info("Property config file: " + deploymentsPropertyFile + " not configured.");
+            }
+            if (!deploymentsPropertyFile.exists()) {
+                getLog().info("Property config file: " + deploymentsPropertyFile + " doesn't exist.");
             }
             getLog().info("Single target not properly configured.");
             return null;
         } else {
             WebSphereModel model = getWebSphereModel();
             if (!model.isValid()) {
-                getLog().info("Single target not properly configured.");
+                getLog().info("Single target not properly configured. Missing 'cell' or 'cluster' or 'server' or 'node'");
                 return null;
             }
             getLog().info("Single target: " + model.getHost());

@@ -61,9 +61,7 @@ mvn was-maven-plugin:deploy
 
 ### Multi Target Servers
 #### was-maven-plugin.properties
-**Please put `was-maven-plugin.properties` to the following folder, to make sure it's available as `${project.basedir}/was-maven-plugin.properties`**
- * EAR: ${basedir}/src/main/application
- * WAR: ${basedir}/src/main/resources
+**Please put `was-maven-plugin.properties` to the same folder as `pom.xml`, to make it available as `${project.basedir}/was-maven-plugin.properties`**
 
 ```properties
 [DEFAULT]
