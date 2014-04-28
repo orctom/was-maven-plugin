@@ -30,8 +30,6 @@ public class WebSphereModel {
     private boolean failOnError;
     private boolean verbose;
 
-    private Meta meta;
-
     private Properties properties;
 
     public WebSphereModel() {
@@ -259,15 +257,6 @@ public class WebSphereModel {
         return this;
     }
 
-    public Meta getMeta() {
-        return meta;
-    }
-
-    public WebSphereModel setMeta(Meta meta) {
-        this.meta = meta;
-        return this;
-    }
-
     public Properties getProperties() {
         return properties;
     }
@@ -297,7 +286,6 @@ public class WebSphereModel {
                 ", packageFile='" + packageFile + '\'' +
                 ", failOnError=" + failOnError +
                 ", verbose=" + verbose +
-                ", meta=" + meta +
                 '}';
     }
 

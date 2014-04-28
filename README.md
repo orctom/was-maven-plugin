@@ -5,6 +5,8 @@ Maven plugin to deploy single artifact to one or multi local/remote WebSphere Ap
 ## Usage
 mvn was-maven-plugin:deploy
 
+**NOTE: 1.0.1 and 1.0.2 is not working, please don't use them!**
+
 ## Parameters
 | Name						| Type		| Description																								|
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
@@ -35,7 +37,7 @@ mvn was-maven-plugin:deploy
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -58,7 +60,8 @@ mvn was-maven-plugin:deploy
 ```
 
 ### Multi Target Servers
-#### was-maven-plugin.properties (same folder with pom.xml)
+#### was-maven-plugin.properties
+**put it to /src/main/resources/ to make sure it's available as `${project.basedir}/was-maven-plugin.properties`**
 ```properties
 [DEFAULT]
 virtualHost=default_host
@@ -88,7 +91,7 @@ virtualHost=devtrunk3_host
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -118,7 +121,7 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -190,7 +193,7 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 				<plugin>
 					<groupId>com.orctom.mojo</groupId>
 					<artifactId>was-maven-plugin</artifactId>
-					<version>1.0.2</version>
+					<version>1.0.3</version>
 					<executions>
 						<execution>
 							<id>deploy</id>
