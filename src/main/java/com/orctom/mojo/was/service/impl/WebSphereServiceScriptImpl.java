@@ -101,7 +101,11 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
             commandLine.createArg().setLine("-tracefile " + buildScript + ".trace");
             commandLine.createArg().setLine("-appendtrace true");
             commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
-            commandLine.createArg().setLine("-o " + task);
+            if (StringUtils.isNotEmpty(model.getScript())) {
+                commandLine.createArg().setLine(model.getScriptArgs());
+            } else {
+                commandLine.createArg().setLine("-o " + task);
+            }
 
             StringStreamConsumer outConsumer = new StringStreamConsumer();
             StringStreamConsumer errConsumer = new StringStreamConsumer();
