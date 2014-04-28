@@ -93,6 +93,12 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected boolean failOnError;
 
     @Parameter
+    protected String script;
+
+    @Parameter
+    protected String scriptArgs;
+
+    @Parameter
     protected boolean verbose;
 
     /**

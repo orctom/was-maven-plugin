@@ -51,25 +51,33 @@ public class CommandUtils {
 
     public static File getBuildScript(String task, String template, WebSphereModel model, String workingDir, String ext)
             throws IOException {
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(template);
+        if (StringUtils.isNotEmpty(model.getScript())) {
+            if (model.getScript().startsWith("/")) {
+                return new File(model.getScript());
+            } else {
+                return new File(workingDir, model.getScript());
+            }
+        } else {
+            MustacheFactory mf = new DefaultMustacheFactory();
+            Mustache mustache = mf.compile(template);
 
-        StringBuilder buildFile = new StringBuilder(50);
-        buildFile.append(task);
-        if (StringUtils.isNotBlank(model.getHost())) {
-            buildFile.append("-").append(model.getHost());
+            StringBuilder buildFile = new StringBuilder(50);
+            buildFile.append(task);
+            if (StringUtils.isNotBlank(model.getHost())) {
+                buildFile.append("-").append(model.getHost());
+            }
+            if (StringUtils.isNotBlank(model.getApplicationName())) {
+                buildFile.append("-").append(model.getApplicationName());
+            }
+            buildFile.append("-").append(getTimestampString()).append(".").append(ext);
+
+            File buildScriptFile = new File(workingDir, buildFile.toString());
+            buildScriptFile.getParentFile().mkdirs();
+            Writer writer = new FileWriter(buildScriptFile);
+            mustache.execute(writer, model).flush();
+
+            return buildScriptFile;
         }
-        if (StringUtils.isNotBlank(model.getApplicationName())) {
-            buildFile.append("-").append(model.getApplicationName());
-        }
-        buildFile.append("-").append(getTimestampString()).append(".").append(ext);
-
-        File buildScriptFile = new File(workingDir, buildFile.toString());
-        buildScriptFile.getParentFile().mkdirs();
-        Writer writer = new FileWriter(buildScriptFile);
-        mustache.execute(writer, model).flush();
-
-        return buildScriptFile;
     }
 
     public static void executeCommand(Commandline commandline, StreamConsumer outConsumer, StreamConsumer errorConsumer,
