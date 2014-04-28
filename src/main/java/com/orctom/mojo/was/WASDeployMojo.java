@@ -32,7 +32,7 @@ public class WASDeployMojo extends AbstractWASMojo {
         getLog().info(Constants.PLUGIN_ID + " - deploy");
         Set<WebSphereModel> models = getWebSphereModels();
 
-        if (models.isEmpty()) {
+        if (null == models || models.isEmpty()) {
             getLog().info("[SKIPPED DEPLOYMENT] empty target server configured, please check your configuration");
             return;
         }
