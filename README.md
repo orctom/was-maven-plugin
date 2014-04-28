@@ -175,6 +175,31 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 * **pre-steps/post-steps can be used with both single target server and multi target servers**
 * **All properties defined in properties section of pom or in was-maven-plugin.properties are available in pre-steps/post-steps ant tasks**
 
+### Customized Jython Script File
+If you'd like to go with a customized jython script file:
+```xml
+<plugin>
+	<groupId>com.orctom.mojo</groupId>
+	<artifactId>was-maven-plugin</artifactId>
+	<version>1.0.3</version>
+	<executions>
+		<execution>
+			<id>deploy</id>
+			<phase>install</phase>
+			<goals>
+				<goal>deploy</goal>
+			</goals>
+			<configuration>
+				<wasHome>${env.WAS_HOME}</wasHome>
+				<script>your-jython-script.py<script><!-- "/xxx" for absolute path; "xxx" for ${basedir}/xxx -->
+				<scriptArgs>optional-args</scriptArgs>
+                <verbose>true</verbose>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+```
+
 ### Continues Deployment with Jenkins
 We could move this plugin to a profile, and utilize [Extended Choice Parameter plugin](https://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin) to make this parameterized.
 

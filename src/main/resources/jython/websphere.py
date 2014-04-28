@@ -17,13 +17,13 @@ packageFile = r"{{packageFile}}"
 class WebSphere:
     def listApplications(self):
         print "[LIST APPLICATIONS]", host
-        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print AdminApp.list()
 
     def restartServer(self):
         print '-'*60
         print "[RESTARTING SERVER]", host
-        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
         if "" != cluster:
             try:
@@ -51,7 +51,7 @@ class WebSphere:
     def startApplication(self):
         print '-'*60
         print "[STARTING APPLICATION]", host, applicationName
-        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
         try:
             if "" == node:
@@ -69,7 +69,7 @@ class WebSphere:
     def stopApplication(self):
         print '-'*60
         print "[STOPPING APPLICATION]", host, applicationName
-        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
         try:
             if "" == node:
@@ -87,7 +87,7 @@ class WebSphere:
     def installApplication(self):
         print '-'*60
         print "[INSTALLING APPLICATION]", host, applicationName
-        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
         try:
             if "" != cluster:
@@ -127,7 +127,7 @@ class WebSphere:
     def uninstallApplication(self):
         print '-'*60
         print "[UNINSTALLING APPLICATION]", host, applicationName
-        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
         try:
             print AdminApp.uninstall(applicationName)
@@ -152,7 +152,7 @@ class WebSphere:
 
         print '-'*60
         print "[FINISHED]", host, applicationName
-        print time.strftime("%Y/%b/%d %H:%M:%S %Z")
+        print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
 
 
