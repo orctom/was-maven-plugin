@@ -108,8 +108,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected PlexusConfiguration[] postSteps;
 
     protected Set<WebSphereModel> getWebSphereModels() {
-
-
         String deployTargets = System.getProperty(Constants.KEY_DEPLOY_TARGETS);
 
         if (StringUtils.isNotBlank(deployTargets)) {
