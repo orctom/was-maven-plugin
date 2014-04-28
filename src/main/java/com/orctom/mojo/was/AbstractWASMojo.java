@@ -1,6 +1,5 @@
 package com.orctom.mojo.was;
 
-import com.orctom.mojo.was.model.Meta;
 import com.orctom.mojo.was.model.WebSphereModel;
 import com.orctom.mojo.was.utils.PropertiesUtils;
 import org.apache.maven.artifact.Artifact;
@@ -140,10 +139,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     }
 
     protected WebSphereModel getWebSphereModel() {
-        Meta meta = new Meta()
-                .setBrand(project.getProperties().getProperty("meta.brand"))
-                .setLocale(project.getProperties().getProperty("meta.locale"))
-                .setCdap(project.getProperties().getProperty("meta.cdap"));
         return new WebSphereModel()
                 .setWasHome(wasHome)
                 .setApplicationName(applicationName)
@@ -161,8 +156,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setProfileName(profileName)
                 .setPackageFile(packageFile.getAbsolutePath())
                 .setFailOnError(failOnError)
-                .setVerbose(verbose)
-                .setMeta(meta);
+                .setVerbose(verbose);
     }
 
     protected Set<WebSphereModel> getWebSphereModels(String deployTargetStr, Map<String, Properties> propertiesMap) {
@@ -176,10 +170,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 getLog().info("[SKIPPED] " + deployTarget + ", not configured in property file.");
                 continue;
             }
-            Meta meta = new Meta()
-                    .setBrand(getPropertyValue("meta.brand", props))
-                    .setLocale(getPropertyValue("meta.locale", props))
-                    .setCdap(getPropertyValue("meta.cdap", props));
             String appName = applicationName;
             String appNameSuffix = getPropertyValue("applicationNameSuffix", props);
             if (StringUtils.isNotEmpty(appNameSuffix)) {
@@ -202,8 +192,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setProfileName(profileName)
                     .setPackageFile(packageFile.getAbsolutePath())
                     .setFailOnError(failOnError)
-                    .setVerbose(verbose)
-                    .setMeta(meta);
+                    .setVerbose(verbose);
             model.setProperties(props);
             if (model.isValid()) {
                 models.add(model);
