@@ -61,7 +61,10 @@ mvn was-maven-plugin:deploy
 
 ### Multi Target Servers
 #### was-maven-plugin.properties
-**put it to /src/main/resources/ to make sure it's available as `${project.basedir}/was-maven-plugin.properties`**
+**Please put `was-maven-plugin.properties` to the following folder, to make sure it's available as `${project.basedir}/was-maven-plugin.properties`**
+ * EAR: ${basedir}/src/main/application
+ * WAR: ${basedir}/src/main/resources
+
 ```properties
 [DEFAULT]
 virtualHost=default_host
