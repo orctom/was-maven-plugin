@@ -30,7 +30,7 @@ mvn was-maven-plugin:deploy
 | **mode**					| String	| Approach to do the deployment: `SCRIPT` (jython script), `ANT` (WebSphere ant tasks). Default: `SCRIPT`	|
 | **preSteps**				| Ant tasks	| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
-| deploymentsPropertyFile	| File		| For multi target, lold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`.|
+| deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`.|
 
 ### Single Target Server
 ```xml
