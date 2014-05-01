@@ -194,7 +194,7 @@ public class AntTaskUtils {
             return new Path(antProject);
         }
 
-        List<String> list = new ArrayList<>(artifacts.size());
+        List<String> list = new ArrayList<String>(artifacts.size());
         for (Artifact a : artifacts) {
             File file = a.getFile();
             if (file == null) {

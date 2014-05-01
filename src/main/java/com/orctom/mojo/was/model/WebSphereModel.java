@@ -27,6 +27,7 @@ public class WebSphereModel {
     private String packageFile;
     private String script;
     private String scriptArgs;
+    private String restartMode;
     private boolean failOnError;
     private boolean verbose;
 
@@ -42,7 +43,7 @@ public class WebSphereModel {
     public WebSphereModel(String applicationNameSuffix, String host, String port, String connectorType, String cluster,
                           String cell, String node, String server, String virtualHost, String user, String password,
                           String contextRoot, String options, String profileName, String packageFile,
-                          String script, String scriptArgs, boolean failOnError, boolean verbose) {
+                          String script, String scriptArgs, String restartMode, boolean failOnError, boolean verbose) {
         this.applicationName = applicationName;
         this.host = host;
         this.port = port;
@@ -60,6 +61,7 @@ public class WebSphereModel {
         this.packageFile = packageFile;
         this.script = script;
         this.scriptArgs = scriptArgs;
+        this.restartMode = restartMode;
         this.failOnError = failOnError;
         this.verbose = verbose;
     }
@@ -239,6 +241,15 @@ public class WebSphereModel {
         return this;
     }
 
+    public String getRestartMode() {
+        return restartMode;
+    }
+
+    public WebSphereModel setRestartMode(String restartMode) {
+        this.restartMode = restartMode;
+        return this;
+    }
+
     public boolean isFailOnError() {
         return failOnError;
     }
@@ -269,7 +280,7 @@ public class WebSphereModel {
     public String toString() {
         return "WebSphereModel{" +
                 "wasHome='" + wasHome + '\'' +
-                ", applicationName='" + this.getApplicationName() + '\'' +
+                ", applicationName='" + applicationName + '\'' +
                 ", host='" + host + '\'' +
                 ", port='" + port + '\'' +
                 ", connectorType='" + connectorType + '\'' +
@@ -284,8 +295,12 @@ public class WebSphereModel {
                 ", options='" + options + '\'' +
                 ", profileName='" + profileName + '\'' +
                 ", packageFile='" + packageFile + '\'' +
+                ", script='" + script + '\'' +
+                ", scriptArgs='" + scriptArgs + '\'' +
+                ", restartMode='" + restartMode + '\'' +
                 ", failOnError=" + failOnError +
                 ", verbose=" + verbose +
+                ", properties=" + properties +
                 '}';
     }
 
