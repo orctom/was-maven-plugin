@@ -1,7 +1,7 @@
 package com.orctom.mojo.was;
 
 import com.orctom.mojo.was.model.WebSphereModel;
-import com.orctom.mojo.was.service.WebSphereServiceFactory;
+import com.orctom.mojo.was.service.impl.WebSphereServiceScriptImpl;
 import com.orctom.mojo.was.utils.AntTaskUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -67,11 +67,12 @@ public class WASDeployMojo extends AbstractWASMojo {
         getLog().info("============================================================");
         getLog().info("[DEPLOY] " + model.getHost() + " " + model.getApplicationName());
         getLog().info("============================================================");
+
+        getLog().info("====================    pre-steps    =======================");
         executeAntTasks(model, super.preSteps);
-
         getLog().info("======================    deploy    ========================");
-        WebSphereServiceFactory.getService(mode, model, project.getBuild().getDirectory()).deploy();
-
+        new WebSphereServiceScriptImpl(model, project.getBuild().getDirectory()).deploy();
+        getLog().info("====================    post-steps    ======================");
         executeAntTasks(model, super.postSteps);
     }
 

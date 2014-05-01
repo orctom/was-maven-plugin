@@ -12,6 +12,7 @@ applicationName = r"{{applicationName}}"
 contextRoot = r"{{contextRoot}}"
 virtualHost = r"{{virtualHost}}"
 packageFile = r"{{packageFile}}"
+restartMode = r"{{restartMode}}"
 
 
 class WebSphere:
@@ -21,32 +22,30 @@ class WebSphere:
         print AdminApp.list()
 
     def restartServer(self):
+        if "skip" == restartMode:
+            pass
         print '-'*60
         print "[RESTARTING SERVER]", host
         print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
-        if "" != cluster:
-            try:
+        try:
+            if "" != cluster:
                 appManager = AdminControl.queryNames('name=' + cluster + ',type=Cluster,process=dmgr,*')
-                print AdminControl.invoke(appManager, 'rippleStart')
-            except:
-                print "Failed to restart cluster:"
-                print '-'*10
-                traceback.print_exc(file=sys.stdout)
-                print '-'*10
-                print "try to startApplication directly..."
-                self.startApplication()
-        else:
-            try:
+                if "restart" == restartMode:
+                    print AdminControl.invoke(appManager, 'restart')
+                else:
+                    print AdminControl.invoke(appManager, 'rippleStart')
+                    print "NOTE: Cluster(s) will be fully back up in a few minutes after the deploy job finished!"
+            else:
                 appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
                 print AdminControl.invoke(appManager, 'restart')
-            except:
-                print "Failed to restart server:"
-                print '-'*10
-                traceback.print_exc(file=sys.stdout)
-                print '-'*10
-                print "try to startApplication directly..."
-                self.startApplication()
+        except:
+            print "FAILED to restart cluster/server:"
+            print '-'*10
+            traceback.print_exc(file=sys.stdout)
+            print '-'*10
+            print "try to startApplication directly..."
+            self.startApplication()
 
     def startApplication(self):
         print '-'*60
@@ -61,7 +60,7 @@ class WebSphere:
             print AdminControl.invoke(appManager, 'startApplication', applicationName)
             #AdminApplication.startApplicationOnCluster(applicationName, cluster)
         except:
-            print "Failed to start application:"
+            print "FAILED to start application:"
             print '-'*10
             traceback.print_exc(file=sys.stdout)
             print '-'*10
@@ -79,7 +78,7 @@ class WebSphere:
             print AdminControl.invoke(appManager, 'stopApplication', applicationName)
             #AdminApplication.stopApplicationOnCluster(applicationName, cluster)
         except:
-            print "Failed to stop application:"
+            print "FAILED to stop application:"
             print '-'*10
             traceback.print_exc(file=sys.stdout)
             print '-'*10
@@ -118,7 +117,7 @@ class WebSphere:
             print "INSTALLED", applicationName
             return "true"
         except:
-            print "Failed to install application: ", applicationName
+            print "FAILED to install application: ", applicationName
             print '-'*10
             traceback.print_exc(file=sys.stdout)
             print '-'*10
@@ -135,7 +134,7 @@ class WebSphere:
             if "" != cluster:
                 AdminNodeManagement.syncActiveNodes()
         except:
-            print "Failed to uninstall application: ", applicationName
+            print "FAILED to uninstall application: ", applicationName
             print '-'*10
             traceback.print_exc(file=sys.stdout)
             print '-'*10

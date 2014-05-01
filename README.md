@@ -27,7 +27,9 @@ mvn was-maven-plugin:deploy
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy. **true not supported yet**				|
 | **verbose**				| Boolean	| Whether show more detailed info in log																	|
-| **mode**					| String	| Approach to do the deployment: `SCRIPT` (jython script), `ANT` (WebSphere ant tasks). Default: `SCRIPT`	|
+| **script**				| String	| Your own jython script for deployment. Double braces for variables: `{{cluster}}` 	                    |
+| **scriptArgs**			| String	| Args that will be passed to the `script`                                          	                    |
+| **restartMode**			| String	| Default: `restart` for standalone, `rippleStart` for cluster; Options: `restart`, `rippleStart`, `skip`   |
 | **preSteps**				| Ant tasks	| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
 | deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`.|

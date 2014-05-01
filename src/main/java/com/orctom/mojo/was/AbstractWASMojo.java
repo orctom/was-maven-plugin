@@ -8,7 +8,6 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.apache.tools.ant.taskdefs.PathConvert;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -31,9 +30,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${plugin.artifacts}")
     protected List<Artifact> pluginArtifacts;
-
-    @Parameter(defaultValue = "SCRIPT")
-    protected String mode;
 
     @Parameter(defaultValue = "${project.basedir}/was-maven-plugin.properties")
     protected File deploymentsPropertyFile;
@@ -99,6 +95,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected String scriptArgs;
 
     @Parameter
+    protected String restartMode;
+
+    @Parameter
     protected boolean verbose;
 
     /**
@@ -140,7 +139,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 return null;
             }
             getLog().info("Single target: " + model.getHost());
-            Set<WebSphereModel> models = new HashSet<>(1);
+            Set<WebSphereModel> models = new HashSet<WebSphereModel>(1);
             models.add(model);
             return models;
         }
@@ -163,15 +162,18 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setPassword(password)
                 .setProfileName(profileName)
                 .setPackageFile(packageFile.getAbsolutePath())
+                .setScript(script)
+                .setScriptArgs(scriptArgs)
+                .setRestartMode(restartMode)
                 .setFailOnError(failOnError)
                 .setVerbose(verbose);
     }
 
     protected Set<WebSphereModel> getWebSphereModels(String deployTargetStr, Map<String, Properties> propertiesMap) {
-        Set<String> deployTargets = new HashSet<>();
+        Set<String> deployTargets = new HashSet<String>();
         Collections.addAll(deployTargets, StringUtils.split(deployTargetStr, ","));
 
-        Set<WebSphereModel> models = new HashSet<>();
+        Set<WebSphereModel> models = new HashSet<WebSphereModel>();
         for (String deployTarget : deployTargets) {
             Properties props = propertiesMap.get(deployTarget);
             if (null == props || props.isEmpty()) {
@@ -199,6 +201,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setPassword(getPropertyValue("password", props))
                     .setProfileName(profileName)
                     .setPackageFile(packageFile.getAbsolutePath())
+                    .setScript(script)
+                    .setScriptArgs(scriptArgs)
+                    .setRestartMode(restartMode)
                     .setFailOnError(failOnError)
                     .setVerbose(verbose);
             model.setProperties(props);
