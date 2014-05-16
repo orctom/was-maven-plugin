@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 /**
+ * Command Utils for executing command line commands or scripts
  * Created by CH on 3/13/14.
  */
 public class CommandUtils {
@@ -72,7 +73,10 @@ public class CommandUtils {
             buildFile.append("-").append(getTimestampString()).append(".").append(ext);
 
             File buildScriptFile = new File(workingDir, buildFile.toString());
-            buildScriptFile.getParentFile().mkdirs();
+            boolean parentDirCreated = buildScriptFile.getParentFile().mkdirs();
+            if (!parentDirCreated) {
+                throw new WebSphereServiceException("Failed to create parent dir for build script: " + buildScriptFile.getParentFile());
+            }
             Writer writer = new FileWriter(buildScriptFile);
             mustache.execute(writer, model).flush();
 
@@ -87,7 +91,7 @@ public class CommandUtils {
                 System.out.println("Executing command:\n" + StringUtils.join(commandline.getShellCommandline(), " "));
             }
 
-            int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 1200);
+            int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 1800);
 
             String msg = "Return code: " + returnCode;
             if (returnCode != 0) {
@@ -97,7 +101,7 @@ public class CommandUtils {
             }
 
         } catch (CommandLineException e) {
-            throw new WebSphereServiceException(e.getMessage());
+            throw new WebSphereServiceException("Executing command line failure.", e);
         }
     }
 

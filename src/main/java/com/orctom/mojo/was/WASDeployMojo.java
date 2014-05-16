@@ -9,6 +9,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.IOException;
@@ -68,12 +69,28 @@ public class WASDeployMojo extends AbstractWASMojo {
         getLog().info("[DEPLOY] " + model.getHost() + " " + model.getApplicationName());
         getLog().info("============================================================");
 
-        getLog().info("====================    pre-steps    =======================");
-        executeAntTasks(model, super.preSteps);
-        getLog().info("======================    deploy    ========================");
-        new WebSphereServiceScriptImpl(model, project.getBuild().getDirectory()).deploy();
-        getLog().info("====================    post-steps    ======================");
-        executeAntTasks(model, super.postSteps);
+        try {
+            getLog().info("====================    pre-steps    =======================");
+            executeAntTasks(model, super.preSteps);
+            getLog().info("======================    deploy    ========================");
+            new WebSphereServiceScriptImpl(model, project.getBuild().getDirectory()).deploy();
+            getLog().info("====================    post-steps    ======================");
+            executeAntTasks(model, super.postSteps);
+        } catch (RuntimeException e) {
+            if (failOnError) {
+                throw e;
+            } else {
+                getLog().error("##############  Exception occurred during deploying to WebSphere  ###############");
+                getLog().error(ExceptionUtils.getFullStackTrace(e));
+            }
+        } catch (Throwable t) {
+            if (failOnError) {
+                throw new RuntimeException(t);
+            } else {
+                getLog().error("##############  Exception occurred during deploying to WebSphere  ###############");
+                getLog().error(ExceptionUtils.getFullStackTrace(t));
+            }
+        }
     }
 
     private void executeAntTasks(WebSphereModel model, PlexusConfiguration[] targets) {
