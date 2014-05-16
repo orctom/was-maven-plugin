@@ -117,7 +117,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
                 System.err.println(error);
             }
         } catch (Exception e) {
-            throw new WebSphereServiceException("Failed to execute: " + task, e);
+            throw new WebSphereServiceException("Failed to execute task: " + task, e);
         }
     }
 

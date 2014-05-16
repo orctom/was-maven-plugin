@@ -25,7 +25,7 @@ mvn was-maven-plugin:deploy
 | password					| String	| Account password for WAS admin console																	|
 | contextRoot				| String	| Context Path if it's a war,`required` if t's a war														|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
-| **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy. **true not supported yet**				|
+| **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy.                          				|
 | **verbose**				| Boolean	| Whether show more detailed info in log																	|
 | **script**				| String	| Your own jython script for deployment. Double braces for variables: `{{cluster}}` 	                    |
 | **scriptArgs**			| String	| Args that will be passed to the `script`                                          	                    |
