@@ -35,7 +35,7 @@ class WebSphere:
                     print AdminControl.invoke(appManager, 'restart')
                 else:
                     print AdminControl.invoke(appManager, 'rippleStart')
-                    print "NOTE: Cluster(s) will be fully back up in a few minutes after the deploy job finished!"
+                    print "NOTICE: Cluster(s) will be fully back up in a few minutes after the deploy job finished!"
             else:
                 appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
                 print AdminControl.invoke(appManager, 'restart')
