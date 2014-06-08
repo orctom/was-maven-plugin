@@ -11,9 +11,9 @@ node = r"{{node}}"
 applicationName = r"{{applicationName}}"
 contextRoot = r"{{contextRoot}}"
 virtualHost = r"{{virtualHost}}"
+sharedLibs = r"{{sharedLibs}}"
 packageFile = r"{{packageFile}}"
 restartMode = r"{{restartMode}}"
-
 
 class WebSphere:
     def listApplications(self):
@@ -88,16 +88,30 @@ class WebSphere:
         print "[INSTALLING APPLICATION]", host, applicationName
         print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
+
+        options = ['-distributeApp', '-preCompileJSPs', 'true', '-appname', applicationName, '-server', server]
+
         try:
             if "" != cluster:
                 serverMapping = 'WebSphere:cluster=' + cluster
-                options = ['-deployws', '-distributeApp', '-appname', applicationName, '-cluster', cluster, '-server', server, '-MapModulesToServers', [['.*','.*', serverMapping]], '-MapWebModToVH', [['.*','.*', virtualHost]]]
-            elif "" != contextRoot:
+                options += ['-cluster', cluster, '-MapModulesToServers', [['.*','.*', serverMapping]]]
+           	else:
                 serverMapping = 'WebSphere:server=' + server
-                options = ['-distributeApp', '-appname', applicationName, '-contextroot', contextRoot, '-server', server, '-MapModulesToServers', [['.*','.*', serverMapping]], '-MapWebModToVH', [['.*','.*', virtualHost]]]
-            else:
-                serverMapping = 'WebSphere:server=' + server
-                options = ['-distributeApp', '-appname', applicationName, '-server', server, '-MapModulesToServers', [['.*','.*', serverMapping]], '-MapWebModToVH', [['.*','.*', virtualHost]]]
+                options += ['-MapModulesToServers', [['.*','.*', serverMapping]]]
+
+           	if "" != contextRoot:
+                options += ['-contextroot', contextRoot]
+
+  	        if "" != virtualHost:
+                options += ['-MapWebModToVH', [['.*','.*', virtualHost]]]
+
+           	if "" != sharedLibs:
+           	    libs = []
+                for lib in sharedLibs.split(','):
+                    libs.append(['.*','.*', lib])
+                options += ['-MapSharedLibForMod', libs]
+
+            print "options: ", options
 
             print "INSTALLING"
             print AdminApp.install(packageFile, options)

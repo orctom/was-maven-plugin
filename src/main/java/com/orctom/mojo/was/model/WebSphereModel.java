@@ -22,7 +22,7 @@ public class WebSphereModel {
     private String user;
     private String password;
     private String contextRoot;
-    private String options;
+    private String sharedLibs;
     private String profileName;
     private String packageFile;
     private String script;
@@ -38,32 +38,6 @@ public class WebSphereModel {
         if (null == wasHome) {
             wasHome = System.getenv("WAS_HOME");
         }
-    }
-
-    public WebSphereModel(String applicationNameSuffix, String host, String port, String connectorType, String cluster,
-                          String cell, String node, String server, String virtualHost, String user, String password,
-                          String contextRoot, String options, String profileName, String packageFile,
-                          String script, String scriptArgs, String restartMode, boolean failOnError, boolean verbose) {
-        this.applicationName = applicationName;
-        this.host = host;
-        this.port = port;
-        this.connectorType = connectorType;
-        this.cluster = cluster;
-        this.cell = cell;
-        this.node = node;
-        this.server = server;
-        this.virtualHost = virtualHost;
-        this.user = user;
-        this.password = password;
-        this.contextRoot = contextRoot;
-        this.options = options;
-        this.profileName = profileName;
-        this.packageFile = packageFile;
-        this.script = script;
-        this.scriptArgs = scriptArgs;
-        this.restartMode = restartMode;
-        this.failOnError = failOnError;
-        this.verbose = verbose;
     }
 
     public String getWasHome() {
@@ -197,12 +171,13 @@ public class WebSphereModel {
         return this;
     }
 
-    public String getOptions() {
-        return options;
+    public String getSharedLibs() {
+        return sharedLibs;
     }
 
-    public void setOptions(String options) {
-        this.options = options;
+    public WebSphereModel setSharedLibs(String options) {
+        this.sharedLibs = sharedLibs;
+        return this;
     }
 
     public String getProfileName() {
@@ -292,7 +267,7 @@ public class WebSphereModel {
                 ", user='" + user + '\'' +
                 ", password='" + password + '\'' +
                 ", contextRoot='" + contextRoot + '\'' +
-                ", options='" + options + '\'' +
+                ", sharedLibs='" + sharedLibs + '\'' +
                 ", profileName='" + profileName + '\'' +
                 ", packageFile='" + packageFile + '\'' +
                 ", script='" + script + '\'' +

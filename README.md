@@ -24,6 +24,7 @@ mvn was-maven-plugin:deploy
 | user						| String	| Account user name for WAS admin console																	|
 | password					| String	| Account password for WAS admin console																	|
 | contextRoot				| String	| Context Path if it's a war,`required` if t's a war														|
+| sharedLibs				| String	| Bind the exist shared libs to ear/war, comma-separated (,)												|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy.                          				|
 | **verbose**				| Boolean	| Whether show more detailed info in log																	|
@@ -39,7 +40,7 @@ mvn was-maven-plugin:deploy
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -94,7 +95,7 @@ virtualHost=devtrunk3_host
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -124,7 +125,7 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -183,7 +184,7 @@ If you'd like to go with a customized jython script file:
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -221,7 +222,7 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 				<plugin>
 					<groupId>com.orctom.mojo</groupId>
 					<artifactId>was-maven-plugin</artifactId>
-					<version>1.0.3</version>
+					<version>1.0.4</version>
 					<executions>
 						<execution>
 							<id>deploy</id>

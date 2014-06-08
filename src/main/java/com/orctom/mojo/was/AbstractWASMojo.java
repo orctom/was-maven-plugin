@@ -79,6 +79,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String contextRoot;
 
+    @Parameter
+    protected String sharedLibs;
+
     @Parameter(defaultValue = "AppSrv01")
     protected String profileName;
 
@@ -158,6 +161,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setServer(server)
                 .setVirtualHost(virtualHost)
                 .setContextRoot(contextRoot)
+                .setSharedLibs(sharedLibs)
                 .setUser(user)
                 .setPassword(password)
                 .setProfileName(profileName)
@@ -197,6 +201,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setServer(getPropertyValue("server", props))
                     .setVirtualHost(getPropertyValue("virtualHost", props))
                     .setContextRoot(getPropertyValue("contextRoot", props))
+                    .setSharedLibs(getPropertyValue("sharedLibs", props))
                     .setUser(getPropertyValue("user", props))
                     .setPassword(getPropertyValue("password", props))
                     .setProfileName(profileName)
