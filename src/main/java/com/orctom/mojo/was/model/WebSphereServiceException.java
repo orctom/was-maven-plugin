@@ -9,12 +9,11 @@ public class WebSphereServiceException extends RuntimeException {
         super(message);
     }
 
-    public WebSphereServiceException(String message, Throwable cause) {
-        super(message, cause);
+    public WebSphereServiceException( Throwable cause) {
+        super(cause);
     }
 
-    @Override
-    public Throwable fillInStackTrace() {
-        return null;
+    public WebSphereServiceException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

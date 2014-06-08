@@ -44,21 +44,6 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
 
     @Override
     public void installApplication() {
-        StringBuilder options = new StringBuilder(100);
-        //-appname {{applicationName}} -preCompileJSPs true -cluster {{cluster}} -server {{server}}
-        options.append("-preCompileJSPs true");
-        if (StringUtils.isNotEmpty(model.getApplicationName())) {
-            options.append(" -appname ").append(model.getApplicationName());
-        }
-
-        if (StringUtils.isNotEmpty(model.getCluster())) {
-            options.append(" -cluster ").append(model.getCluster());
-        }
-
-        if (StringUtils.isNotEmpty(model.getServer())) {
-            options.append(" -server ").append(model.getServer());
-        }
-        model.setOptions(options.toString());
         execute("installApplication");
     }
 

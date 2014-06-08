@@ -1,6 +1,7 @@
 package com.orctom.mojo.was;
 
 import com.orctom.mojo.was.model.WebSphereModel;
+import com.orctom.mojo.was.model.WebSphereServiceException;
 import com.orctom.mojo.was.service.impl.WebSphereServiceScriptImpl;
 import com.orctom.mojo.was.utils.AntTaskUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -85,7 +86,7 @@ public class WASDeployMojo extends AbstractWASMojo {
             }
         } catch (Throwable t) {
             if (failOnError) {
-                throw new RuntimeException(t);
+                throw new WebSphereServiceException(t);
             } else {
                 getLog().error("##############  Exception occurred during deploying to WebSphere  ###############");
                 getLog().error(ExceptionUtils.getFullStackTrace(t));
@@ -93,19 +94,13 @@ public class WASDeployMojo extends AbstractWASMojo {
         }
     }
 
-    private void executeAntTasks(WebSphereModel model, PlexusConfiguration[] targets) {
+    private void executeAntTasks(WebSphereModel model, PlexusConfiguration[] targets) throws IOException, MojoExecutionException {
         if (null == targets || 0 == targets.length) {
             getLog().info("Skipped, not configured.");
             return;
         }
         for (PlexusConfiguration target : targets) {
-            try {
-                AntTaskUtils.execute(model, target, project, projectHelper, pluginArtifacts, getLog());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (MojoExecutionException e) {
-                e.printStackTrace();
-            }
+            AntTaskUtils.execute(model, target, project, projectHelper, pluginArtifacts, getLog());
         }
     }
 
