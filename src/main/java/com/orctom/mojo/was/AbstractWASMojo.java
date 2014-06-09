@@ -41,10 +41,10 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter(defaultValue = "localhost")
     protected String host;
 
-    @Parameter(defaultValue = "8879")
+    @Parameter
     protected String port;
 
-    @Parameter(defaultValue = "SOAP")
+    @Parameter
     protected String connectorType;
 
     /**
@@ -84,10 +84,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected boolean parentLast;
 
     @Parameter
-    protected boolean webParentLast;
-
-    @Parameter(defaultValue = "AppSrv01")
-    protected String profileName;
+    protected boolean webModuleParentLast;
 
     @Parameter(defaultValue = "${project.artifact.file}")
     protected File packageFile;
@@ -100,9 +97,6 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     @Parameter
     protected String scriptArgs;
-
-    @Parameter
-    protected String restartMode;
 
     @Parameter
     protected boolean verbose;
@@ -168,14 +162,12 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setContextRoot(contextRoot)
                 .setSharedLibs(sharedLibs)
                 .setParentLast(parentLast)
-                .setWebParentLast(webParentLast)
+                .setWebModuleParentLast(webModuleParentLast)
                 .setUser(user)
                 .setPassword(password)
-                .setProfileName(profileName)
                 .setPackageFile(packageFile.getAbsolutePath())
                 .setScript(script)
                 .setScriptArgs(scriptArgs)
-                .setRestartMode(restartMode)
                 .setFailOnError(failOnError)
                 .setVerbose(verbose);
     }
@@ -210,14 +202,12 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setContextRoot(getPropertyValue("contextRoot", props))
                     .setSharedLibs(getPropertyValue("sharedLibs", props))
                     .setParentLast(Boolean.valueOf(getPropertyValue("parentLast", props)))
-                    .setWebParentLast(Boolean.valueOf(getPropertyValue("webParentLast", props)))
+                    .setWebModuleParentLast(Boolean.valueOf(getPropertyValue("webModuleParentLast", props)))
                     .setUser(getPropertyValue("user", props))
                     .setPassword(getPropertyValue("password", props))
-                    .setProfileName(profileName)
                     .setPackageFile(packageFile.getAbsolutePath())
                     .setScript(script)
                     .setScriptArgs(scriptArgs)
-                    .setRestartMode(restartMode)
                     .setFailOnError(failOnError)
                     .setVerbose(verbose);
             model.setProperties(props);
@@ -243,6 +233,26 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     private Properties getProjectProperties() {
         Properties properties = new Properties(project.getProperties());
+        setProperty(properties, "host", host);
+        setProperty(properties, "port", port);
+        setProperty(properties, "connectorType", connectorType);
+        setProperty(properties, "cluster", cluster);
+        setProperty(properties, "cell", cell);
+        setProperty(properties, "node", node);
+        setProperty(properties, "server", server);
+        setProperty(properties, "virtualHost", virtualHost);
+        setProperty(properties, "user", user);
+        setProperty(properties, "password", password);
+        setProperty(properties, "contextRoot", contextRoot);
+        setProperty(properties, "sharedLibs", sharedLibs);
+        setProperty(properties, "parentLast", String.valueOf(parentLast));
+        setProperty(properties, "webModuleParentLast", String.valueOf(webModuleParentLast));
+        setProperty(properties, "packageFile", packageFile.getAbsolutePath());
+        setProperty(properties, "failOnError", String.valueOf(failOnError));
+        setProperty(properties, "script", script);
+        setProperty(properties, "scriptArgs", scriptArgs);
+        setProperty(properties, "verbose", String.valueOf(verbose));
+
         properties.setProperty("basedir", project.getBasedir().getAbsolutePath());
         properties.setProperty("project.basedir", project.getBasedir().getAbsolutePath());
         properties.setProperty("version", project.getVersion());
@@ -256,5 +266,11 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         properties.setProperty("artifactId", project.getArtifactId());
         properties.setProperty("project.artifactId", project.getArtifactId());
         return properties;
+    }
+
+    private void setProperty(Properties properties, String key, String value) {
+        if (StringUtils.isNotEmpty(value)) {
+            properties.setProperty(key, value);
+        }
     }
 }
