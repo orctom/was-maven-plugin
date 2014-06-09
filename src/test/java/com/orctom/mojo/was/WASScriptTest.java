@@ -15,7 +15,7 @@ public class WASScriptTest {
         try {
             WebSphereModel model = new WebSphereModel();
             model.setHost("10.164.39.41").setPort("8881").setConnectorType("SOAP").setServer("server1").setNode("ciNode02")
-                    .setUser("wsadmin").setPassword("passw0rd").setProfileName("AppSrv01").setVerbose(true);
+                    .setUser("wsadmin").setPassword("passw0rd").setVerbose(true);
 
             service = new WebSphereServiceScriptImpl(model, "D:\\workspace-idea\\was-maven-plugin\\target");
             service.startServer();
@@ -30,7 +30,7 @@ public class WASScriptTest {
         try {
             WebSphereModel model = new WebSphereModel();
             model.setHost("10.164.39.41").setPort("8881").setConnectorType("SOAP").setServer("server1").setNode("ciNode02")
-                    .setUser("wsadmin").setPassword("passw0rd").setProfileName("AppSrv01").setApplicationName("test")
+                    .setUser("wsadmin").setPassword("passw0rd").setApplicationName("test")
                     .setPackageFile("D:\\workspace-idea\\was-maven-plugin\\scripts\\DefaultApplication.ear").setVerbose(true);
 
             service = new WebSphereServiceScriptImpl(model, "D:\\workspace-idea\\was-maven-plugin\\target");

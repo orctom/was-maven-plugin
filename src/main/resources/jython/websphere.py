@@ -12,10 +12,9 @@ applicationName = r"{{applicationName}}"
 contextRoot = r"{{contextRoot}}"
 virtualHost = r"{{virtualHost}}"
 sharedLibs = r"{{sharedLibs}}"
-parentLast = {{parentLast}}
-webParentLast = {{webParentLast}}
+parentLast = r"{{parentLast}}"
+webModuleParentLast = r"{{webModuleParentLast}}"
 packageFile = r"{{packageFile}}"
-restartMode = r"{{restartMode}}"
 
 class WebSphere:
     def listApplications(self):
@@ -24,8 +23,6 @@ class WebSphere:
         print AdminApp.list()
 
     def restartServer(self):
-        if "skip" == restartMode:
-            pass
         print '-'*60
         print "[RESTARTING SERVER]", host
         print time.strftime("%Y-%b-%d %H:%M:%S %Z")
@@ -33,11 +30,12 @@ class WebSphere:
         try:
             if "" != cluster:
                 appManager = AdminControl.queryNames('name=' + cluster + ',type=Cluster,process=dmgr,*')
-                if "restart" == restartMode:
-                    print AdminControl.invoke(appManager, 'restart')
-                else:
-                    print AdminControl.invoke(appManager, 'rippleStart')
-                    print "NOTICE: Cluster(s) will be fully back up in a few minutes after the deploy job finished!"
+                print AdminControl.invoke(appManager, 'rippleStart')
+                print ""
+                print '='*60
+                print "[NOTICE]: It takes a few minutes for the cluster to fully back running after the build finished!"
+                print '='*60
+                print ""
             else:
                 appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
                 print AdminControl.invoke(appManager, 'restart')
@@ -113,16 +111,14 @@ class WebSphere:
                     libs.append(['.*','.*', lib])
                 options += ['-MapSharedLibForMod', libs]
 
+            print ""
             print "options: ", options
+            print ""
 
             print "INSTALLING"
             print AdminApp.install(packageFile, options)
 
-            if parentLast:
-                AdminApplication.configureClassLoaderLoadingModeForAnApplication(applicationName, "PARENT_LAST")
-
-            if webParentLast:
-                AdminApplication.configureWebModulesOfAnApplication(applicationName, "*", "1000", "PARENT_LAST")
+            self.__modifyClassloader()
 
             print "SAVING CONFIG"
             AdminConfig.save()
@@ -144,6 +140,22 @@ class WebSphere:
             traceback.print_exc(file=sys.stdout)
             print '-'*10
             return "false"
+
+    def __modifyClassloader(self):
+        deployments = AdminConfig.getid("/Deployment:" + applicationName + "/")
+        deploymentObject = AdminConfig.showAttribute(deployments, "deployedObject")
+
+        if "true" == parentLast:
+            #AdminApplication.configureClassLoaderLoadingModeForAnApplication(applicationName, "PARENT_LAST")
+            classloader = AdminConfig.showAttribute(deploymentObject, "classloader")
+            AdminConfig.modify(classloader, [['mode', 'PARENT_LAST']])
+
+        if "true" == webModuleParentLast:
+            modules = AdminConfig.showAttribute(deploymentObject, "modules")
+            arrayModules = modules[1:len(modules)-1].split(" ")
+            for module in arrayModules:
+                if module.find('WebModuleDeployment') != -1:
+                    AdminConfig.modify(module, [['classloaderMode', 'PARENT_LAST']])
 
     def uninstallApplication(self):
         print '-'*60

@@ -24,12 +24,10 @@ public class WebSphereModel {
     private String contextRoot;
     private String sharedLibs;
     private boolean parentLast;
-    private boolean webParentLast;
-    private String profileName;
+    private boolean webModuleParentLast;
     private String packageFile;
     private String script;
     private String scriptArgs;
-    private String restartMode;
     private boolean failOnError;
     private boolean verbose;
 
@@ -177,7 +175,7 @@ public class WebSphereModel {
         return sharedLibs;
     }
 
-    public WebSphereModel setSharedLibs(String options) {
+    public WebSphereModel setSharedLibs(String sharedLibs) {
         this.sharedLibs = sharedLibs;
         return this;
     }
@@ -191,21 +189,12 @@ public class WebSphereModel {
         return this;
     }
 
-    public boolean isWebParentLast() {
-        return webParentLast;
+    public boolean isWebModuleParentLast() {
+        return webModuleParentLast;
     }
 
-    public WebSphereModel setWebParentLast(boolean webParentLast) {
-        this.webParentLast = webParentLast;
-        return this;
-    }
-
-    public String getProfileName() {
-        return profileName;
-    }
-
-    public WebSphereModel setProfileName(String profileName) {
-        this.profileName = profileName;
+    public WebSphereModel setWebModuleParentLast(boolean webModuleParentLast) {
+        this.webModuleParentLast = webModuleParentLast;
         return this;
     }
 
@@ -233,15 +222,6 @@ public class WebSphereModel {
 
     public WebSphereModel setScriptArgs(String scriptArgs) {
         this.scriptArgs = scriptArgs;
-        return this;
-    }
-
-    public String getRestartMode() {
-        return restartMode;
-    }
-
-    public WebSphereModel setRestartMode(String restartMode) {
-        this.restartMode = restartMode;
         return this;
     }
 
@@ -289,12 +269,10 @@ public class WebSphereModel {
                 ", contextRoot='" + contextRoot + '\'' +
                 ", sharedLibs='" + sharedLibs + '\'' +
                 ", parentLast='" + parentLast + '\'' +
-                ", webParentLast='" + webParentLast + '\'' +
-                ", profileName='" + profileName + '\'' +
+                ", webModuleParentLast='" + webModuleParentLast + '\'' +
                 ", packageFile='" + packageFile + '\'' +
                 ", script='" + script + '\'' +
                 ", scriptArgs='" + scriptArgs + '\'' +
-                ", restartMode='" + restartMode + '\'' +
                 ", failOnError=" + failOnError +
                 ", verbose=" + verbose +
                 ", properties=" + properties +

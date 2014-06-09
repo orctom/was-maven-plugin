@@ -78,7 +78,7 @@ public class CommandUtils {
                 throw new WebSphereServiceException("Failed to create parent dir for build script: " + buildScriptFile.getParentFile());
             }
             Writer writer = new FileWriter(buildScriptFile);
-            mustache.execute(writer, model).flush();
+            mustache.execute(writer, model.getProperties()).flush();
 
             return buildScriptFile;
         }
