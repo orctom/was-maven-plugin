@@ -64,10 +64,10 @@ public class PropertiesUtils {
     }
 
     public static Map<String, Properties> loadSectionedProperties(File file) {
-        return loadSectionedProperties(file, null, null);
+        return loadSectionedProperties(file, null);
     }
 
-    public static Map<String, Properties> loadSectionedProperties(File file, String section, Properties defaultProps) {
+    public static Map<String, Properties> loadSectionedProperties(File file, Properties defaultProps) {
         try {
             return loadSectionedProperties(new FileInputStream(file), defaultProps);
         } catch (Exception e) {
@@ -121,7 +121,7 @@ public class PropertiesUtils {
     public static class SectionedProperties extends Properties {
 
         private static final long serialVersionUID = 1L;
-        private Pattern section = Pattern.compile("\\s*\\[([^]]*)\\]\\s*");
+        private Pattern sectionPattern = Pattern.compile("\\s*\\[([^]]*)\\]\\s*");
         private Map<String, Properties> properties = new HashMap<String, Properties>();
         private Properties defaultProps = new Properties();
         private Properties props = new Properties();
@@ -140,16 +140,16 @@ public class PropertiesUtils {
         public synchronized Object put(Object keyObj, Object valueObj) {
             String key = String.valueOf(keyObj);
             String value = String.valueOf(valueObj);
-            Matcher matcher = section.matcher(key);
-            if (matcher.matches()) {
+            Matcher sectionMatcher = sectionPattern.matcher(key);
+            if (sectionMatcher.matches()) {
                 if (DEFAULT_SECTION.equals(key)) {
-                    props = defaultProps;
+                    props.putAll(defaultProps);
                 } else {
                     props = new Properties();
                     if (null != defaultProps && !defaultProps.isEmpty()) {
                         props.putAll(defaultProps);
                     }
-                    properties.put(matcher.replaceAll("$1"), props);
+                    properties.put(sectionMatcher.replaceAll("$1"), props);
                 }
             } else {
                 props.put(key, value);

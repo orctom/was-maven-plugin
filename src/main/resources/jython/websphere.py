@@ -12,6 +12,8 @@ applicationName = r"{{applicationName}}"
 contextRoot = r"{{contextRoot}}"
 virtualHost = r"{{virtualHost}}"
 sharedLibs = r"{{sharedLibs}}"
+parentLast = {{parentLast}}
+webParentLast = {{webParentLast}}
 packageFile = r"{{packageFile}}"
 restartMode = r"{{restartMode}}"
 
@@ -95,18 +97,18 @@ class WebSphere:
             if "" != cluster:
                 serverMapping = 'WebSphere:cluster=' + cluster
                 options += ['-cluster', cluster, '-MapModulesToServers', [['.*','.*', serverMapping]]]
-           	else:
+            else:
                 serverMapping = 'WebSphere:server=' + server
                 options += ['-MapModulesToServers', [['.*','.*', serverMapping]]]
 
-           	if "" != contextRoot:
+            if "" != contextRoot:
                 options += ['-contextroot', contextRoot]
 
-  	        if "" != virtualHost:
+            if "" != virtualHost:
                 options += ['-MapWebModToVH', [['.*','.*', virtualHost]]]
 
-           	if "" != sharedLibs:
-           	    libs = []
+            if "" != sharedLibs:
+                libs = []
                 for lib in sharedLibs.split(','):
                     libs.append(['.*','.*', lib])
                 options += ['-MapSharedLibForMod', libs]
@@ -115,6 +117,12 @@ class WebSphere:
 
             print "INSTALLING"
             print AdminApp.install(packageFile, options)
+
+            if parentLast:
+                AdminApplication.configureClassLoaderLoadingModeForAnApplication(applicationName, "PARENT_LAST")
+
+            if webParentLast:
+                AdminApplication.configureWebModulesOfAnApplication(applicationName, "*", "1000", "PARENT_LAST")
 
             print "SAVING CONFIG"
             AdminConfig.save()
