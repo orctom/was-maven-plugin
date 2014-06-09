@@ -14,8 +14,6 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.util.*;
 
-import static com.orctom.mojo.was.utils.PropertiesUtils.SectionedProperties.DEFAULT_SECTION;
-
 /**
  * Abstract Mojo for websphere deployment
  * Created by CH on 3/4/14.
@@ -82,6 +80,12 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String sharedLibs;
 
+    @Parameter
+    protected boolean parentLast;
+
+    @Parameter
+    protected boolean webParentLast;
+
     @Parameter(defaultValue = "AppSrv01")
     protected String profileName;
 
@@ -120,7 +124,8 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
         if (StringUtils.isNotBlank(deployTargets)) {
             if (null != deploymentsPropertyFile && deploymentsPropertyFile.exists()) {
-                Map<String, Properties> propertiesMap = PropertiesUtils.loadSectionedProperties(deploymentsPropertyFile, DEFAULT_SECTION, project.getProperties());
+                project.getBasedir();
+                Map<String, Properties> propertiesMap = PropertiesUtils.loadSectionedProperties(deploymentsPropertyFile, getProjectProperties());
                 if (propertiesMap.size() >= 1) {
                     getLog().info("Multi targets: " + deployTargets);
                     return getWebSphereModels(deployTargets, propertiesMap);
@@ -162,6 +167,8 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setVirtualHost(virtualHost)
                 .setContextRoot(contextRoot)
                 .setSharedLibs(sharedLibs)
+                .setParentLast(parentLast)
+                .setWebParentLast(webParentLast)
                 .setUser(user)
                 .setPassword(password)
                 .setProfileName(profileName)
@@ -202,6 +209,8 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setVirtualHost(getPropertyValue("virtualHost", props))
                     .setContextRoot(getPropertyValue("contextRoot", props))
                     .setSharedLibs(getPropertyValue("sharedLibs", props))
+                    .setParentLast(Boolean.valueOf(getPropertyValue("parentLast", props)))
+                    .setWebParentLast(Boolean.valueOf(getPropertyValue("webParentLast", props)))
                     .setUser(getPropertyValue("user", props))
                     .setPassword(getPropertyValue("password", props))
                     .setProfileName(profileName)
@@ -230,5 +239,22 @@ public abstract class AbstractWASMojo extends AbstractMojo {
             }
         }
         return value;
+    }
+
+    private Properties getProjectProperties() {
+        Properties properties = new Properties(project.getProperties());
+        properties.setProperty("basedir", project.getBasedir().getAbsolutePath());
+        properties.setProperty("project.basedir", project.getBasedir().getAbsolutePath());
+        properties.setProperty("version", project.getVersion());
+        properties.setProperty("project.version", project.getVersion());
+        properties.setProperty("project.build.directory", project.getBuild().getDirectory());
+        properties.setProperty("project.build.outputDirectory", project.getBuild().getOutputDirectory());
+        properties.setProperty("project.build.finalName", project.getBuild().getFinalName());
+        properties.setProperty("project.name", project.getName());
+        properties.setProperty("groupId", project.getGroupId());
+        properties.setProperty("project.groupId", project.getGroupId());
+        properties.setProperty("artifactId", project.getArtifactId());
+        properties.setProperty("project.artifactId", project.getArtifactId());
+        return properties;
     }
 }

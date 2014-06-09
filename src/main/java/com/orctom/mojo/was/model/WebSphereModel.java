@@ -23,6 +23,8 @@ public class WebSphereModel {
     private String password;
     private String contextRoot;
     private String sharedLibs;
+    private boolean parentLast;
+    private boolean webParentLast;
     private String profileName;
     private String packageFile;
     private String script;
@@ -180,6 +182,24 @@ public class WebSphereModel {
         return this;
     }
 
+    public boolean isParentLast() {
+        return parentLast;
+    }
+
+    public WebSphereModel setParentLast(boolean parentLast) {
+        this.parentLast = parentLast;
+        return this;
+    }
+
+    public boolean isWebParentLast() {
+        return webParentLast;
+    }
+
+    public WebSphereModel setWebParentLast(boolean webParentLast) {
+        this.webParentLast = webParentLast;
+        return this;
+    }
+
     public String getProfileName() {
         return profileName;
     }
@@ -268,6 +288,8 @@ public class WebSphereModel {
                 ", password='" + password + '\'' +
                 ", contextRoot='" + contextRoot + '\'' +
                 ", sharedLibs='" + sharedLibs + '\'' +
+                ", parentLast='" + parentLast + '\'' +
+                ", webParentLast='" + webParentLast + '\'' +
                 ", profileName='" + profileName + '\'' +
                 ", packageFile='" + packageFile + '\'' +
                 ", script='" + script + '\'' +
