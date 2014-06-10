@@ -224,7 +224,8 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected String getPropertyValue(String propertyName, Properties props) {
         String value = props.getProperty(propertyName);
         if (isValueNotResolved(value)) {
-            props.setProperty(propertyName, PropertiesUtils.resolve(value, props));
+            value = PropertiesUtils.resolve(value, props);
+            props.setProperty(propertyName, value);
         }
         return value;
     }
