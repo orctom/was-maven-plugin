@@ -124,7 +124,7 @@ public class PropertiesUtils {
         private Pattern sectionPattern = Pattern.compile("\\s*\\[([^]]*)\\]\\s*");
         private Map<String, Properties> properties = new HashMap<String, Properties>();
         private Properties defaultProps = new Properties();
-        private Properties props = new Properties();
+        private Properties readingSection = new Properties();
 
         public static final String DEFAULT_SECTION = "[DEFAULT]";
 
@@ -143,16 +143,16 @@ public class PropertiesUtils {
             Matcher sectionMatcher = sectionPattern.matcher(key);
             if (sectionMatcher.matches()) {
                 if (DEFAULT_SECTION.equals(key)) {
-                    props.putAll(defaultProps);
+                    readingSection = defaultProps;
                 } else {
-                    props = new Properties();
+                    readingSection = new Properties();
                     if (null != defaultProps && !defaultProps.isEmpty()) {
-                        props.putAll(defaultProps);
+                        readingSection.putAll(defaultProps);
                     }
-                    properties.put(sectionMatcher.replaceAll("$1"), props);
+                    properties.put(sectionMatcher.replaceAll("$1"), readingSection);
                 }
             } else {
-                props.put(key, value);
+                readingSection.put(key, value);
             }
             return valueObj;
         }

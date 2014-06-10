@@ -29,7 +29,6 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
         this.workingDir = CommandUtils.getWorkingDir(targetDir, TEMPLATE_EXT);
     }
 
-    @Override
     public void restartServer() {
         execute("restartServer");
     }
@@ -42,27 +41,22 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
         execute("stopServer");
     }
 
-    @Override
     public void installApplication() {
         execute("installApplication");
     }
 
-    @Override
     public void uninstallApplication() {
         execute("uninstallApplication");
     }
 
-    @Override
     public void startApplication() {
         execute("startApplication");
     }
 
-    @Override
     public void stopApplication() {
         execute("stopApplication");
     }
 
-    @Override
     public void deploy() {
         execute("deploy");
     }

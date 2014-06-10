@@ -210,6 +210,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setScriptArgs(scriptArgs)
                     .setFailOnError(failOnError)
                     .setVerbose(verbose);
+
             model.setProperties(props);
             if (model.isValid()) {
                 models.add(model);
@@ -222,13 +223,14 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     protected String getPropertyValue(String propertyName, Properties props) {
         String value = props.getProperty(propertyName);
-        if (null != value && value.contains("{{") && value.contains("}}")) {
-            value = PropertiesUtils.resolve(value, props);
-            if (StringUtils.isNotEmpty(value)) {
-                props.setProperty(propertyName, value);
-            }
+        if (isValueNotResolved(value)) {
+            props.setProperty(propertyName, PropertiesUtils.resolve(value, props));
         }
         return value;
+    }
+
+    private boolean isValueNotResolved(String value) {
+        return StringUtils.isNotEmpty(value) && value.contains("{{") && value.contains("}}");
     }
 
     private Properties getProjectProperties() {
