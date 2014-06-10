@@ -1,36 +1,32 @@
 # was-maven-plugin [![Build Status](https://api.travis-ci.org/orctom/was-maven-plugin.png)](https://travis-ci.org/orctom/was-maven-plugin)
 
 Maven plugin to deploy single artifact to one or multi local/remote WebSphere Application Server (WAS) 8.5
-
-## Usage
-mvn was-maven-plugin:deploy
-
-**NOTE: 1.0.1 and 1.0.2 is not working, please don't use them!**
+**NOTE: WebSphere Application Server installation required on host box!**
 
 ## Parameters
 | Name						| Type		| Description																								|
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
-| **wasHome**				| String	| WebSphere Application Server home. Default: `${env.WAS_HOME}`, `required`									|
-| **applicationName**		| String	| Application name displayed in admin console. Default: ${project.build.finalName}`							|
+| **wasHome**				| String	| WebSphere Application Server home. Default: `${env.WAS_HOME}`, **required**								|
+| **applicationName**		| String	| Application name displayed in admin console. Default: `${project.build.finalName}`							|
 | applicationNameSuffix		| String	| Suffix will be appended to applicationName, as `applicationName_applicationNameSuffix`					|
-| host						| String	| Local/Remote WAS IP/domain URL. e.g. `localhost`, `10.95.197.181`, `devtrunk01.company.com`, `required`	|
+| host						| String	| Local/Remote WAS IP/domain URL. e.g. `localhost`, `10.95.197.181`, `devtrunk01.company.com`, **required**	|
 | port						| String	| Default: `8879` (when `cluster` not empty); `8880` (when `cluster` empty)									|
 | connectorType 			| String	| Default: `SOAP` 																							|
-| cluster					| String	| Target cluster name, `required` if target is was is a cluster												|
+| cluster					| String	| Target cluster name, **required** if target is was is a cluster												|
 | cell						| String	| Target cell name																							|
-| node						| String	| Target node name, `required` if target is was is NOT a cluster											|
-| server					| String	| Target server name, `required`																			|
+| node						| String	| Target node name, **required** if target is was is NOT a cluster											|
+| server					| String	| Target server name, **required**																			|
 | virtualHost				| String	| Target virtual host name																					|
 | user						| String	| Account user name for WAS admin console																	|
 | password					| String	| Account password for WAS admin console																	|
-| contextRoot				| String	| Context Path if it's a war,`required` if t's a war														|
+| contextRoot				| String	| Context Path if it's a war, **required** if t's a war														|
 | sharedLibs				| String	| Bind the exist shared libs to ear/war, comma-separated (,)												|
-| parentLast				| String	| `true` set to classloader mode of application to `PARENT_LAST`, default `false`							|
-| webModuleParentLast		| String	| `true` set to classloader mode of web module to `PARENT_LAST`, default `false`							|
+| parentLast				| Boolean	| `true` set to classloader mode of application to `PARENT_LAST`, default `false`							|
+| webModuleParentLast		| Boolean	| `true` set to classloader mode of web module to `PARENT_LAST`, default `false`							|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy.                          				|
 | **verbose**				| Boolean	| Whether show more detailed info in log																	|
-| **script**				| String	| Your own jython script for deployment. Double braces for variables: `{{cluster}}` 	                    |
+| **script**				| String	| Your own jython script for deployment. Double braces for variables, such as: `{{cluster}}`                |
 | **scriptArgs**			| String	| Args that will be passed to the `script`                                          	                    |
 | **preSteps**				| Ant tasks	| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
