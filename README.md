@@ -7,19 +7,19 @@ Maven plugin to deploy single artifact to one or multi local/remote WebSphere Ap
 | Name						| Type		| Description																								|
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
 | **wasHome**				| String	| WebSphere Application Server home. Default: `${env.WAS_HOME}`, **required**								|
-| **applicationName**		| String	| Application name displayed in admin console. Default: `${project.build.finalName}`							|
+| **applicationName**		| String	| Application name displayed in admin console. Default: `${project.build.finalName}`						|
 | applicationNameSuffix		| String	| Suffix will be appended to applicationName, as `applicationName_applicationNameSuffix`					|
-| host						| String	| Local/Remote WAS IP/domain URL. e.g. `localhost`, `10.95.197.181`, `devtrunk01.company.com`, **required**	|
+| host						| String	| Local/Remote WAS IP/domain URL. e.g. `10.95.197.181`, `devtrunk01.company.com`, default: `localhost`   	|
 | port						| String	| Default: `8879` (when `cluster` not empty); `8880` (when `cluster` empty)									|
 | connectorType 			| String	| Default: `SOAP` 																							|
-| cluster					| String	| Target cluster name, **required** if target is was is a cluster												|
+| cluster					| String	| Target cluster name, **required** if target WAS is a cluster	    										|
 | cell						| String	| Target cell name																							|
-| node						| String	| Target node name, **required** if target is was is NOT a cluster											|
+| node						| String	| Target node name, **required** if target WAS is NOT a cluster 											|
 | server					| String	| Target server name, **required**																			|
 | virtualHost				| String	| Target virtual host name																					|
 | user						| String	| Account user name for WAS admin console																	|
 | password					| String	| Account password for WAS admin console																	|
-| contextRoot				| String	| Context Path if it's a war, **required** if t's a war														|
+| contextRoot				| String	| **required** for war deployment                   														|
 | sharedLibs				| String	| Bind the exist shared libs to ear/war, comma-separated (,)												|
 | parentLast				| Boolean	| `true` set to classloader mode of application to `PARENT_LAST`, default `false`							|
 | webModuleParentLast		| Boolean	| `true` set to classloader mode of web module to `PARENT_LAST`, default `false`							|
