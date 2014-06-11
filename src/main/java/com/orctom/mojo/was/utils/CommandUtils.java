@@ -73,9 +73,11 @@ public class CommandUtils {
             buildFile.append("-").append(getTimestampString()).append(".").append(ext);
 
             File buildScriptFile = new File(workingDir, buildFile.toString());
-            boolean parentDirCreated = buildScriptFile.getParentFile().mkdirs();
-            if (!parentDirCreated) {
-                throw new WebSphereServiceException("Failed to create parent dir for build script: " + buildScriptFile.getParentFile());
+            if (!buildScriptFile.getParentFile().exists()) {
+                boolean parentDirCreated = buildScriptFile.getParentFile().mkdirs();
+                if (!parentDirCreated) {
+                    throw new WebSphereServiceException("Failed to create parent dir for build script: " + buildScriptFile.getParentFile());
+                }
             }
             Writer writer = new FileWriter(buildScriptFile);
             mustache.execute(writer, model.getProperties()).flush();
