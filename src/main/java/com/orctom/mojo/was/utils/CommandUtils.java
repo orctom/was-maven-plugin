@@ -50,8 +50,7 @@ public class CommandUtils {
         return executable;
     }
 
-    public static File getBuildScript(String task, String template, WebSphereModel model, String workingDir, String ext)
-            throws IOException {
+    public static File getBuildScript(String task, String template, WebSphereModel model, String workingDir, String ext) throws IOException {
         if (StringUtils.isNotEmpty(model.getScript())) {
             if (model.getScript().startsWith("/")) {
                 return new File(model.getScript());
@@ -86,8 +85,7 @@ public class CommandUtils {
         }
     }
 
-    public static void executeCommand(Commandline commandline, StreamConsumer outConsumer, StreamConsumer errorConsumer,
-                                      boolean isVerbose) {
+    public static void executeCommand(Commandline commandline, StreamConsumer outConsumer, StreamConsumer errorConsumer, boolean isVerbose) {
         try {
             if (isVerbose) {
                 System.out.println("Executing command:\n" + StringUtils.join(commandline.getShellCommandline(), " "));
