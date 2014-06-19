@@ -89,7 +89,7 @@ class WebSphere:
         print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
 
-        options = ['-distributeApp', '-preCompileJSPs', 'true', '-appname', applicationName, '-server', server]
+        options = ['-deployws', '-distributeApp', '-appname', applicationName, '-server', server]
 
         try:
             if "" != cluster:
