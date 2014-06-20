@@ -1,30 +1,22 @@
-<!-- MarkdownTOC depth=5 -->
-
-- [was-maven-plugin](#!Build Status)
-	- Introduction
-	- Goal (the only one) -- `deploy`
-		- Parameters
-	- Single Target Server
-	- Multi Target Servers
-		- was-maven-plugin.properties
-		- pom.xml
-	- Pre-Steps and Post-Steps
-	- Customized Jython Script File
-	- Continues Deployment with Jenkins
-		- Sample pom.xml
-		- Sample Jenkins Job Configuration
-	- With Global Security Turned on
-	- Changes
-		- Next Release
-		- 1.0.7
-		- 1.0.6
-		- 1.0.5
-		- 1.0.4
-		- 1.0.3
-
-<!-- /MarkdownTOC -->
-
 # was-maven-plugin [![Build Status](https://api.travis-ci.org/orctom/was-maven-plugin.png)](https://travis-ci.org/orctom/was-maven-plugin)
+
+**Table Of Content**
+- [Introduction](#Introduction)
+- [Goal-`deploy`](#Goal-`deploy`)
+	- [Parameters](#Parameters)
+- [Single Target Server](#Single Target Server)
+- [Multi Target Servers](#Multi Target Servers)
+- [Pre-Steps and Post-Steps](#Pre-Steps and Post-Steps)
+- [Customized Jython Script File](#Customized Jython Script File)
+- [Continues Deployment with Jenkins](#Continues Deployment with Jenkins)
+- [With Global Security Turned on](#With Global Security Turned on)
+- [Changes](#Changes)
+	- [Next Release](#Next Release)
+	- [1.0.7](#1.0.7)
+	- [1.0.6](#1.0.6)
+	- [1.0.5](#1.0.5)
+	- [1.0.4](#1.0.4)
+	- [1.0.3](#1.0.3)
 
 ## Introduction
 
@@ -32,7 +24,8 @@ Maven plugin to deploy a single war or ear to one or multi local or remote WebSp
 Tested on WAS 8.5
 **NOTE: WebSphere Application Server installation required on host box!**
 
-## Goal (the only one) -- `deploy`
+## Goal-`deploy`
+The only one goal of this plugin, it will:
 1. Check if an application with the same name already installed on target server
 	* Uninstall it if yes
 2. Install the package to target server
@@ -338,25 +331,28 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 ```
 #### Sample Jenkins Job Configuration
 **Configure**
+
 ![Jenkins Job configure](https://raw.github.com/orctom/was-maven-plugin/master/screenshots/configure.png "Jenkins Job Configure")
+
 **Trigger**
+
 ![Jenkins Job Trigger](https://raw.github.com/orctom/was-maven-plugin/master/screenshots/trigger.png "Jenkins Job Trigger")
 
 ## With Global Security Turned on
 When Global Security is enabled on remote WAS (not under a same deployment manager), certificates of remote WAS need to be added to local trust store. 
 We could configure WAS to prompt to add them to local trust store.
-1. Open ${WAS_HOME}/properties/ssl.client.props 
-2. Change the value of `com.ibm.ssl.enableSignerExchangePrompt` to `gui` or `stdin`
+ 1. Open ${WAS_HOME}/properties/ssl.client.props 
+ 2. Change the value of `com.ibm.ssl.enableSignerExchangePrompt` to `gui` or `stdin`
 
 * `gui`: will prompt a Java based window, this requires a X window installed. 
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
 ## Changes
 
-### Next Release
-- [x] Not checking whether parent folder of script been created and raising exception.
+#### Next Release
+- [x] Not checking whether parent folder of script been created and raising exception if not.
 
-### 1.0.7
+#### 1.0.7
 * removed `jsp precomiile` options for deployment
 
 ### 1.0.6
