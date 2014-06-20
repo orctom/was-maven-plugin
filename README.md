@@ -24,11 +24,11 @@ Tested on WAS 8.5
 **NOTE: WebSphere Application Server installation required on host box!**
 
 ## Goal-`deploy`
-The only one goal of this plugin, it will:
-1. Check if an application with the same name already installed on target server
-	* Uninstall it if yes
-2. Install the package to target server
-3. Restart the server/cluster
+The only goal of this plugin, it will:
+ 1. Check if an application with the same name already installed on target server(s)/cluster(s)
+ 	* Uninstall it if yes
+ 2. Install the package to target server(s)/cluster(s)
+ 3. Restart target server(s)/cluster(s)
 
 ### Parameters
 | Name						| Type		| Description																								|
@@ -36,7 +36,7 @@ The only one goal of this plugin, it will:
 | **wasHome**				| String	| WebSphere Application Server home. Default: `${env.WAS_HOME}`, **required**								|
 | **applicationName**		| String	| Application name displayed in admin console. Default: `${project.build.finalName}`						|
 | applicationNameSuffix		| String	| Suffix will be appended to applicationName, as `applicationName_applicationNameSuffix`					|
-| host						| String	| Local/Remote WAS IP/domain URL. e.g. `10.95.197.181`, `devtrunk01.company.com`, default: `localhost`   	|
+| host						| String	| Local/Remote WAS IP/domain URL. e.g. `10.95.0.100`, `devtrunk01.company.com`, default: `localhost`   		|
 | port						| String	| Default: `8879` (when `cluster` not empty); `8880` (when `cluster` empty)									|
 | connectorType 			| String	| Default: `SOAP` 																							|
 | cluster					| String	| Target cluster name, **required** if target WAS is a cluster	    										|
@@ -44,12 +44,12 @@ The only one goal of this plugin, it will:
 | node						| String	| Target node name, **required** if target WAS is NOT a cluster 											|
 | server					| String	| Target server name, **required**																			|
 | virtualHost				| String	| Target virtual host name																					|
-| user						| String	| Account user name for WAS admin console																	|
-| password					| String	| Account password for WAS admin console																	|
+| user						| String	| Account username for **target WAS** admin console, if global security is turned on						|
+| password					| String	| Account password for **target WAS** admin console, if global security is turned on						|
 | contextRoot				| String	| **required** for war deployment                   														|
 | sharedLibs				| String	| Bind the exist shared libs to ear/war, comma-separated (,)												|
-| parentLast				| Boolean	| `true` set to classloader mode of application to `PARENT_LAST`, default `false`							|
-| webModuleParentLast		| Boolean	| `true` set to classloader mode of web module to `PARENT_LAST`, default `false`							|
+| parentLast				| Boolean	| `true` to set classloader mode of application to `PARENT_LAST`, default `false`							|
+| webModuleParentLast		| Boolean	| `true` to set classloader mode of web module to `PARENT_LAST`, default `false`							|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy.                          				|
 | **verbose**				| Boolean	| Whether show more detailed info in log																	|
@@ -57,7 +57,7 @@ The only one goal of this plugin, it will:
 | **scriptArgs**			| String	| Args that will be passed to the `script`                                          	                    |
 | **preSteps**				| Ant tasks	| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
-| deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`.|
+| deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`	|
 
 Generally, you need to specify at least
  * `claster` and `server` for a cluster
@@ -210,7 +210,7 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 * **All properties defined in properties section of pom or in was-maven-plugin.properties are available in pre-steps/post-steps ant tasks**
 
 ## Customized Jython Script File
-If you'd like to go with a customized jython script file.
+If you'd like to go with a customized jython script file for deployment.
 
 Double braces for variables, such as: `{{cluster}}`, properties in was-maven-plugin.properties are all available as variables.
 ```xml
@@ -352,7 +352,7 @@ We could configure WAS to prompt to add them to local trust store.
 - [x] Not checking whether parent folder of script been created and raising exception if not.
 
 #### 1.0.7
-* removed `jsp precomiile` options for deployment
+* removed `preCompileJSPs` options for deployment
 
 #### 1.0.6
 * Fixed multi-server deployment issue
@@ -366,4 +366,4 @@ We could configure WAS to prompt to add them to local trust store.
 * Added `failonerror`
 
 #### 1.0.3
-* Removed private project specific logic. (1st working version for general projects for websphere deployment)
+* Removed private project specific logic. (it's the 1st working version for general projects for websphere deployment)
