@@ -349,21 +349,21 @@ We could configure WAS to prompt to add them to local trust store.
 ## Change List
 
 #### Next Release
-- [x] Not checking whether parent folder of script been created and raising exception if not.
+- [x] Not to check whether parent folder of deployment script been created or not.
 
 #### 1.0.7
-* removed `preCompileJSPs` options for deployment
+* removed `preCompileJSPs` options for deployment.
 
 #### 1.0.6
-* Fixed multi-server deployment issue
+* Fixed multi-server deployment issue.
 
 #### 1.0.5
-* Downgraded to use 1.5 build level
-* Fixed property resolving issue, properties in was-maven-plugin.properties are all available in custome scripts and pre/post steps
+* Downgraded to use 1.5 build level, so that it can be used for older version of websphere.
+* Fixed property resolving issue, properties in was-maven-plugin.properties are all available in custome scripts and pre/post steps.
 
 #### 1.0.4
-* Added `PARENT_LAST` for application and web module and `sahred libs` bindings
+* Added `PARENT_LAST` for application and web module and `sahred libs` bindings.
 * Added `failonerror`
 
 #### 1.0.3
-* Removed private project specific logic. (it's the 1st working version for general projects for websphere deployment)
+* Removed private project specific logic. (it's the 1st working version for general projects for websphere deployment).
