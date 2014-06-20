@@ -1,9 +1,44 @@
+<!-- MarkdownTOC depth=5 -->
+
+- [was-maven-plugin](#!Build Status)
+	- Introduction
+	- Goal (the only one) -- `deploy`
+		- Parameters
+	- Single Target Server
+	- Multi Target Servers
+		- was-maven-plugin.properties
+		- pom.xml
+	- Pre-Steps and Post-Steps
+	- Customized Jython Script File
+	- Continues Deployment with Jenkins
+		- Sample pom.xml
+		- Sample Jenkins Job Configuration
+	- With Global Security Turned on
+	- Changes
+		- Next Release
+		- 1.0.7
+		- 1.0.6
+		- 1.0.5
+		- 1.0.4
+		- 1.0.3
+
+<!-- /MarkdownTOC -->
+
 # was-maven-plugin [![Build Status](https://api.travis-ci.org/orctom/was-maven-plugin.png)](https://travis-ci.org/orctom/was-maven-plugin)
 
-Maven plugin to deploy single artifact to one or multi local/remote WebSphere Application Server (WAS) 8.5
+## Introduction
+
+Maven plugin to deploy a single war or ear to one or multi local or remote WebSphere Application Server (WAS) at a single build.
+Tested on WAS 8.5
 **NOTE: WebSphere Application Server installation required on host box!**
 
-## Parameters
+## Goal (the only one) -- `deploy`
+1. Check if an application with the same name already installed on target server
+	* Uninstall it if yes
+2. Install the package to target server
+3. Restart the server/cluster
+
+### Parameters
 | Name						| Type		| Description																								|
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
 | **wasHome**				| String	| WebSphere Application Server home. Default: `${env.WAS_HOME}`, **required**								|
@@ -32,12 +67,16 @@ Maven plugin to deploy single artifact to one or multi local/remote WebSphere Ap
 | **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
 | deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`.|
 
-### Single Target Server
+Generally, you need to specify at least
+ * `claster` and `server` for a cluster
+ * `server` and `node` for a non-cluster
+
+## Single Target Server
 ```xml
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.7</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -59,8 +98,11 @@ Maven plugin to deploy single artifact to one or multi local/remote WebSphere Ap
 </plugin>
 ```
 
-### Multi Target Servers
+## Multi Target Servers
 #### was-maven-plugin.properties
+This property file contains the meta config for target WAS.
+The section name will be used to identify each target WAS.
+
 **Please put `was-maven-plugin.properties` to the same folder as `pom.xml`, to make it available as `${project.basedir}/was-maven-plugin.properties`**
 
 ```properties
@@ -92,7 +134,7 @@ virtualHost=devtrunk3_host
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.7</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -108,21 +150,21 @@ virtualHost=devtrunk3_host
 	</executions>
 </plugin>
 ```
-#### Deploy to dev-trunk1 and dev-trunk2
+**Deploy to dev-trunk1 and dev-trunk2**
 ```
 mvn clean install -Ddeploy_targets=dev-trunk1,dev-trunk2
 ```
-#### Deploy to dev-trunk2 and dev-trunk3
+**Deploy to dev-trunk2 and dev-trunk3**
 ```
 mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 ```
 
-### Pre-Steps and Post-Steps
+## Pre-Steps and Post-Steps
 ```xml
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.7</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -175,13 +217,15 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 * **pre-steps/post-steps can be used with both single target server and multi target servers**
 * **All properties defined in properties section of pom or in was-maven-plugin.properties are available in pre-steps/post-steps ant tasks**
 
-### Customized Jython Script File
-If you'd like to go with a customized jython script file:
+## Customized Jython Script File
+If you'd like to go with a customized jython script file.
+
+Double braces for variables, such as: `{{cluster}}`, properties in was-maven-plugin.properties are all available as variables.
 ```xml
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.7</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -191,7 +235,7 @@ If you'd like to go with a customized jython script file:
 			</goals>
 			<configuration>
 				<wasHome>${env.WAS_HOME}</wasHome>
-				<script>your-jython-script.py<script><!-- "/xxx" for absolute path; "xxx" for ${basedir}/xxx -->
+				<script>your-jython-script.py</script><!-- "/xxx" for absolute path; "xxx" for ${basedir}/xxx -->
 				<scriptArgs>optional-args</scriptArgs>
                 <verbose>true</verbose>
 			</configuration>
@@ -200,7 +244,7 @@ If you'd like to go with a customized jython script file:
 </plugin>
 ```
 
-### Continues Deployment with Jenkins
+## Continues Deployment with Jenkins
 We could move this plugin to a profile, and utilize [Extended Choice Parameter plugin](https://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin) to make this parameterized.
 
 #### Sample pom.xml
@@ -219,7 +263,7 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 				<plugin>
 					<groupId>com.orctom.mojo</groupId>
 					<artifactId>was-maven-plugin</artifactId>
-					<version>1.0.4</version>
+					<version>1.0.7</version>
 					<executions>
 						<execution>
 							<id>deploy</id>
@@ -293,15 +337,38 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 </profiles>
 ```
 #### Sample Jenkins Job Configuration
-##### Configure
+**Configure**
 ![Jenkins Job configure](https://raw.github.com/orctom/was-maven-plugin/master/screenshots/configure.png "Jenkins Job Configure")
-##### Trigger
+**Trigger**
 ![Jenkins Job Trigger](https://raw.github.com/orctom/was-maven-plugin/master/screenshots/trigger.png "Jenkins Job Trigger")
 
-### With Global Security Turned on
-When Global Security is enabled on remote WAS, certificates of remote WAS need to be added to local trust store. We could configure WAS to prompt to add them to local trust store.
- 1. Open ${WAS_HOME}/properties/ssl.client.props 
- 2. Change the value of `com.ibm.ssl.enableSignerExchangePrompt` to `gui` or `stdin`
+## With Global Security Turned on
+When Global Security is enabled on remote WAS (not under a same deployment manager), certificates of remote WAS need to be added to local trust store. 
+We could configure WAS to prompt to add them to local trust store.
+1. Open ${WAS_HOME}/properties/ssl.client.props 
+2. Change the value of `com.ibm.ssl.enableSignerExchangePrompt` to `gui` or `stdin`
 
 * `gui`: will prompt a Java based window, this requires a X window installed. 
 * `stdin`: when using ssh, or on client linux without X window installed. 
+
+## Changes
+
+### Next Release
+- [x] Not checking whether parent folder of script been created and raising exception.
+
+### 1.0.7
+* removed `jsp precomiile` options for deployment
+
+### 1.0.6
+* Fixed multi-server deployment issue
+
+### 1.0.5
+* Downgraded to use 1.5 build level
+* Fixed property resolving issue, properties in was-maven-plugin.properties are all available in custome scripts and pre/post steps
+
+### 1.0.4
+* Added `PARENT_LAST` for application and web module and `sahred libs` bindings
+* Added `failonerror`
+
+### 1.0.3
+* Removed private project specific logic. (1st working version for general projects for websphere deployment)
