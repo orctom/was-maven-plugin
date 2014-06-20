@@ -9,7 +9,7 @@
 - [Customized Jython Script File](#customized-jython-script-file)
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
-- [Changes](#changes)
+- [Change List](#change-list)
 	- [Next Release](#next-release)
 	- [1.0.7](#107)
 	- [1.0.6](#106)
@@ -19,8 +19,8 @@
 
 ## Introduction
 
-Maven plugin to deploy a single war or ear to one or multi local or remote WebSphere Application Server (WAS) at a single build.
-Tested on WAS 8.5
+Maven plugin to deploy a single war or ear to one or multi local or remote WebSphere Application Server (WAS) at a single build.  
+Tested on WAS 8.5  
 **NOTE: WebSphere Application Server installation required on host box!**
 
 ## Goal-`deploy`
@@ -92,7 +92,7 @@ Generally, you need to specify at least
 
 ## Multi Target Servers
 #### was-maven-plugin.properties
-This property file contains the meta config for target WAS.
+This property file contains the meta config for target WAS.  
 The section name will be used to identify each target WAS.
 
 **Please put `was-maven-plugin.properties` to the same folder as `pom.xml`, to make it available as `${project.basedir}/was-maven-plugin.properties`**
@@ -346,7 +346,7 @@ We could configure WAS to prompt to add them to local trust store.
 * `gui`: will prompt a Java based window, this requires a X window installed. 
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
-## Changes
+## Change List
 
 #### Next Release
 - [x] Not checking whether parent folder of script been created and raising exception if not.
@@ -354,16 +354,16 @@ We could configure WAS to prompt to add them to local trust store.
 #### 1.0.7
 * removed `jsp precomiile` options for deployment
 
-### 1.0.6
+#### 1.0.6
 * Fixed multi-server deployment issue
 
-### 1.0.5
+#### 1.0.5
 * Downgraded to use 1.5 build level
 * Fixed property resolving issue, properties in was-maven-plugin.properties are all available in custome scripts and pre/post steps
 
-### 1.0.4
+#### 1.0.4
 * Added `PARENT_LAST` for application and web module and `sahred libs` bindings
 * Added `failonerror`
 
-### 1.0.3
+#### 1.0.3
 * Removed private project specific logic. (1st working version for general projects for websphere deployment)
