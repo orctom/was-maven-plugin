@@ -80,23 +80,19 @@ public class CommandUtils {
         }
     }
 
-    public static void executeCommand(Commandline commandline, StreamConsumer outConsumer, StreamConsumer errorConsumer, boolean isVerbose) {
-        try {
-            if (isVerbose) {
-                System.out.println("Executing command:\n" + StringUtils.join(commandline.getShellCommandline(), " "));
-            }
+    public static void executeCommand(Commandline commandline, StreamConsumer outConsumer, StreamConsumer errorConsumer, boolean isVerbose)
+            throws CommandLineException {
+        if (isVerbose) {
+            System.out.println("Executing command:\n" + StringUtils.join(commandline.getShellCommandline(), " "));
+        }
 
-            int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 1800);
+        int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 1800);
 
-            String msg = "Return code: " + returnCode;
-            if (returnCode != 0) {
-                throw new WebSphereServiceException(msg);
-            } else {
-                System.out.println(msg);
-            }
-
-        } catch (CommandLineException e) {
-            throw new WebSphereServiceException("Executing command line failure.", e);
+        String msg = "Return code: " + returnCode;
+        if (returnCode != 0) {
+            throw new WebSphereServiceException(msg);
+        } else {
+            System.out.println(msg);
         }
     }
 

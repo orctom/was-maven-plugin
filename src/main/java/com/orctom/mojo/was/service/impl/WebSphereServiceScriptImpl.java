@@ -6,6 +6,7 @@ import com.orctom.mojo.was.service.IWebSphereService;
 import com.orctom.mojo.was.utils.CommandUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.cli.CommandLineTimeOutException;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
@@ -95,6 +96,9 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
             if (StringUtils.isNotEmpty(error)) {
                 System.err.println(error);
             }
+        } catch (CommandLineTimeOutException e) {
+            throw new WebSphereServiceException("Failed to execute task" + task +
+                    "\n\tPlease ensure remote WAS or Deployment Manager is running", e);
         } catch (Exception e) {
             throw new WebSphereServiceException("Failed to execute task: " + task, e);
         }
