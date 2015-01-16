@@ -60,7 +60,7 @@ The only goal of this plugin, it will:
 | deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`	|
 
 Generally, you need to specify at least
- * `claster` and `server` for a cluster
+ * `cluster` and `server` for a cluster
  * `server` and `node` for a non-cluster
 
 ## Single Target Server
