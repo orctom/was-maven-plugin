@@ -68,7 +68,7 @@ Generally, you need to specify at least
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.7</version>
+	<version>${latest-version}</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -126,7 +126,7 @@ virtualHost=devtrunk3_host
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.7</version>
+	<version>${latest-version}</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -156,7 +156,7 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.7</version>
+	<version>${latest-version}</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -217,7 +217,7 @@ Double braces for variables, such as: `{{cluster}}`, properties in was-maven-plu
 <plugin>
 	<groupId>com.orctom.mojo</groupId>
 	<artifactId>was-maven-plugin</artifactId>
-	<version>1.0.7</version>
+	<version>${latest-version}</version>
 	<executions>
 		<execution>
 			<id>deploy</id>
@@ -255,7 +255,7 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 				<plugin>
 					<groupId>com.orctom.mojo</groupId>
 					<artifactId>was-maven-plugin</artifactId>
-					<version>1.0.7</version>
+					<version>${latest-version}</version>
 					<executions>
 						<execution>
 							<id>deploy</id>
