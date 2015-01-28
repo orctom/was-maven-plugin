@@ -10,7 +10,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
-	- [Next Release](#next-release)
+	- [1.0.8](#108)
 	- [1.0.7](#107)
 	- [1.0.6](#106)
 	- [1.0.5](#105)
@@ -35,7 +35,7 @@ The only goal of this plugin, it will:
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
 | **wasHome**				| String	| WebSphere Application Server home. Default: `${env.WAS_HOME}`, **required**								|
 | **applicationName**		| String	| Application name displayed in admin console. Default: `${project.build.finalName}`						|
-| applicationNameSuffix		| String	| Suffix will be appended to applicationName, as `applicationName_applicationNameSuffix`					|
+| applicationNameSuffix		| String	| Will be appended to applicationName, as `applicationName_applicationNameSuffix`, **property file only** 	|
 | host						| String	| Local/Remote WAS IP/domain URL. e.g. `10.95.0.100`, `devtrunk01.company.com`, default: `localhost`   		|
 | port						| String	| Default: `8879` (when `cluster` not empty); `8880` (when `cluster` empty)									|
 | connectorType 			| String	| Default: `SOAP` 																							|
@@ -348,11 +348,12 @@ We could configure WAS to prompt to add them to local trust store.
 
 ## Change List
 
-#### Next Release
-- [x] Not to check whether parent folder of deployment script been created or not.
+#### 1.0.8
+* Fixed single target WAS deployment issue.
+* Not to check whether parent folder of deployment script been created or not.
 
 #### 1.0.7
-* removed `preCompileJSPs` options for deployment.
+* Removed `preCompileJSPs` options for deployment.
 
 #### 1.0.6
 * Fixed multi-server deployment issue.

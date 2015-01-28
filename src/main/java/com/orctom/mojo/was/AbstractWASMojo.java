@@ -148,7 +148,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     }
 
     protected WebSphereModel getWebSphereModel() {
-        return new WebSphereModel()
+    	WebSphereModel model = new WebSphereModel()
                 .setWasHome(wasHome)
                 .setApplicationName(applicationName)
                 .setHost(host)
@@ -170,6 +170,10 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setScriptArgs(scriptArgs)
                 .setFailOnError(failOnError)
                 .setVerbose(verbose);
+    	
+    	model.setProperties(getProjectProperties());
+    	
+    	return model;
     }
 
     protected Set<WebSphereModel> getWebSphereModels(String deployTargetStr, Map<String, Properties> propertiesMap) {
@@ -183,14 +187,12 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 getLog().info("[SKIPPED] " + deployTarget + ", not configured in property file.");
                 continue;
             }
-            String appName = applicationName;
-            String appNameSuffix = getPropertyValue("applicationNameSuffix", props);
-            if (StringUtils.isNotEmpty(appNameSuffix)) {
-                appName = appName + "_" + appNameSuffix;
-            }
+            
+            updateApplicationNameWithSuffix(props);
+            
             WebSphereModel model = new WebSphereModel()
                     .setWasHome(wasHome)
-                    .setApplicationName(appName)
+                    .setApplicationName(getPropertyValue("applicationName", props))
                     .setHost(getPropertyValue("host", props))
                     .setPort(getPropertyValue("port", props))
                     .setConnectorType(getPropertyValue("connectorType", props))
@@ -214,11 +216,18 @@ public abstract class AbstractWASMojo extends AbstractMojo {
             model.setProperties(props);
             if (model.isValid()) {
                 models.add(model);
-                props.setProperty("applicationName", model.getApplicationName());
             }
         }
 
         return models;
+    }
+    
+    private void updateApplicationNameWithSuffix(Properties props) {
+        String appNameSuffix = getPropertyValue("applicationNameSuffix", props);
+        if (StringUtils.isNotEmpty(appNameSuffix)) {
+        	String appName = getPropertyValue("applicationName", props);
+        	props.setProperty("applicationName", appName + "_" + appNameSuffix);
+        }
     }
 
     protected String getPropertyValue(String propertyName, Properties props) {
@@ -236,6 +245,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     private Properties getProjectProperties() {
         Properties properties = new Properties(project.getProperties());
+        setProperty(properties, "applicationName", applicationName);
         setProperty(properties, "host", host);
         setProperty(properties, "port", port);
         setProperty(properties, "connectorType", connectorType);
