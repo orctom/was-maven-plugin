@@ -21,7 +21,7 @@
 
 Maven plugin to deploy a single war or ear to one or multi local or remote WebSphere Application Server (WAS) at a single build.  
 Tested on WAS 8.5  
-**NOTE: WebSphere Application Server installation required on host box!**
+**NOTE: WebSphere Application Server installation required on host box! But no need to be configured, nor running.**
 
 ## Goal-`deploy`
 The only goal of this plugin, it will:
