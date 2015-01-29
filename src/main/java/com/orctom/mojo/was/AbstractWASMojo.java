@@ -97,6 +97,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
 
     @Parameter
     protected String scriptArgs;
+    
+    @Parameter
+    protected String javaoption;
 
     @Parameter
     protected boolean verbose;
@@ -168,6 +171,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setPackageFile(packageFile.getAbsolutePath())
                 .setScript(script)
                 .setScriptArgs(scriptArgs)
+                .setJavaoption(javaoption)
                 .setFailOnError(failOnError)
                 .setVerbose(verbose);
     	
@@ -210,6 +214,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setPackageFile(packageFile.getAbsolutePath())
                     .setScript(script)
                     .setScriptArgs(scriptArgs)
+                    .setJavaoption(javaoption)
                     .setFailOnError(failOnError)
                     .setVerbose(verbose);
 
@@ -261,6 +266,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         setProperty(properties, "parentLast", String.valueOf(parentLast));
         setProperty(properties, "webModuleParentLast", String.valueOf(webModuleParentLast));
         setProperty(properties, "packageFile", packageFile.getAbsolutePath());
+        setProperty(properties, "javaoption", javaoption);
         setProperty(properties, "failOnError", String.valueOf(failOnError));
         setProperty(properties, "script", script);
         setProperty(properties, "scriptArgs", scriptArgs);
