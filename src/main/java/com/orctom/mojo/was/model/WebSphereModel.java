@@ -28,6 +28,7 @@ public class WebSphereModel {
     private String packageFile;
     private String script;
     private String scriptArgs;
+    private String javaoption;
     private boolean failOnError;
     private boolean verbose;
 
@@ -225,6 +226,15 @@ public class WebSphereModel {
         return this;
     }
 
+    public String getJavaoption() {
+        return javaoption;
+    }
+
+    public WebSphereModel setJavaoption(String javaoption) {
+        this.javaoption = javaoption;
+        return this;
+    }
+
     public boolean isFailOnError() {
         return failOnError;
     }
@@ -273,6 +283,7 @@ public class WebSphereModel {
                 ", packageFile='" + packageFile + '\'' +
                 ", script='" + script + '\'' +
                 ", scriptArgs='" + scriptArgs + '\'' +
+                ", javaoption='" + javaoption + '\'' +
                 ", failOnError=" + failOnError +
                 ", verbose=" + verbose +
                 ", properties=" + properties +

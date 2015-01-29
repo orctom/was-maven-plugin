@@ -78,6 +78,10 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
                 }
             }
             commandLine.createArg().setLine("-lang jython");
+            if (StringUtils.isNotEmpty(model.getJavaoption())) {
+                commandLine.createArg().setLine("-javaoption");
+                commandLine.createArg().setLine(model.getJavaoption());
+            }
             commandLine.createArg().setLine("-tracefile " + buildScript + ".trace");
             commandLine.createArg().setLine("-appendtrace true");
             commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
