@@ -36,8 +36,11 @@ class WebSphere:
                 print "[NOTICE]: It takes a few minutes for the cluster to fully back running after the build finished!"
                 print '='*60
                 print ""
+            elif "" != node:
+                appManager = AdminControl.queryNames('node=' + node + ',type=Server,process=' + server + ',*')
+                print AdminControl.invoke(appManager, 'restart')
             else:
-                appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
+                appManager = AdminControl.queryNames('type=Server,process=' + server + ',*')
                 print AdminControl.invoke(appManager, 'restart')
         except:
             print "FAILED to restart cluster/server:"
@@ -53,10 +56,12 @@ class WebSphere:
         print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
         try:
-            if "" == node:
+            if "" != cluster:
                 appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
+            elif "" != node:
+                appManager = AdminControl.queryNames('node=' + node + ',type=Server,process=' + server + ',*')
             else:
-                appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
+                appManager = AdminControl.queryNames('type=Server,process=' + server + ',*')
             print AdminControl.invoke(appManager, 'startApplication', applicationName)
             #AdminApplication.startApplicationOnCluster(applicationName, cluster)
         except:
@@ -71,10 +76,12 @@ class WebSphere:
         print time.strftime("%Y-%b-%d %H:%M:%S %Z")
         print '-'*60
         try:
-            if "" == node:
+            if "" != cluster:
                 appManager = AdminControl.queryNames('type=ApplicationManager,process=' + server + ',*')
+            elif "" != node:
+                appManager = AdminControl.queryNames('node=' + node + ',type=Server,process=' + server + ',*')
             else:
-                appManager = AdminControl.queryNames('node=' + node + ',type=ApplicationManager,process=' + server + ',*')
+                appManager = AdminControl.queryNames('type=Server,process=' + server + ',*')
             print AdminControl.invoke(appManager, 'stopApplication', applicationName)
             #AdminApplication.stopApplicationOnCluster(applicationName, cluster)
         except:
