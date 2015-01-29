@@ -10,6 +10,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
+	- [1.0.9](#109)
 	- [1.0.8](#108)
 	- [1.0.7](#107)
 	- [1.0.6](#106)
@@ -41,7 +42,7 @@ The only goal of this plugin, it will:
 | connectorType 			| String	| Default: `SOAP` 																							|
 | cluster					| String	| Target cluster name, **required** if target WAS is a cluster	    										|
 | cell						| String	| Target cell name																							|
-| node						| String	| Target node name, **required** if target WAS is NOT a cluster 											|
+| node						| String	| Target node name,												 											|
 | server					| String	| Target server name, **required**																			|
 | virtualHost				| String	| Target virtual host name																					|
 | user						| String	| Account username for **target WAS** admin console, if global security is turned on						|
@@ -55,6 +56,7 @@ The only goal of this plugin, it will:
 | **verbose**				| Boolean	| Whether show more detailed info in log																	|
 | **script**				| String	| Your own jython script for deployment. Double braces for variables, such as: `{{cluster}}`                |
 | **scriptArgs**			| String	| Args that will be passed to the `script`                                          	                    |
+| **javaoption**			| String	| Sample `-Xmx1024m`, `-Xms512m -Xmx1024m`                                          	                    |
 | **preSteps**				| Ant tasks	| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
 | deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`	|
@@ -347,6 +349,9 @@ We could configure WAS to prompt to add them to local trust store.
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
 ## Change List
+
+#### 1.0.9
+* Added support to override default `javaoption` in wsadmin client.
 
 #### 1.0.8
 * Fixed single target WAS deployment issue.
