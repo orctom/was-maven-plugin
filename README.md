@@ -1,6 +1,7 @@
 # was-maven-plugin [![Build Status](https://api.travis-ci.org/orctom/was-maven-plugin.png)](https://travis-ci.org/orctom/was-maven-plugin)
 
 - [Introduction](#introduction)
+- [How It Works](#how-it-works)
 - [Goal-`deploy`](#goal-deploy)
 	- [Parameters](#parameters)
 - [Single Target Server](#single-target-server)
@@ -19,10 +20,36 @@
 	- [1.0.3](#103)
 
 ## Introduction
-
 Maven plugin to deploy a single war or ear to one or multi local or remote WebSphere Application Server (WAS) at a single build.  
 Tested on WAS 8.5  
 **NOTE: WebSphere Application Server installation required on host box! But no need to be configured, nor running.**
+
+## How It Works
+These are the known popular ways that you can programmly have your war/ear deployed to a running WebSphere Application Server:
+### JMX
+Using IBM specialized JMX APIs you could not only retrieve the information of the apps, but also you can do deployment.
+2 jars from WebSphere are required along with your build.
+ * com.ibm.ws.admin.client_x.x.x.jar (over 50MB)
+ * com.ibm.ws.orb_x.x.x.jar (about 2MB)
+
+**It does NOT support all options for deployment!**
+
+### Monitored Directory Deployment
+Deployment by adding your packages to a monitoredDeployableApps subdirectory of an application server or deployment manager profile.
+For more information, please check: 
+http://www-01.ibm.com/support/knowledgecenter/SSAW57_8.5.5/com.ibm.websphere.nd.doc/ae/trun_app_install_dragdrop.html
+
+In order to deploy to a remote WAS, you'll have to copy/upload your packages to remote host first thru sftp or other approaches.
+**It's turned off by default.**
+### Ant Tasks
+WebSphere provides a set of built-in ant tasks, by using which you could also programmly have your packages deployed to WAS.
+http://www-01.ibm.com/support/knowledgecenter/SSAW57_8.5.5/com.ibm.websphere.javadoc.doc/web/apidocs/com/ibm/websphere/ant/tasks/package-summary.html
+**Ant tasks are in the end been translated to `jacl` script and been executed in `wsadmin` client.**
+### wsadmin client (what we are using)
+wsadmin client tool is the most powerful and flexible tool from OPS' perspective, which locates in `$WAS_HOME/bin/wsadmin.sh`.
+Supports 2 scripting languages: jacl (default) and jython (recommended).
+It uses WebSphere built-in security (credencials) and file transfer protocal (no sftp is needed) for a remote deployment.
+**JMX and Ant Tasks approaches were also implemented in the beginning, but we have them removed before 1.0.2**
 
 ## Goal-`deploy`
 The only goal of this plugin, it will:
