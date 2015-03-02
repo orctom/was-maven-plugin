@@ -57,7 +57,7 @@ It supports 2 scripting languages: jacl (default) and jython (recommended).
 
 It uses WebSphere built-in security (credencials) and file transfer protocal (no sftp is needed) for a remote deployment.
 
-**JMX and Ant Tasks approaches were also implemented in the beginning, but we have them removed before 1.0.2**
+**JMX and Ant Tasks approaches were also implemented in the beginning, but we had them removed before 1.0.2**
 
 ## Goal-`deploy`
 The only goal of this plugin, it will:
