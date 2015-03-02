@@ -386,7 +386,7 @@ We could configure WAS to prompt to add them to local trust store.
 ## Change List
 
 #### 1.0.9
-* Added support to override default `javaoption` in wsadmin client.
+* Added support to override default `javaoption` in wsadmin client, in case you get `OutOfMemoryError`.
 
 #### 1.0.8
 * Fixed single target WAS deployment issue.
