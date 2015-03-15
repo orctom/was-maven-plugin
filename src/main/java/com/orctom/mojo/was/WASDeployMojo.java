@@ -43,7 +43,9 @@ public class WASDeployMojo extends AbstractWASMojo {
         boolean parallelDeploy = StringUtils.isEmpty(parallel) ? models.size() > 1 : Boolean.valueOf(parallel);
 
         if (parallelDeploy) {
-            ExecutorService executor = Executors.newFixedThreadPool(models.size());
+	        int numOfProcessors = Runtime.getRuntime().availableProcessors();
+	        int poolSize = models.size() > numOfProcessors ? numOfProcessors : models.size();
+            ExecutorService executor = Executors.newFixedThreadPool(poolSize);
             for (final WebSphereModel model : models) {
                 executor.execute(new Runnable() {
                     @Override
