@@ -403,7 +403,7 @@ We could configure WAS to prompt to add them to local trust store.
 * Fixed property resolving issue, properties in was-maven-plugin.properties are all available in custome scripts and pre/post steps.
 
 #### 1.0.4
-* Added `PARENT_LAST` for application and web module and `sahred libs` bindings.
+* Added `PARENT_LAST` for application and web module and `shared libs` bindings.
 * Added `failonerror`
 
 #### 1.0.3
