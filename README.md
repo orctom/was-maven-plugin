@@ -1,4 +1,4 @@
-# was-maven-plugin [![Build Status](https://api.travis-ci.org/orctom/was-maven-plugin.png)](https://travis-ci.org/orctom/was-maven-plugin)
+# was-maven-plugin [![Build Status](https://api.travis-ci.org/orctom/was-maven-plugin.png)](https://travis-ci.org/orctom/was-maven-plugin) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.orctom.mojo/was-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.orctom.mojo/was-maven-plugin)
 
 - [Introduction](#introduction)
 - [How It Works](#how-it-works)
