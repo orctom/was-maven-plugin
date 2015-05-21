@@ -47,6 +47,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String connectorType;
 
+    @Parameter(defaultValue = "false")
+    protected boolean restartAfterDeploy;
+
     /**
      * Required if target server is a cluster
      */
@@ -173,6 +176,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setScriptArgs(scriptArgs)
                 .setJavaoption(javaoption)
                 .setFailOnError(failOnError)
+                .setRestartAfterDeploy(restartAfterDeploy)
                 .setVerbose(verbose);
     	
     	model.setProperties(getProjectProperties());
@@ -216,6 +220,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setScriptArgs(scriptArgs)
                     .setJavaoption(javaoption)
                     .setFailOnError(failOnError)
+                    .setRestartAfterDeploy(Boolean.valueOf(getPropertyValue("restartAfterDeploy", props)))
                     .setVerbose(verbose);
 
             model.setProperties(props);
@@ -271,6 +276,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         setProperty(properties, "script", script);
         setProperty(properties, "scriptArgs", scriptArgs);
         setProperty(properties, "verbose", String.valueOf(verbose));
+        setProperty(properties, "restartAfterDeploy", String.valueOf(restartAfterDeploy));
 
         properties.setProperty("basedir", project.getBasedir().getAbsolutePath());
         properties.setProperty("project.basedir", project.getBasedir().getAbsolutePath());
