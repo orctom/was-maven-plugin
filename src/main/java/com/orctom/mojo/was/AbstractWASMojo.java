@@ -47,7 +47,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     @Parameter
     protected String connectorType;
 
-    @Parameter(defaultValue = "false")
+    @Parameter(defaultValue = "true")
     protected boolean restartAfterDeploy;
 
     /**
