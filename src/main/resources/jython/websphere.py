@@ -191,6 +191,9 @@ class WebSphere:
         if "true" == self.installApplication():
             if "true" == restartAfterDeploy:
                 self.restartServer()
+            else:
+                print "no reboot just startApplication directly..."
+                self.startApplication()
 
         print '-'*60
         print "[FINISHED]", host, applicationName
