@@ -11,7 +11,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
-	- [1.1.0](#110)
+	- [1.0.10](#1010)
 	- [1.0.9](#109)
 	- [1.0.8](#108)
 	- [1.0.7](#107)
@@ -387,7 +387,7 @@ We could configure WAS to prompt to add them to local trust store.
 
 ## Change List
 
-#### 1.1.0
+#### 1.0.10
 * Added a boolean property `restartAfterDeploy`:
   - `true` to restart server after deploy
   - `false` to start application directly
