@@ -11,6 +11,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
+	- [1.1.0](#110)
 	- [1.0.9](#109)
 	- [1.0.8](#108)
 	- [1.0.7](#107)
@@ -85,7 +86,7 @@ The only goal of this plugin, it will:
 | contextRoot				| String	| **required** for war deployment                   														|
 | sharedLibs				| String	| Bind the exist shared libs to ear/war, comma-separated (,)												|
 | parentLast				| Boolean	| `true` to set classloader mode of application to `PARENT_LAST`, default `false`							|
-| restartAfterDeploy		| Boolean	| `true` to restart server after deploy, default `true`							|
+| restartAfterDeploy		| Boolean	| `true` to restart server after deploy, `false` to start application directly. Default `true`				|
 | webModuleParentLast		| Boolean	| `true` to set classloader mode of web module to `PARENT_LAST`, default `false`							|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy.                          				|
@@ -385,6 +386,12 @@ We could configure WAS to prompt to add them to local trust store.
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
 ## Change List
+
+#### 1.1.0
+* Added a boolean property `restartAfterDeploy`:
+  - `true` to restart server after deploy
+  - `false` to start application directly
+  - Default: `true`	
 
 #### 1.0.9
 * Added support to override default `javaoption` in wsadmin client, in case you get `OutOfMemoryError`.
