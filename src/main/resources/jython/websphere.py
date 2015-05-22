@@ -192,7 +192,7 @@ class WebSphere:
             if "true" == restartAfterDeploy:
                 self.restartServer()
             else:
-                print "no reboot just startApplication directly..."
+                print "Starting application instead of restarting server..."
                 self.startApplication()
 
         print '-'*60
