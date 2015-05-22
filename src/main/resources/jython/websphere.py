@@ -15,6 +15,7 @@ sharedLibs = r"{{sharedLibs}}"
 parentLast = r"{{parentLast}}"
 webModuleParentLast = r"{{webModuleParentLast}}"
 packageFile = r"{{packageFile}}"
+restartAfterDeploy = r"{{restartAfterDeploy}}"
 
 class WebSphere:
     def listApplications(self):
@@ -188,7 +189,11 @@ class WebSphere:
             self.uninstallApplication()
 
         if "true" == self.installApplication():
-            self.restartServer()
+            if "true" == restartAfterDeploy:
+                self.restartServer()
+            else:
+                print "no reboot just startApplication directly..."
+                self.startApplication()
 
         print '-'*60
         print "[FINISHED]", host, applicationName

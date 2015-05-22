@@ -85,6 +85,7 @@ The only goal of this plugin, it will:
 | contextRoot				| String	| **required** for war deployment                   														|
 | sharedLibs				| String	| Bind the exist shared libs to ear/war, comma-separated (,)												|
 | parentLast				| Boolean	| `true` to set classloader mode of application to `PARENT_LAST`, default `false`							|
+| restartAfterDeploy		| Boolean	| `true` to restart server after deploy, default `true`							|
 | webModuleParentLast		| Boolean	| `true` to set classloader mode of web module to `PARENT_LAST`, default `false`							|
 | **packageFile**			| String	| The EAR/WAR package that will be deployed to remote RAS, Default: `${project.artifact.file}`				|
 | **failOnError**			| Boolean	| Default: `false` Whether failed the build when failed to deploy.                          				|

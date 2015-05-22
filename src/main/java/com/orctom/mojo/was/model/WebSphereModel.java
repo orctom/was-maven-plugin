@@ -24,6 +24,7 @@ public class WebSphereModel {
     private String contextRoot;
     private String sharedLibs;
     private boolean parentLast;
+    private boolean restartAfterDeploy;
     private boolean webModuleParentLast;
     private String packageFile;
     private String script;
@@ -253,6 +254,15 @@ public class WebSphereModel {
         return this;
     }
 
+    public boolean shouldRestartAfterDeploy() {
+        return restartAfterDeploy;
+    }
+
+    public WebSphereModel setRestartAfterDeploy(boolean restartAfterDeploy) {
+        this.restartAfterDeploy = restartAfterDeploy;
+        return this;
+    }
+
     public Properties getProperties() {
         return properties;
     }
@@ -286,6 +296,7 @@ public class WebSphereModel {
                 ", javaoption='" + javaoption + '\'' +
                 ", failOnError=" + failOnError +
                 ", verbose=" + verbose +
+                ", restartAfterDeploy='" + restartAfterDeploy + '\'' +
                 ", properties=" + properties +
                 '}';
     }
