@@ -126,7 +126,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
             if (null != deploymentsPropertyFile && deploymentsPropertyFile.exists()) {
                 project.getBasedir();
                 Map<String, Properties> propertiesMap = PropertiesUtils.loadSectionedProperties(deploymentsPropertyFile, getProjectProperties());
-                if (propertiesMap.size() >= 1) {
+                if (null != propertiesMap && propertiesMap.size() >= 1) {
                     getLog().info("Multi targets: " + deployTargets);
                     return getWebSphereModels(deployTargets, propertiesMap);
                 }
