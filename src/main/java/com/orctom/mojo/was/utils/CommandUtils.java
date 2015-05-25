@@ -26,7 +26,7 @@ public class CommandUtils {
     private static final String TIMESTAMP_FORMAT = "yyyyMMdd-HHmmss-SSS";
 
     public static String getWorkingDir(String targetFolder, String templateExt) {
-        return targetFolder + "/" + Constants.PLUGIN_ID + "/" + templateExt + "/";
+        return targetFolder + File.separator + Constants.PLUGIN_ID + File.separator + templateExt + File.separator;
     }
 
     public static File getExecutable(final String wasHome, final String name) {
@@ -54,33 +54,46 @@ public class CommandUtils {
         return executable;
     }
 
-    public static File getBuildScript(String task, String template, WebSphereModel model, String workingDir, String ext) throws IOException {
-        if (StringUtils.isNotEmpty(model.getScript())) {
-            if (model.getScript().startsWith("/")) {
-                return new File(model.getScript());
-            } else {
-                return new File(workingDir, model.getScript());
-            }
+    public static File getBuildScript(String task, String defaultTemplate, WebSphereModel model, String workingDir, String ext) throws IOException {
+        String template = getScriptTemplate(defaultTemplate, model, workingDir);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(template);
+
+        StringBuilder buildFile = new StringBuilder(50);
+        buildFile.append(task);
+        if (StringUtils.isNotBlank(model.getHost())) {
+            buildFile.append("-").append(model.getHost());
+        }
+        if (StringUtils.isNotBlank(model.getApplicationName())) {
+            buildFile.append("-").append(model.getApplicationName());
+        }
+        buildFile.append("-").append(getTimestampString()).append(".").append(ext);
+
+        File buildScriptFile = new File(workingDir, buildFile.toString());
+        buildScriptFile.getParentFile().mkdirs();
+        Writer writer = new FileWriter(buildScriptFile);
+        mustache.execute(writer, model.getProperties()).flush();
+
+        return buildScriptFile;
+    }
+
+    private static String getScriptTemplate(String defaultTemplate, WebSphereModel model, String workingDir) {
+        if (StringUtils.isEmpty(model.getScript())) {
+            return defaultTemplate;
         } else {
-            MustacheFactory mf = new DefaultMustacheFactory();
-            Mustache mustache = mf.compile(template);
-
-            StringBuilder buildFile = new StringBuilder(50);
-            buildFile.append(task);
-            if (StringUtils.isNotBlank(model.getHost())) {
-                buildFile.append("-").append(model.getHost());
+            File customizedScript = null;
+            if (model.getScript().startsWith(File.separator)) {
+                customizedScript = new File(model.getScript());
+            } else {
+                File projectRoot = new File(workingDir).getParentFile().getParentFile().getParentFile();
+                customizedScript = new File(projectRoot, model.getScript());
             }
-            if (StringUtils.isNotBlank(model.getApplicationName())) {
-                buildFile.append("-").append(model.getApplicationName());
+
+            if (!customizedScript.exists()) {
+                throw new WebSphereServiceException("Customized script doesn't exist: " + customizedScript.getAbsolutePath());
             }
-            buildFile.append("-").append(getTimestampString()).append(".").append(ext);
-
-            File buildScriptFile = new File(workingDir, buildFile.toString());
-            buildScriptFile.getParentFile().mkdirs();
-            Writer writer = new FileWriter(buildScriptFile);
-            mustache.execute(writer, model.getProperties()).flush();
-
-            return buildScriptFile;
+            System.out.println("Using customized script: " + customizedScript.getAbsolutePath());
+            return customizedScript.getAbsolutePath();
         }
     }
 
@@ -92,11 +105,11 @@ public class CommandUtils {
 
         int returnCode = CommandLineUtils.executeCommandLine(commandline, outConsumer, errorConsumer, 1800);
 
-        String msg = "Return code: " + returnCode;
         if (returnCode != 0) {
+            String msg = "Failed to deploy, return code: " + returnCode + ". Please make sure target WAS is alive and reachable.";
             throw new WebSphereServiceException(msg);
         } else {
-            System.out.println(msg);
+            System.out.println("Return code: " + returnCode);
         }
     }
 
