@@ -40,6 +40,10 @@ public class CommandUtils {
             }
         });
 
+        if (null == candidates) {
+            throw new WebSphereServiceException("Wrong wasHome or WAS_HOME: " + wasHome);
+        }
+
         if (candidates.length != 1) {
             throw new WebSphereServiceException("Couldn't find " + name + "[.sh|.bat], candidates: " + Arrays.toString(candidates));
         }
