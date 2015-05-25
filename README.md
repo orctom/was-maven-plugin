@@ -11,6 +11,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
+	- [1.0.11](#1011)
 	- [1.0.10](#1010)
 	- [1.0.9](#109)
 	- [1.0.8](#108)
@@ -181,13 +182,13 @@ virtualHost=devtrunk3_host
 	</executions>
 </plugin>
 ```
-**Deploy to dev-trunk1 and dev-trunk2**
+**Deploy to `dev-trunk1` and `dev-trunk2`**
 ```
-mvn clean install -Ddeploy_targets=dev-trunk1,dev-trunk2
+mvn clean install -Ddeploy_targets=`dev-trunk1`,`dev-trunk2`
 ```
-**Deploy to dev-trunk2 and dev-trunk3**
+**Deploy to `dev-trunk2` and `dev-trunk3`**
 ```
-mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
+mvn clean install -Ddeploy_targets=`dev-trunk2`,`dev-trunk3`
 ```
 
 ## Pre-Steps and Post-Steps
@@ -249,7 +250,10 @@ mvn clean install -Ddeploy_targets=dev-trunk2,dev-trunk3
 * **All properties defined in properties section of pom or in was-maven-plugin.properties are available in pre-steps/post-steps ant tasks**
 
 ## Customized Jython Script File
-If you'd like to go with a customized jython script file for deployment.
+This plugin also supports customized jython script if you need to tween the installation options, such server mappings.
+
+You can copy-create it from [the built-in one](src/main/resources/jython/websphere.py),
+or write a totally different one of you own.
 
 Double braces for variables, such as: `{{cluster}}`, properties in was-maven-plugin.properties are all available as variables.
 ```xml
@@ -266,8 +270,8 @@ Double braces for variables, such as: `{{cluster}}`, properties in was-maven-plu
 			</goals>
 			<configuration>
 				<wasHome>${env.WAS_HOME}</wasHome>
-				<script>your-jython-script.py</script><!-- "/xxx" for absolute path; "xxx" for ${basedir}/xxx -->
-				<scriptArgs>optional-args</scriptArgs>
+				<script>your-jython-script.py</script><!-- relative path to project root, or absolute path starts with a "/" (Linux) or "\" (Windows)  -->
+				<scriptArgs>optional-args</scriptArgs><!-- "-o deploy" will be appended if not specified. -->
                 <verbose>true</verbose>
 			</configuration>
 		</execution>
@@ -386,6 +390,9 @@ We could configure WAS to prompt to add them to local trust store.
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
 ## Change List
+
+#### 1.0.11
+* Fixed the issue with customized script.
 
 #### 1.0.10
 * Added a boolean property `restartAfterDeploy`:
