@@ -21,7 +21,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
     private WebSphereModel model;
     private String workingDir;
 
-    private static final String TEMPLATE = "jython/websphere.py";
+    private static final String TEMPLATE = "jython" + File.separator + "websphere.py";
     private static final String TEMPLATE_EXT = "py";
 
     public WebSphereServiceScriptImpl(WebSphereModel model, String targetDir) {
@@ -87,7 +87,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
             commandLine.createArg().setLine("-tracefile " + buildScript + ".trace");
             commandLine.createArg().setLine("-appendtrace true");
             commandLine.createArg().setLine("-f " + buildScript.getAbsolutePath());
-            if (StringUtils.isNotEmpty(model.getScript())) {
+            if (StringUtils.isNotEmpty(model.getScript()) && StringUtils.isNotEmpty(model.getScriptArgs())) {
                 commandLine.createArg().setLine(model.getScriptArgs());
             } else {
                 commandLine.createArg().setLine("-o " + task);
@@ -104,9 +104,9 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
             }
         } catch (CommandLineTimeOutException e) {
             throw new WebSphereServiceException("Failed to execute task" + task +
-                    "\n\tPlease ensure remote WAS or Deployment Manager is running", e);
+                    "\n\tPlease ensure remote WAS or Deployment Manager is running. " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new WebSphereServiceException("Failed to execute task: " + task, e);
+            throw new WebSphereServiceException(e.getMessage(), e);
         }
     }
 
