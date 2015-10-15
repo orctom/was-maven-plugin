@@ -21,7 +21,7 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
     private WebSphereModel model;
     private String workingDir;
 
-    private static final String TEMPLATE = "jython" + File.separator + "websphere.py";
+    private static final String TEMPLATE = "jython/websphere.py";
     private static final String TEMPLATE_EXT = "py";
 
     public WebSphereServiceScriptImpl(WebSphereModel model, String targetDir) {
