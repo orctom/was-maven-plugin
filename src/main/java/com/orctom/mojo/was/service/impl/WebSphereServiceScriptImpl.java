@@ -97,14 +97,20 @@ public class WebSphereServiceScriptImpl implements IWebSphereService {
             StringStreamConsumer errConsumer = new StringStreamConsumer();
             CommandUtils.executeCommand(commandLine, outConsumer, errConsumer, model.isVerbose());
 
-            FileUtils.fileWrite(new File(buildScript + ".log"), outConsumer.getOutput());
+            String out = outConsumer.getOutput();
+            FileUtils.fileWrite(new File(buildScript + ".log"), out);
+
+            if (model.isFailOnError() && out.contains("com.ibm.ws.scripting.ScriptingException")) {
+                throw new WebSphereServiceException("Failed to execute goal: " + task + ". Please see the log for more details");
+            }
+
             String error = errConsumer.getOutput();
             if (StringUtils.isNotEmpty(error)) {
                 System.err.println(error);
             }
         } catch (CommandLineTimeOutException e) {
-            throw new WebSphereServiceException("Failed to execute task" + task +
-                    "\n\tPlease ensure remote WAS or Deployment Manager is running. " + e.getMessage(), e);
+            throw new WebSphereServiceException("Failed to execute goal: " + task +
+                    ". Please ensure remote WAS or Deployment Manager is running. " + e.getMessage(), e);
         } catch (Exception e) {
             throw new WebSphereServiceException(e.getMessage(), e);
         }
