@@ -11,6 +11,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
+	- [1.1.0](#110)
 	- [1.0.12](#1012)
 	- [1.0.11](#1011)
 	- [1.0.10](#1010)
@@ -101,7 +102,7 @@ The only goal of this plugin, it will:
 | deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`	|
 
 Generally, you need to specify at least
- * `cluster` and `server` for a cluster
+ * `cluster` for a cluster
  * `server` and `node` for a non-cluster
 
 ## Single Target Server
@@ -391,6 +392,10 @@ We could configure WAS to prompt to add them to local trust store.
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
 ## Change List
+
+#### 1.1.0
+* Fixed server mapping issue with cluster. Apps will be deployed to all servers that managed by the specified cluster.
+* Fixed issue about `failOnError`.
 
 #### 1.0.12
 * Fixed the issue about "Template 'jython\websphere.py' not found" specific for Windows.
