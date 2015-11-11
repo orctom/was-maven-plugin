@@ -69,6 +69,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     protected String server;
 
     @Parameter
+    protected String webservers;
+
+    @Parameter
     protected String virtualHost;
 
     @Parameter
@@ -103,6 +106,9 @@ public abstract class AbstractWASMojo extends AbstractMojo {
     
     @Parameter
     protected String javaoption;
+
+    @Parameter
+    protected String deployOptions;
 
     @Parameter
     protected boolean verbose;
@@ -163,6 +169,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setCell(cell)
                 .setNode(node)
                 .setServer(server)
+                .setWebservers(webservers)
                 .setVirtualHost(virtualHost)
                 .setContextRoot(contextRoot)
                 .setSharedLibs(sharedLibs)
@@ -174,6 +181,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                 .setScript(script)
                 .setScriptArgs(scriptArgs)
                 .setJavaoption(javaoption)
+                .setDeployOptions(deployOptions)
                 .setFailOnError(failOnError)
                 .setRestartAfterDeploy(restartAfterDeploy)
                 .setVerbose(verbose);
@@ -207,6 +215,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setCell(getPropertyValue("cell", props))
                     .setNode(getPropertyValue("node", props))
                     .setServer(getPropertyValue("server", props))
+                    .setWebservers(getPropertyValue("webservers", props))
                     .setVirtualHost(getPropertyValue("virtualHost", props))
                     .setContextRoot(getPropertyValue("contextRoot", props))
                     .setSharedLibs(getPropertyValue("sharedLibs", props))
@@ -218,6 +227,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
                     .setScript(script)
                     .setScriptArgs(scriptArgs)
                     .setJavaoption(javaoption)
+                    .setDeployOptions(deployOptions)
                     .setFailOnError(failOnError)
                     .setRestartAfterDeploy(Boolean.valueOf(getPropertyValue("restartAfterDeploy", props)))
                     .setVerbose(verbose);
@@ -262,6 +272,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         setProperty(properties, "cell", cell);
         setProperty(properties, "node", node);
         setProperty(properties, "server", server);
+        setProperty(properties, "webservers", webservers);
         setProperty(properties, "virtualHost", virtualHost);
         setProperty(properties, "user", user);
         setProperty(properties, "password", password);
@@ -271,6 +282,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
         setProperty(properties, "webModuleParentLast", String.valueOf(webModuleParentLast));
         setProperty(properties, "packageFile", packageFile.getAbsolutePath());
         setProperty(properties, "javaoption", javaoption);
+        setProperty(properties, "deployOptions", deployOptions);
         setProperty(properties, "failOnError", String.valueOf(failOnError));
         setProperty(properties, "script", script);
         setProperty(properties, "scriptArgs", scriptArgs);
