@@ -11,7 +11,6 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
-	- [1.1.0](#110)
 	- [1.0.12](#1012)
 	- [1.0.11](#1011)
 	- [1.0.10](#1010)
@@ -393,7 +392,7 @@ We could configure WAS to prompt to add them to local trust store.
 
 ## Change List
 
-#### 1.1.0
+#### next release
 * Fixed server mapping issue with cluster. Apps will be deployed to all servers that managed by the specified cluster.
 * Fixed issue about `failOnError`.
 
