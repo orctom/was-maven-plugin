@@ -1,19 +1,18 @@
 package com.orctom.mojo.was;
 
-import com.orctom.mojo.was.model.WebSphereModel;
-import com.orctom.mojo.was.model.WebSphereServiceException;
-import com.orctom.mojo.was.service.impl.WebSphereServiceScriptImpl;
+import com.google.common.base.Throwables;
 import com.orctom.mojo.was.utils.AntTaskUtils;
-
+import com.orctom.was.model.WebSphereModel;
+import com.orctom.was.model.WebSphereServiceException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
-import org.codehaus.plexus.util.ExceptionUtils;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -40,6 +39,8 @@ public class WASDeployMojo extends AbstractWASMojo {
             return;
         }
 
+        final String workingDir = project.getBuild().getDirectory() + File.separator + Constants.PLUGIN_ID + File.separator + "py" + File.separator;
+
         boolean parallelDeploy = StringUtils.isEmpty(parallel) ? models.size() > 1 : Boolean.valueOf(parallel);
 
         if (parallelDeploy) {
@@ -50,7 +51,7 @@ public class WASDeployMojo extends AbstractWASMojo {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        execute(model);
+                        execute(model, workingDir);
                     }
                 });
             }
@@ -63,12 +64,12 @@ public class WASDeployMojo extends AbstractWASMojo {
             }
         } else {
             for (WebSphereModel model : models) {
-                execute(model);
+                execute(model, workingDir);
             }
         }
     }
 
-    private void execute(WebSphereModel model) {
+    private void execute(WebSphereModel model, String workingDir) {
         getLog().info("============================================================");
         getLog().info("[DEPLOY] " + model.getHost() + " " + model.getApplicationName());
         getLog().info("============================================================");
@@ -77,22 +78,15 @@ public class WASDeployMojo extends AbstractWASMojo {
             getLog().info("====================    pre-steps    =======================");
             executeAntTasks(model, super.preSteps);
             getLog().info("======================    deploy    ========================");
-            new WebSphereServiceScriptImpl(model, project.getBuild().getDirectory()).deploy();
+            new WebSphereServiceImpl(model, workingDir).deploy();
             getLog().info("====================    post-steps    ======================");
             executeAntTasks(model, super.postSteps);
-        } catch (RuntimeException e) {
-            if (failOnError) {
-                throw e;
-            } else {
-                getLog().error("##############  Exception occurred during deploying to WebSphere  ###############");
-                getLog().error(ExceptionUtils.getFullStackTrace(e));
-            }
         } catch (Throwable t) {
             if (failOnError) {
                 throw new WebSphereServiceException(t);
             } else {
                 getLog().error("##############  Exception occurred during deploying to WebSphere  ###############");
-                getLog().error(ExceptionUtils.getFullStackTrace(t));
+                getLog().error(Throwables.getStackTraceAsString(t));
             }
         }
     }

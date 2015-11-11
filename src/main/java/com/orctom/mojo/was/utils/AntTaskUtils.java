@@ -1,7 +1,8 @@
 package com.orctom.mojo.was.utils;
 
 import com.orctom.mojo.was.Constants;
-import com.orctom.mojo.was.model.WebSphereModel;
+import com.orctom.was.model.WebSphereModel;
+import com.orctom.was.utils.CommandUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -69,7 +70,7 @@ public class AntTaskUtils {
             fileName.append("-").append(model.getApplicationName());
         }
         fileName.append("-").append(antTargetName).append("-").append(CommandUtils.getTimestampString()).append(".xml");
-        File buildFile = new File(CommandUtils.getWorkingDir(project.getBuild().getDirectory(), "/steps/") + fileName);
+        File buildFile = getBuildFile(project, fileName.toString());
 
         if (model.isVerbose()) {
             logger.info("ant fileName: " + fileName);
@@ -104,6 +105,11 @@ public class AntTaskUtils {
 
         Project antProject = generateAntProject(model, buildFile, project, projectHelper, pluginArtifact, logger);
         antProject.executeTarget(antTargetName);
+    }
+
+    private static File getBuildFile(MavenProject project, String fileName) {
+        String path = project.getBuild().getDirectory() + File.separator + Constants.PLUGIN_ID + File.separator + "steps" + File.separator;
+        return new File(path, fileName);
     }
 
     private static Project generateAntProject(WebSphereModel model, File antBuildFile, MavenProject project, MavenProjectHelper projectHelper,

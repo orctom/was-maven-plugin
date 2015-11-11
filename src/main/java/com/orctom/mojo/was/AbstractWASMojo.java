@@ -1,7 +1,7 @@
 package com.orctom.mojo.was;
 
-import com.orctom.mojo.was.model.WebSphereModel;
-import com.orctom.mojo.was.utils.PropertiesUtils;
+import com.orctom.was.model.WebSphereModel;
+import com.orctom.was.utils.PropertiesUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Component;
