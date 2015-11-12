@@ -28,7 +28,7 @@ Maven plugin to deploy a single war or ear to one or multi local or remote WebSp
 Tested on WAS 8.5  
 **Requires: WebSphere Application Server installation on host box! But no need to be configured, nor running.**
 
-**Requires: JDK 7 or later**
+**Requires: JDK 6 or later**
 
 ## How It Works
 These are the known popular ways that you can programmly have your war/ear deployed to a running WebSphere Application Server:
