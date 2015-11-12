@@ -11,6 +11,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
+	- [1.1.0](#110)
 	- [1.0.12](#1012)
 	- [1.0.11](#1011)
 	- [1.0.10](#1010)
@@ -392,9 +393,12 @@ We could configure WAS to prompt to add them to local trust store.
 
 ## Change List
 
-#### next release
+#### 1.1.0
 * Fixed server mapping issue with cluster. Apps will be deployed to all servers that managed by the specified cluster.
+* Web servers support, use `webservers` to specify the web server(s) that you want to bind. (but you still have to 'update web server plug-in configuration' by your self.)
+* Added parameter `deployOptions`, expecting space-separated options such as `-precompileJSPs -deployws`, which will be prepended in the deployment options.
 * Fixed issue about `failOnError`.
+* Extract some common code including `websphere.py` to [was-util](https://github.com/orctom/was-util), which is also been used by [was-gradle-plugin](https://github.com/orctom/was-gradle-plugin)
 
 #### 1.0.12
 * Fixed the issue about "Template 'jython\websphere.py' not found" specific for Windows.
@@ -403,7 +407,7 @@ We could configure WAS to prompt to add them to local trust store.
 * Fixed the issue with customized script.
 
 #### 1.0.10
-* Added a boolean property `restartAfterDeploy`:
+* Added a boolean parameter `restartAfterDeploy`:
   - `true` to restart server after deploy
   - `false` to start application directly
   - Default: `true`	
