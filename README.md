@@ -402,7 +402,7 @@ We could configure WAS to prompt to add them to local trust store.
 * Web servers support, use `webservers` to specify the web server(s) that you want to bind. (but you still have to 'update web server plug-in configuration' by your self.)
 * Added parameter `deployOptions`, expecting space-separated options such as `-precompileJSPs -deployws`, which will be prepended in the deployment options.
 * Fixed issue about `failOnError`.
-* Extract some common code including `websphere.py` to [was-util](https://github.com/orctom/was-util), which is also been used by [was-gradle-plugin](https://github.com/orctom/was-gradle-plugin)
+* Extracted some common code including `websphere.py` to [was-util](https://github.com/orctom/was-util), which is also been used by [was-gradle-plugin](https://github.com/orctom/was-gradle-plugin)
 
 #### 1.0.12
 * Fixed the issue about "Template 'jython\websphere.py' not found" specific for Windows.
