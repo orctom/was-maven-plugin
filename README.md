@@ -26,7 +26,9 @@
 ## Introduction
 Maven plugin to deploy a single war or ear to one or multi local or remote WebSphere Application Server (WAS) at a single build.  
 Tested on WAS 8.5  
-**NOTE: WebSphere Application Server installation required on host box! But no need to be configured, nor running.**
+**Requires: WebSphere Application Server installation on host box! But no need to be configured, nor running.**
+
+**Requires: JDK 7 or later**
 
 ## How It Works
 These are the known popular ways that you can programmly have your war/ear deployed to a running WebSphere Application Server:
@@ -82,7 +84,8 @@ The only goal of this plugin, it will:
 | cluster					| String	| Target cluster name, **required** if target WAS is a cluster	    										|
 | cell						| String	| Target cell name																							|
 | node						| String	| Target node name,												 											|
-| server					| String	| Target server name, **required**																			|
+| server					| String	| Target server name,									            										|
+| webservers				| String	| Target web server(s) name, comma-separated.																|
 | virtualHost				| String	| Target virtual host name																					|
 | user						| String	| Account username for **target WAS** admin console, if global security is turned on						|
 | password					| String	| Account password for **target WAS** admin console, if global security is turned on						|
@@ -97,6 +100,7 @@ The only goal of this plugin, it will:
 | **script**				| String	| Your own jython script for deployment. Double braces for variables, such as: `{{cluster}}`                |
 | **scriptArgs**			| String	| Args that will be passed to the `script`                                          	                    |
 | **javaoption**			| String	| Sample `-Xmx1024m`, `-Xms512m -Xmx1024m`                                          	                    |
+| deployOptions				| String	| Sample `-precompileJSPs`, `-precompileJSPs -deployws`                                	                    |
 | **preSteps**				| Ant tasks	| Ant tasks that can be executed before the deployments														|
 | **postSteps**				| Ant tasks	| Ant tasks that can be executed after the deployments														|
 | deploymentsPropertyFile	| File		| For multi target, hold above parameters, except those in **bold**. Default: `was-maven-plugin.properties`	|
@@ -254,7 +258,7 @@ mvn clean install -Ddeploy_targets=`dev-trunk2`,`dev-trunk3`
 ## Customized Jython Script File
 This plugin also supports customized jython script if you need to tween the installation options, such server mappings.
 
-You can copy-create it from [the built-in one](src/main/resources/jython/websphere.py),
+You can copy-create it from [the built-in one](https://github.com/orctom/was-util/blob/master/src/main/resources/jython/websphere.py),
 or write a totally different one of you own.
 
 Double braces for variables, such as: `{{cluster}}`, properties in was-maven-plugin.properties are all available as variables.
