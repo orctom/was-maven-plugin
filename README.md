@@ -11,6 +11,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
+	- [1.1.1](#111)
 	- [1.1.0](#110)
 	- [1.0.12](#1012)
 	- [1.0.11](#1011)
@@ -396,6 +397,9 @@ We could configure WAS to prompt to add them to local trust store.
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
 ## Change List
+
+#### 1.1.1
+* Fixed issue of not starting application on standalone WAS (restartAfterDeploy=false)
 
 #### 1.1.0
 * Fixed server mapping issue with cluster. Apps will be deployed to all servers that managed by the specified cluster.
