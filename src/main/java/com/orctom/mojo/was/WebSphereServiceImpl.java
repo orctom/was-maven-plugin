@@ -1,5 +1,6 @@
 package com.orctom.mojo.was;
 
+import com.google.common.base.Strings;
 import com.orctom.was.model.Command;
 import com.orctom.was.model.WebSphereModel;
 import com.orctom.was.model.WebSphereServiceException;
@@ -26,8 +27,12 @@ public class WebSphereServiceImpl extends AbstractWebSphereServiceImpl {
 			Commandline commandLine = new Commandline();
 			commandLine.setExecutable(command.getExecutable());
 			commandLine.setWorkingDirectory(command.getWorkingDir());
-			for (String arg : command.getArgEntriesAsList()) {
-				commandLine.createArg().setLine(arg);
+			for (String arg : command.getArgs().keySet()) {
+			    commandLine.createArg().setLine(arg);
+			    if (!Strings.isNullOrEmpty(command.getArgs().get( arg ))) {
+			        commandLine.createArg().setLine(StringUtils.quoteAndEscape( command.getArgs().get( arg ),'"' ) );
+			    }
+			    
 			}
 
 			StringStreamConsumer outConsumer = new StringStreamConsumer();
