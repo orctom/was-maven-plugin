@@ -11,6 +11,7 @@
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
 - [Change List](#change-list)
+	- [1.1.2](#112)
 	- [1.1.1](#111)
 	- [1.1.0](#110)
 	- [1.0.12](#1012)
@@ -397,6 +398,9 @@ We could configure WAS to prompt to add them to local trust store.
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
 ## Change List
+
+#### 1.1.2
+* Fixed issue for workspace path includes whitespaces.
 
 #### 1.1.1
 * Fixed issue of not starting application on standalone WAS (restartAfterDeploy=false)
