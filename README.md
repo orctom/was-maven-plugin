@@ -10,20 +10,7 @@
 - [Customized Jython Script File](#customized-jython-script-file)
 - [Continues Deployment with Jenkins](#continues-deployment-with-jenkins)
 - [With Global Security Turned on](#with-global-security-turned-on)
-- [Change List](#change-list)
-	- [1.1.2](#112)
-	- [1.1.1](#111)
-	- [1.1.0](#110)
-	- [1.0.12](#1012)
-	- [1.0.11](#1011)
-	- [1.0.10](#1010)
-	- [1.0.9](#109)
-	- [1.0.8](#108)
-	- [1.0.7](#107)
-	- [1.0.6](#106)
-	- [1.0.5](#105)
-	- [1.0.4](#104)
-	- [1.0.3](#103)
+- [Change Log](#change-log)
 
 ## Introduction
 Maven plugin to deploy a single war or ear to one or multi local or remote WebSphere Application Server (WAS) at a single build.  
@@ -397,7 +384,10 @@ We could configure WAS to prompt to add them to local trust store.
 * `gui`: will prompt a Java based window, this requires a X window installed. 
 * `stdin`: when using ssh, or on client linux without X window installed. 
 
-## Change List
+## Change Log
+
+#### 1.1.3
+* Fixed issue [multi shared libs only the last one got bound](https://github.com/orctom/was-maven-plugin/issues/13)
 
 #### 1.1.2
 * Fixed issue for workspace path includes whitespaces.
