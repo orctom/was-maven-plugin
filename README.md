@@ -386,6 +386,9 @@ We could configure WAS to prompt to add them to local trust store.
 
 ## Change Log
 
+#### 1.1.3.2
+* Added support for IHS webserver mapping for standalone WAS.
+
 #### 1.1.3.1
 * Fixed issue [multi shared libs only the last one got bound](https://github.com/orctom/was-maven-plugin/issues/13)
 

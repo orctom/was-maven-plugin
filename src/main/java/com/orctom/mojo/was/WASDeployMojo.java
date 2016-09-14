@@ -26,79 +26,79 @@ import java.util.concurrent.TimeUnit;
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresDirectInvocation = true, threadSafe = true)
 public class WASDeployMojo extends AbstractWASMojo {
 
-    @Parameter
-    protected String parallel;
+  @Parameter
+  protected String parallel;
 
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().info(Constants.PLUGIN_ID + " - deploy");
-        Set<WebSphereModel> models = getWebSphereModels();
+  @Override
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    getLog().info(Constants.PLUGIN_ID + " - deploy");
+    Set<WebSphereModel> models = getWebSphereModels();
 
-        if (null == models || models.isEmpty()) {
-            getLog().info("[SKIPPED DEPLOYMENT] empty target server configured, please check your configuration");
-            return;
-        }
-
-        final String workingDir = project.getBuild().getDirectory() + File.separator + Constants.PLUGIN_ID + File.separator + "py" + File.separator;
-
-        boolean parallelDeploy = StringUtils.isEmpty(parallel) ? models.size() > 1 : Boolean.valueOf(parallel);
-
-        if (parallelDeploy) {
-	        int numOfProcessors = Runtime.getRuntime().availableProcessors();
-	        int poolSize = models.size() > numOfProcessors ? numOfProcessors : models.size();
-            ExecutorService executor = Executors.newFixedThreadPool(poolSize);
-            for (final WebSphereModel model : models) {
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        execute(model, workingDir);
-                    }
-                });
-            }
-            executor.shutdown();
-
-            try {
-                executor.awaitTermination(20, TimeUnit.MINUTES);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } else {
-            for (WebSphereModel model : models) {
-                execute(model, workingDir);
-            }
-        }
+    if (null == models || models.isEmpty()) {
+      getLog().info("[SKIPPED DEPLOYMENT] empty target server configured, please check your configuration");
+      return;
     }
 
-    private void execute(WebSphereModel model, String workingDir) {
-        getLog().info("============================================================");
-        getLog().info("[DEPLOY] " + model.getHost() + " " + model.getApplicationName());
-        getLog().info("============================================================");
+    final String workingDir = project.getBuild().getDirectory() + File.separator + Constants.PLUGIN_ID + File.separator + "py" + File.separator;
 
-        try {
-            getLog().info("====================    pre-steps    =======================");
-            executeAntTasks(model, super.preSteps);
-            getLog().info("======================    deploy    ========================");
-            new WebSphereServiceImpl(model, workingDir).deploy();
-            getLog().info("====================    post-steps    ======================");
-            executeAntTasks(model, super.postSteps);
-        } catch (Throwable t) {
-            if (failOnError) {
-                throw new WebSphereServiceException(t);
-            } else {
-                getLog().error("##############  Exception occurred during deploying to WebSphere  ###############");
-                getLog().error(Throwables.getStackTraceAsString(t));
-            }
-        }
-    }
+    boolean parallelDeploy = StringUtils.isEmpty(parallel) ? models.size() > 1 : Boolean.valueOf(parallel);
 
-    private void executeAntTasks(WebSphereModel model, PlexusConfiguration[] targets) throws IOException, MojoExecutionException {
-        if (null == targets || 0 == targets.length) {
-            getLog().info("Skipped, not configured.");
-            return;
-        }
-        for (PlexusConfiguration target : targets) {
-            AntTaskUtils.execute(model, target, project, projectHelper, pluginArtifacts, getLog());
-        }
+    if (parallelDeploy) {
+      int numOfProcessors = Runtime.getRuntime().availableProcessors();
+      int poolSize = models.size() > numOfProcessors ? numOfProcessors : models.size();
+      ExecutorService executor = Executors.newFixedThreadPool(poolSize);
+      for (final WebSphereModel model : models) {
+        executor.execute(new Runnable() {
+          @Override
+          public void run() {
+            execute(model, workingDir);
+          }
+        });
+      }
+      executor.shutdown();
+
+      try {
+        executor.awaitTermination(20, TimeUnit.MINUTES);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    } else {
+      for (WebSphereModel model : models) {
+        execute(model, workingDir);
+      }
     }
+  }
+
+  private void execute(WebSphereModel model, String workingDir) {
+    getLog().info("============================================================");
+    getLog().info("[DEPLOY] " + model.getHost() + " " + model.getApplicationName());
+    getLog().info("============================================================");
+
+    try {
+      getLog().info("====================    pre-steps    =======================");
+      executeAntTasks(model, super.preSteps);
+      getLog().info("======================    deploy    ========================");
+      new WebSphereServiceImpl(model, workingDir).deploy();
+      getLog().info("====================    post-steps    ======================");
+      executeAntTasks(model, super.postSteps);
+    } catch (Throwable t) {
+      if (failOnError) {
+        throw new WebSphereServiceException(t);
+      } else {
+        getLog().error("##############  Exception occurred during deploying to WebSphere  ###############");
+        getLog().error(Throwables.getStackTraceAsString(t));
+      }
+    }
+  }
+
+  private void executeAntTasks(WebSphereModel model, PlexusConfiguration[] targets) throws IOException, MojoExecutionException {
+    if (null == targets || 0 == targets.length) {
+      getLog().info("Skipped, not configured.");
+      return;
+    }
+    for (PlexusConfiguration target : targets) {
+      AntTaskUtils.execute(model, target, project, projectHelper, pluginArtifacts, getLog());
+    }
+  }
 
 }
