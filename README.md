@@ -3,7 +3,7 @@
 - [Introduction](#introduction)
 - [How It Works](#how-it-works)
 - [Goal-`deploy`](#goal-deploy)
-	- [Parameters](#parameters)
+  - [Parameters](#parameters)
 - [Single Target Server](#single-target-server)
 - [Multi Target Servers](#multi-target-servers)
 - [Pre-Steps and Post-Steps](#pre-steps-and-post-steps)
@@ -57,7 +57,7 @@ It uses WebSphere built-in security (credencials) and file transfer protocal (no
 ## Goal-`deploy`
 The only goal of this plugin, it will:
  1. Check if an application with the same name already installed on target server(s)/cluster(s)
- 	* Uninstall it if yes
+   * Uninstall it if yes
  2. Install the package to target server(s)/cluster(s)
  3. Restart target server(s)/cluster(s)
 
@@ -101,27 +101,27 @@ Generally, you need to specify at least
 ## Single Target Server
 ```xml
 <plugin>
-	<groupId>com.orctom.mojo</groupId>
-	<artifactId>was-maven-plugin</artifactId>
-	<version>${latest-version}</version>
-	<executions>
-		<execution>
-			<id>deploy</id>
-			<phase>install</phase>
-			<goals>
-				<goal>deploy</goal>
-			</goals>
-			<configuration>
-				<wasHome>${env.WAS_HOME}</wasHome>
-				<applicationName>${project.build.finalName}</applicationName>
-				<host>localhost</host>
-				<server>server01</server>
-				<node>node01</node>
-				<virtualHost>default_host</virtualHost>
-                <verbose>true</verbose>
-			</configuration>
-		</execution>
-	</executions>
+  <groupId>com.orctom.mojo</groupId>
+  <artifactId>was-maven-plugin</artifactId>
+  <version>${latest-version}</version>
+  <executions>
+    <execution>
+      <id>deploy</id>
+      <phase>install</phase>
+      <goals>
+        <goal>deploy</goal>
+      </goals>
+      <configuration>
+        <wasHome>${env.WAS_HOME}</wasHome>
+        <applicationName>${project.build.finalName}</applicationName>
+        <host>localhost</host>
+        <server>server01</server>
+        <node>node01</node>
+        <virtualHost>default_host</virtualHost>
+        <verbose>true</verbose>
+      </configuration>
+    </execution>
+  </executions>
 </plugin>
 ```
 
@@ -159,22 +159,22 @@ virtualHost=devtrunk3_host
 #### pom.xml
 ```xml
 <plugin>
-	<groupId>com.orctom.mojo</groupId>
-	<artifactId>was-maven-plugin</artifactId>
-	<version>${latest-version}</version>
-	<executions>
-		<execution>
-			<id>deploy</id>
-			<phase>install</phase>
-			<goals>
-				<goal>deploy</goal>
-			</goals>
-			<configuration>
-				<wasHome>${env.WAS_HOME}</wasHome>
-                <verbose>true</verbose>
-			</configuration>
-		</execution>
-	</executions>
+  <groupId>com.orctom.mojo</groupId>
+  <artifactId>was-maven-plugin</artifactId>
+  <version>${latest-version}</version>
+  <executions>
+    <execution>
+      <id>deploy</id>
+      <phase>install</phase>
+      <goals>
+        <goal>deploy</goal>
+      </goals>
+      <configuration>
+        <wasHome>${env.WAS_HOME}</wasHome>
+        <verbose>true</verbose>
+      </configuration>
+    </execution>
+  </executions>
 </plugin>
 ```
 **Deploy to `dev-trunk1` and `dev-trunk2`**
@@ -189,56 +189,56 @@ mvn clean install -Ddeploy_targets=`dev-trunk2`,`dev-trunk3`
 ## Pre-Steps and Post-Steps
 ```xml
 <plugin>
-	<groupId>com.orctom.mojo</groupId>
-	<artifactId>was-maven-plugin</artifactId>
-	<version>${latest-version}</version>
-	<executions>
-		<execution>
-			<id>deploy</id>
-			<phase>install</phase>
-			<goals>
-				<goal>deploy</goal>
-			</goals>
-			<configuration>
-				<wasHome>${env.WAS_HOME}</wasHome>
-                <verbose>true</verbose>
-				<preSteps>
-					<target name="pre 1">
-						<echo message="====== pre 1 ===== ${applicationName}" />
-					</target>
-					<target name="pre 2">
-						<echo message="====== pre 2 =====" />
-					</target>
-				</preSteps>
-				<postSteps>
-					<target name="post 1">
-						<echo message="====== post 1 =====" />
-					</target>
-					<target name="post 2">
-						<echo message="====== post 2 =====" />
-						<sleep seconds="10"/>
-					</target>
-				</postSteps>
-			</configuration>
-		</execution>
-	</executions>
-	<dependencies>
-		<dependency>
-			<groupId>ant-contrib</groupId>
-			<artifactId>ant-contrib</artifactId>
-			<version>20020829</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant-jsch</artifactId>
-			<version>1.8.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.49</version>
-		</dependency>
-	</dependencies>
+  <groupId>com.orctom.mojo</groupId>
+  <artifactId>was-maven-plugin</artifactId>
+  <version>${latest-version}</version>
+  <executions>
+    <execution>
+      <id>deploy</id>
+      <phase>install</phase>
+      <goals>
+        <goal>deploy</goal>
+      </goals>
+      <configuration>
+        <wasHome>${env.WAS_HOME}</wasHome>
+        <verbose>true</verbose>
+        <preSteps>
+          <target name="pre 1">
+            <echo message="====== pre 1 ===== ${applicationName}" />
+          </target>
+          <target name="pre 2">
+            <echo message="====== pre 2 =====" />
+          </target>
+        </preSteps>
+        <postSteps>
+          <target name="post 1">
+            <echo message="====== post 1 =====" />
+          </target>
+          <target name="post 2">
+            <echo message="====== post 2 =====" />
+            <sleep seconds="10"/>
+          </target>
+        </postSteps>
+      </configuration>
+    </execution>
+  </executions>
+  <dependencies>
+    <dependency>
+      <groupId>ant-contrib</groupId>
+      <artifactId>ant-contrib</artifactId>
+      <version>20020829</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-jsch</artifactId>
+      <version>1.8.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.49</version>
+    </dependency>
+  </dependencies>
 </plugin>
 ```
 * **pre-steps/post-steps can be used with both single target server and multi target servers**
@@ -253,24 +253,24 @@ or write a totally different one of you own.
 Double braces for variables, such as: `{{cluster}}`, properties in was-maven-plugin.properties are all available as variables.
 ```xml
 <plugin>
-	<groupId>com.orctom.mojo</groupId>
-	<artifactId>was-maven-plugin</artifactId>
-	<version>${latest-version}</version>
-	<executions>
-		<execution>
-			<id>deploy</id>
-			<phase>install</phase>
-			<goals>
-				<goal>deploy</goal>
-			</goals>
-			<configuration>
-				<wasHome>${env.WAS_HOME}</wasHome>
-				<script>your-jython-script.py</script><!-- relative path to project root, or absolute path starts with a "/" (Linux) or "\" (Windows)  -->
-				<scriptArgs>optional-args</scriptArgs><!-- "-o deploy" will be appended if not specified. -->
-                <verbose>true</verbose>
-			</configuration>
-		</execution>
-	</executions>
+  <groupId>com.orctom.mojo</groupId>
+  <artifactId>was-maven-plugin</artifactId>
+  <version>${latest-version}</version>
+  <executions>
+    <execution>
+      <id>deploy</id>
+      <phase>install</phase>
+      <goals>
+        <goal>deploy</goal>
+      </goals>
+      <configuration>
+        <wasHome>${env.WAS_HOME}</wasHome>
+        <script>your-jython-script.py</script><!-- relative path to project root, or absolute path starts with a "/" (Linux) or "\" (Windows)  -->
+        <scriptArgs>optional-args</scriptArgs><!-- "-o deploy" will be appended if not specified. -->
+        <verbose>true</verbose>
+      </configuration>
+    </execution>
+  </executions>
 </plugin>
 ```
 
@@ -280,90 +280,90 @@ We could move this plugin to a profile, and utilize [Extended Choice Parameter p
 #### Sample pom.xml
 ```xml
 <profiles>
-	<profile>
-		<id>deploy</id>
-		<activation>
-			<property>
-				<name>deploy</name>
-				<value>true</value>
-			</property>
-		</activation>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>com.orctom.mojo</groupId>
-					<artifactId>was-maven-plugin</artifactId>
-					<version>${latest-version}</version>
-					<executions>
-						<execution>
-							<id>deploy</id>
-							<phase>install</phase>
-							<goals>
-								<goal>deploy</goal>
-							</goals>
-							<configuration>
-								<wasHome>${env.WAS_HOME}</wasHome>
-								<verbose>true</verbose>
-								<preSteps>
-									<target name="unzip-Config-zip">
-										<echo message="Unzipping ${project.build.directory}/Config.zip --> WAS shared libs folder" />
-										<unzip dest="${WAS shared libs folder}/conf">
-											<fileset dir="${project.build.directory}/">
-												<include name="Config.zip" />
-											</fileset>
-										</unzip>
-									</target>
-									<target name="unzip-static-zip">
-										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-										<if>
-											<available file="${project.build.directory}/static.zip" />
-											<then>
-												<echo message="Unzipping ${project.build.directory}/static.zip --> apache sratic path" />
-												<unzip dest="${apache sratic path}" src="${project.build.directory}/static.zip" />
-											</then>
-										</if>
-									</target>
-									<target name="copy-config-to-remote">
-										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-										<if>
-											<isset property="some property name in pom or was-maven-plugin/properties" />
-											<then>
-												<echo message="Coping ${WAS shared libs folder}/conf to ${remote ip}:${WAS shared libs folder}/conf ..." />
-												<scp todir="wsadmin@${remote ip}:${WAS shared libs folder}/conf" keyfile="${user.home}/.ssh/id_rsa" trust="true" failonerror="false">
-													<fileset dir="${WAS shared libs folder}/conf" />
-												</scp>
-												<echo message="Copied ${meta.config.path}/conf" />
-											</then>
-											<else>
-												<echo message="Skipped, not needed." />
-											</else>
-										</if>
-									</target>
-								</preSteps>
-							</configuration>
-						</execution>
-					</executions>
-					<dependencies>
-						<dependency>
-							<groupId>ant-contrib</groupId>
-							<artifactId>ant-contrib</artifactId>
-							<version>20020829</version>
-						</dependency>
-						<dependency>
-							<groupId>org.apache.ant</groupId>
-							<artifactId>ant-jsch</artifactId>
-							<version>1.8.4</version>
-						</dependency>
-						<dependency>
-							<groupId>com.jcraft</groupId>
-							<artifactId>jsch</artifactId>
-							<version>0.1.49</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-			</plugins>
-		</build>
-	</profile>
+  <profile>
+    <id>deploy</id>
+    <activation>
+      <property>
+        <name>deploy</name>
+        <value>true</value>
+      </property>
+    </activation>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>com.orctom.mojo</groupId>
+          <artifactId>was-maven-plugin</artifactId>
+          <version>${latest-version}</version>
+          <executions>
+            <execution>
+              <id>deploy</id>
+              <phase>install</phase>
+              <goals>
+                <goal>deploy</goal>
+              </goals>
+              <configuration>
+                <wasHome>${env.WAS_HOME}</wasHome>
+                <verbose>true</verbose>
+                <preSteps>
+                  <target name="unzip-Config-zip">
+                    <echo message="Unzipping ${project.build.directory}/Config.zip --> WAS shared libs folder" />
+                    <unzip dest="${WAS shared libs folder}/conf">
+                      <fileset dir="${project.build.directory}/">
+                        <include name="Config.zip" />
+                      </fileset>
+                    </unzip>
+                  </target>
+                  <target name="unzip-static-zip">
+                    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                    <if>
+                      <available file="${project.build.directory}/static.zip" />
+                      <then>
+                        <echo message="Unzipping ${project.build.directory}/static.zip --> apache sratic path" />
+                        <unzip dest="${apache sratic path}" src="${project.build.directory}/static.zip" />
+                      </then>
+                    </if>
+                  </target>
+                  <target name="copy-config-to-remote">
+                    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                    <if>
+                      <isset property="some property name in pom or was-maven-plugin/properties" />
+                      <then>
+                        <echo message="Coping ${WAS shared libs folder}/conf to ${remote ip}:${WAS shared libs folder}/conf ..." />
+                        <scp todir="wsadmin@${remote ip}:${WAS shared libs folder}/conf" keyfile="${user.home}/.ssh/id_rsa" trust="true" failonerror="false">
+                          <fileset dir="${WAS shared libs folder}/conf" />
+                        </scp>
+                        <echo message="Copied ${meta.config.path}/conf" />
+                      </then>
+                      <else>
+                        <echo message="Skipped, not needed." />
+                      </else>
+                    </if>
+                  </target>
+                </preSteps>
+              </configuration>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>ant-contrib</groupId>
+              <artifactId>ant-contrib</artifactId>
+              <version>20020829</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.ant</groupId>
+              <artifactId>ant-jsch</artifactId>
+              <version>1.8.4</version>
+            </dependency>
+            <dependency>
+              <groupId>com.jcraft</groupId>
+              <artifactId>jsch</artifactId>
+              <version>0.1.49</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
 </profiles>
 ```
 #### Sample Jenkins Job Configuration
@@ -415,7 +415,7 @@ We could configure WAS to prompt to add them to local trust store.
 * Added a boolean parameter `restartAfterDeploy`:
   - `true` to restart server after deploy
   - `false` to start application directly
-  - Default: `true`	
+  - Default: `true`  
 
 #### 1.0.9
 * Added support to override default `javaoption` in wsadmin client, in case you get `OutOfMemoryError`.
