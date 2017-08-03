@@ -29,7 +29,7 @@ public abstract class AbstractWASMojo extends AbstractMojo {
   @Parameter(defaultValue = "${plugin.artifacts}")
   protected List<Artifact> pluginArtifacts;
 
-  @Parameter(defaultValue = "${project.basedir}/was-maven-plugin.properties")
+  @Parameter(defaultValue = "${project.basedir}/was-maven-plugin.properties", property = "was.deploymentsPropertyFile")
   protected File deploymentsPropertyFile;
 
   @Parameter(required = true)
