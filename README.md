@@ -386,6 +386,9 @@ We could configure WAS to prompt to add them to local trust store.
 
 ## Change Log
 
+#### 1.1.3.3
+* Added system property support for defining the deployments property file. [#19](https://github.com/orctom/was-maven-plugin/pull/19)
+
 #### 1.1.3.2
 * Added support for IHS webserver mapping for standalone WAS.
 
